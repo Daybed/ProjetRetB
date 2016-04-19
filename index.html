@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chenillard</title>
+		<script type="text/javascript" src="./node_modules/jquery/dist/jquery.min.js" ></script>
+		<link link rel="shortcut icon" type="image/x-icon" href="img/bb8.png"/>
+		<link rel="stylesheet" href="./css/style.css"/>
+		<link rel="stylesheet" href="./node_modules/bootstrap/css/bootstrap.min.css"/>
+		<script type="text/javascript" src="./node_modules/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="./node_modules/angular/angular.min.js"></script>
+		<!--<script type="text/javascript" src="./node_modules/ng-toast/dist/ngToast.min.js"></script>
+		<link rel="stylesheet" href="./node_modules/ng-toast/dist/ngToast.min.css">-->
+		<script type="text/javascript" src="./node_modules/socket.io-client/socket.io.js"></script>
+		<script type="text/javascript" src="./js/client.js"></script>
+	</head>
+
+<body>
+	
+	<div ng-app="myApp">
+	<div ng-controller="myCtrl">
+		<toast><toast>
+		<div class="row">
+
+			<div class= "col-md-4">
+				<button type="button" ng-click="loop()" class="btn btn-primary btn-lg btn-block">{{loopstart}}</button>	
+			</div>
+
+			<div class="col-md-4">
+				<br>
+				<label for="usr">Vitesse :</label>
+				<input type="Number" ng-model="vitesse"><br>
+				<p>Vitesse acutelle : {{speed}}</p>
+				<br><button type="button" ng-click="setspeed()" class="btn btn-secondary btn-lg btn-block">Send Vitesse</button><br>
+				<button type="button" ng-click="changedirection()" class="btn btn-secondary btn-lg btn-block">Changer de sens</button><br>
+			</div>
+		</div>
+
+	<div class="row">
+		<div class="col-md-offset-1">
+			<div class="col-md-1 col-md-offset-1" ng-repeat="x in lampes track by $index">
+		            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="200" width="200">
+		    </div>
+		</div>
+	</div>
+
+	</div>
+	</div>
+</body>
+
+</html>
