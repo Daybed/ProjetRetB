@@ -24,6 +24,7 @@ var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
   return '0.0.0.0';
 }
 
+
   function getall(){
     for(var i in light){
     getknx(light[i].adresse);
@@ -42,42 +43,6 @@ var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
     connection.RequestStatus(adresse);
   }
 
-
-/*
-
- function loop (){
-
- for(i=0;i<light.length;i++){
-      setknx(light[i].adresse,false);
-      }
-
-  myloop = setInterval(function() {
-    if(chenillard.clockwise==true){
-      decreasing=increasing;
-    }
-    else{
-      decreasing=pre-1;
-      if (decreasing==-1){
-        decreasing=light.length -1;
-      }
-    }  
-
-    setknx(light[pre].adresse,false);
-    //light[pre].etat=0;
-
-    setknx(light[decreasing].adresse,true);
-   // light[decreasing].etat=1;
-
-    pre = decreasing;
-    increasing++;
-
-
-    if(increasing>=light.length){
-      increasing=0;
-    }
-  }, chenillard.speed);
-  }
-*/
 
 function exec(callback){
 
@@ -146,5 +111,77 @@ function looptest (){
     else{
       return;
     }
+}
+
+
+function rgb2xy(R,G,B){
+
+  var X = 0.4124*R + 0.3576*G + 0.1805*B;
+  var Y = 0.2126*R + 0.7152*G + 0.0722*B;
+  var Z = 0.0193*R + 0.1192*G + 0.9505*B;
+  var coorx = X / (X + Y + Z);
+  var coory = Y / (X + Y + Z);
+  return {x:coorx,y:coory};
+
+}
+
+function rgb2hsl (r,g,b) {
+  var r1=r/255;
+  var g1=g/255;
+  var b1=b/255;
+ var minRGB = Math.min(r1,Math.min(g1,b1));
+ var maxRGB = Math.max(r1,Math.max(g1,b1));
+ var delta=maxRGB-minRGB;
+ var l;
+ var s;
+ l = (minRGB + maxRGB)/2;
+ if(delta==0){
+   s = 0;
+}
+else{
+  s = delta/(1-(Math.abs(2*l -1)));
+}
+s= Math.round(s*255);
+l = Math.round(l*255);
+return {sat:s,bri:l};
+}
+function rgb2hsv (r,g,b) {
+ var computedH = 0;
+ var computedS = 0;
+ var computedV = 0;
+
+ //remove spaces from input RGB values, convert to int
+ var r = parseInt( (''+r).replace(/\s/g,''),10 ); 
+ var g = parseInt( (''+g).replace(/\s/g,''),10 ); 
+ var b = parseInt( (''+b).replace(/\s/g,''),10 ); 
+
+ if ( r==null || g==null || b==null ||
+     isNaN(r) || isNaN(g)|| isNaN(b) ) {
+   alert ('Please enter numeric RGB values!');
+   return;
+ }
+ if (r<0 || g<0 || b<0 || r>255 || g>255 || b>255) {
+   alert ('RGB values must be in the range 0 to 255.');
+   return;
+ }
+ r=r/255; g=g/255; b=b/255;
+ var minRGB = Math.min(r,Math.min(g,b));
+ var maxRGB = Math.max(r,Math.max(g,b));
+
+ // Black-gray-white
+ if (minRGB==maxRGB) {
+  computedV = minRGB;
+  return [0,0,computedV];
+ }
+
+ // Colors other than black-gray-white:
+ var d = (r==minRGB) ? g-b : ((b==minRGB) ? r-g : b-r);
+ var h = (r==minRGB) ? 3 : ((b==minRGB) ? 1 : 5);
+ computedH = 60*(h - d/(maxRGB - minRGB));
+ computedS = Math.round(((maxRGB - minRGB)/maxRGB)*255);
+ computedV = Math.round(maxRGB*255);
+
+
+ return {h:computedH,s:computedS,v:computedV};
 }
 

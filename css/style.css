@@ -10,5 +10,8 @@ background : url("../img/10.jpg") fixed center center ;
 body h1{
 	font-family: "Comic Sans Ms";
 	font-size: 30px;
-}		
-
+}	
+	
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
