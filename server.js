@@ -199,7 +199,7 @@ io.on('connection',function(socket){
     
     socket.emit('lampes',light);
     socket.emit('init',{ipserver: ipserver, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});
-    init(socket);
+    //init(socket);
 
     socket.on('setspeed',function(vitesse){
        chenillard.setspeed(vitesse); 
