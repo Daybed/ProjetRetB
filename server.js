@@ -50,10 +50,13 @@ if (connection.connected){
     var light=[];
         for(var k =0; k<4;k++){
             light[k]={adresse:"0/1/"+k,etat:"", numero: k};
+        for(var k =1; k<5;k++){
+            light[k]={adresse:"0/1/"+k,etat:null, numero: k,nberreur:0};
         }
 }
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
 var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
+//var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
 
 //connectionknx(function(){getall();});---------------------------------------------------------------------------------------------c'est quoi ?
 
