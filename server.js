@@ -50,6 +50,7 @@ if (connection.connected){
     var light=[];
         for(var k =0; k<4;k++){
             light[k]={adresse:"0/1/"+k,etat:"", numero: k};
+        }
 
 }
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
