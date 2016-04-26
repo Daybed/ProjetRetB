@@ -53,7 +53,7 @@ if (connection.connected){
 
 }
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
-var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
+//var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
 
 //connectionknx(function(){getall();});---------------------------------------------------------------------------------------------c'est quoi ?
 
@@ -185,8 +185,8 @@ io.on('connection',function(socket){
         var param = JSON.stringify({"on":data.on});
         var res = Put(url,param);
         var json = JSON.parse(res);
-       if(json[0].success){
-        io.emit('ChangementOnHue',data);
+        if(json[0].success){
+            io.emit('ChangementOnHue',data);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à l'état " + data.on+". Type de l'erreur : "+ json[0].error.description);
