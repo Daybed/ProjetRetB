@@ -5,30 +5,28 @@ var fs = require("fs");
 var http = require('http').Server(app);
 var io= require('socket.io')(http);
 
-
-eval(fs.readFileSync(__dirname + '/function.js')+'');
-eval(fs.readFileSync(__dirname + '/objet.js')+'');
-app.use('/node_modules',express.static('d:/Documents/David/Javascript/node_modules'));
+// charger l'adresse ip des hue avec le lien :https://www.meethue.com/api/nupnp
+    
+eval(fs.readFileSync(__dirname + '/js/function.js')+'');
+eval(fs.readFileSync(__dirname + '/js/objet.js')+'');
 app.use('/node_modules',express.static('d:/Documents/David/Javascript/ProjetRetB/node_modules'));
-app.use('/js',express.static(__dirname + '/js'));
-app.use('/img',express.static(__dirname +'/img'));
-app.use('/css',express.static(__dirname +'/css'));
-
+app.use('/public',express.static(__dirname + '/public'));
+app.use('/bower_components',express.static(__dirname + '/bower_components'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var ipserver=getIPAddress();
+var ipplateauknx= '192.168.1.117';
+var portplateauknx=3671;
+var portserver = 13671;
+
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
 var xmlHttpPut = new XMLHttpRequest(); 
+
 var endAugmenter;
 var intervalUp;
 var intervalDown;
-
-var ipplateauknx= '192.168.1.117';
-var portplateauknx=3671;
-    
-var portserver = 13671;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -38,66 +36,20 @@ KnxHelper = require('./src/KnxHelper.js');
 KnxConnectionTunneling = require('./src/KnxConnectionTunneling.js');
 exports.KnxHelper = KnxHelper;
 exports.KnxConnectionTunneling = KnxConnectionTunneling;
+
 //crée les variables de connexion à la plaque KNX
 var KnxConnectionTunneling = require('knx.js').KnxConnectionTunneling;
 var connection = new KnxConnectionTunneling(ipplateauknx, portplateauknx,ipserver,portserver );
-
-/*
-
-var light=[];
-for(var k =0; k<4;k++){
-light[k]={adresse:"0/1/"+k,etat:"", numero: k};
-}*/
 
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe
 var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
 
 //connectionknx(function(){getall();});
 
-//lancement de la connection 
 var conf = JSON.parse(fs.readFileSync('conf.json'));
 
-function initHue(callback){
-    var tab=[];
-    var rep = JSON.parse(Get('http://'+conf.ipAdresseHue+'/api/'+conf.hueUsername+'/lights/'));
+// adresse ip serveur hue : https://www.meethue.com/api/nupnp
 
-    for(i in rep){
-        if (rep[i].state.reachable==true){
-            var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, xy: [rep[i].state.xy[0],rep[i].state.xy[1]], hue:rep[i].state.hue, sat:rep[i].state.sat};
-            tab.push(lampe);
-        }
-        else{
-        }
-    }
-    console.log(tab);
-    callback(tab);
-};
-
-function init(socket){
-initHue(function(hue){
-socket.emit('initHue',hue);
-});
-}
-
-
-function Get(url) {
-    xmlHttpGet.open( "GET", url , false ); 
-    xmlHttpGet.send( null );
-        if(xmlHttpGet.status==200){
-            return xmlHttpGet.responseText;
-        }
-}
-
-function Put(url,paramASend){
-    xmlHttpPut.open("PUT", url, false ); 
-    xmlHttpPut.send(paramASend);
-        if(xmlHttpPut.status==200){
-            return xmlHttpPut.responseText;
-        }
-}
-
-
-//color(24,154,2);
 
 app.use(function (req, res, next) {
 
@@ -120,7 +72,7 @@ app.use(function (req, res, next) {
 
 // affichage de la page 
 app.all('/', function(req, res) {
-    res.sendfile('/index.html', {
+    res.sendFile('/index.html', {
         root: __dirname
     });
 });
@@ -199,7 +151,7 @@ io.on('connection',function(socket){
     
     socket.emit('lampes',light);
     socket.emit('init',{ipserver: ipserver, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});
-    //init(socket);
+    init(socket);
 
     socket.on('setspeed',function(vitesse){
        chenillard.setspeed(vitesse); 
@@ -227,13 +179,15 @@ io.on('connection',function(socket){
         setknx(data.adresse, data.etat);
     });
 
+
     socket.on('on',function(data){
         var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
         var param = JSON.stringify({"on":data.on});
         var res = Put(url,param);
         var json = JSON.parse(res);
        if(json[0].success){
-        io.emit('ChangementOnHue',data);
+        //io.emit('ChangementOnHue',data);
+        init(socket);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à l'état " + data.on+". Type de l'erreur : "+ json[0].error.description);
@@ -248,7 +202,8 @@ io.on('connection',function(socket){
         var res = Put(url,param);
         var json = JSON.parse(res);
        if(json[0].success){
-        io.emit('ChangementBriHue',data);
+        // io.emit('ChangementBriHue',data);
+        init(socket);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à la lum " + data.bri+". Type de l'erreur : "+ json[0].error.description);
@@ -262,7 +217,8 @@ io.on('connection',function(socket){
         var res = Put(url,param);
         var json = JSON.parse(res);
        if(json[0].success){
-        io.emit('ChangementSatHue',data);
+       // io.emit('ChangementSatHue',data);
+       init(socket);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à la saturation " + data.sat+". Type de l'erreur : "+ json[0].error.description);
@@ -270,28 +226,17 @@ io.on('connection',function(socket){
     });
 
     socket.on('color',function(data){
-        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/2/state";
-        var r=data[0];
-        var g=data[1];
-        var b = data[2];
-       // console.log(rgb2hsl(r,g,b).sat + " et " + rgb2hsl(r,g,b).bri +'\n' + rgb2hsv(r,g,b).s + " et "+rgb2hsv(r,g,b).v);
-        //var param = JSON.stringify({"xy": [rgb2xy(r,g,b).x,rgb2xy(r,g,b).y],"sat":rgb2hsl(r,g,b).sat,"bri":rgb2hsl(r,g,b).bri});
+        var lampe = data.lampe;
+        var r=data.r;
+        var g=data.g;
+        var b = data.b;
+        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+lampe+"/state";
+        var param = JSON.stringify({"xy": [rgb2xy(r,g,b).x,rgb2xy(r,g,b).y]});
         var res = Put(url,param);
         var json = JSON.parse(res);
         
-        if(json[0].success){
-            var tab=[];
-            var rep = JSON.parse(Get('http://'+conf.ipAdresseHue+'/api/'+conf.hueUsername+'/lights/'));
-
-            for(i in rep){
-                if (rep[i].state.reachable==true){
-                    var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, xy: [rep[i].state.xy[0],rep[i].state.xy[1]], hue:rep[i].state.hue, sat:rep[i].state.sat};
-                    tab.push(lampe);
-                }
-                else{
-                }
-            }
-            io.emit('ChangementColorHue',tab);
+       if(json[0].success){
+        init(socket);
          }
 
         else{
@@ -300,6 +245,7 @@ io.on('connection',function(socket){
 
     });
 });
+      
 
     
 http.listen(8000, function(){
@@ -315,9 +261,3 @@ process.on('SIGINT', function(){
     process.exit();
 });
 //})
-/*{
-  "ipAdresseHue" : "192.168.1.104",
-  "hueUsername" : "c45537a1ec1feb75b4b4e61605fd3",
-  "portServer" : "5000",
-  "name":"test"
-}*/

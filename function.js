@@ -1,119 +1,120 @@
-var increasing=0;
-var decreasing=0;
-var pre = 0;
-var myloop;
-
 var somme =0;
 var k;
-// comparesomme="";
-//var time=0;
 var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
 
 
- function getIPAddress() {
-  var interfaces = require('os').networkInterfaces();
-  for (var devName in interfaces) {
-    var iface = interfaces[devName];
+function getIPAddress() {
+    var interfaces = require('os').networkInterfaces();
+    for (var devName in interfaces) {
+        var iface = interfaces[devName];
 
-    for (var i = 0; i < iface.length; i++) {
-      var alias = iface[i];
-      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
-        return alias.address;
+        for (var i = 0; i < iface.length; i++) {
+            var alias = iface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
+                return alias.address;
+            }  
+        }
     }
-  }
-  return '0.0.0.0';
+    return '0.0.0.0';
 }
 
 
-  function getall(){
+function getall(){
     for(var i in light){
-    getknx(light[i].adresse);
+        getknx(light[i].adresse);
+    }
+} 
+function connectionknx(callback){
+   connection.Connect(function (){callback();});
 }
-  } 
-  function connectionknx(callback){
-    connection.Connect(function (){callback();});
-  }
-  function deconnectionknx(callback){
+function deconnectionknx(callback){
     connection.Disconnect(function(){callback();});
-  }
-  function setknx(adresse,value){
+}
+function setknx(adresse,value){
     connection.Action(adresse,value);
-  }
-  function getknx(adresse){
+}
+function getknx(adresse){
     connection.RequestStatus(adresse);
-  }
+}
 
 
 function exec(callback){
-
-      if(chenillard.clockwise==true){
-
-              for (var j=0; j<light.length;j++){
-
-               k = (j+1+light.length) % light.length;
-               somme+=light[j].etat;
-
-                  if(light[j].etat==1){
-                    newtab[k].etat=true;
-                  }
-                  else{
-                    newtab[k].etat=false;
-                  }
-                }
-              }
-
-        else if(chenillard.clockwise==false){
-
-            for (var j=0; j<light.length;j++){
-
-              k = (j-1+light.length) % light.length;
-              somme+=light[j].etat;
-
-              if(light[j].etat==1){
+    if(chenillard.clockwise==true){
+        for (var j=0; j<light.length;j++){
+            k = (j+1+light.length) % light.length;
+            somme+=light[j].etat;
+            if(light[j].etat==1){
                 newtab[k].etat=true;
-              }
-              else{
-                  newtab[k].etat=false;
-                }
-                
             }
-          }
-
-
-        if(somme==light.length || somme==0){
-          console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
-          //toast
-        }
-        
-        else if(chenillard.on==true){
-            for(var i in newtab){
-              setknx(light[i].adresse,newtab[i].etat);
+            else{
+                newtab[k].etat=false;
             }
         }
-
-        else{
-          console.log("Erreur");
+    }
+    else if(chenillard.clockwise==false){
+        for (var j=0; j<light.length;j++){
+            k = (j-1+light.length) % light.length;
+            somme+=light[j].etat;
+            if(light[j].etat==1){
+                newtab[k].etat=true;
+            }
+            else{
+                newtab[k].etat=false;
+            }     
         }
-
-        somme = 0;
-        callback();
-}
-
-function looptest (){
-
-    if(chenillard.on==true){
-      exec(function(){
-      setTimeout(function(){
-        looptest();}, chenillard.speed
-      );
-    });
+    }
+    if(somme==light.length || somme==0){
+        console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
+        //toast
+    }
+    else if(chenillard.on==true){
+        for(var i in newtab){
+            setknx(light[i].adresse,newtab[i].etat);
+        }
     }
     else{
-      return;
+        console.log("Erreur");
+    }
+    somme = 0;
+    callback();
+}
+function looptest (){
+    if(chenillard.on==true){
+        exec(function(){
+            setTimeout(function(){
+                looptest();
+            }, chenillard.speed); 
+        });
+    }
+    else{
+        return;
     }
 }
-
-
+function rgbToXyBri(Red,Green,Blue) {
+    var red = Red/255;;
+    var green = Green/255;
+    var blue = Blue/255;
+    var r = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+    var g = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+    var b = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+    var X = r * 0.649926 + g * 0.103455 + b * 0.197109;
+    var Y = r * 0.234327 + g * 0.743075 + b * 0.022598;
+    var Z = r * 0.0000000 + g * 0.053077 + b * 1.035763;
+    var cx = X / (X + Y + Z);
+    var cy = Y / (X + Y + Z);
+    if (isNaN(cx)) {
+        cx = 0.0;
+    }
+    if (isNaN(cy)) {
+        cy = 0.0;
+    }
+    return {
+          x: cx,
+          y: cy,
+          bri: Y*255
+      };
+  }
+/*
 function rgb2xy(R,G,B){
 
   var X = 0.4124*R + 0.3576*G + 0.1805*B;
@@ -145,6 +146,7 @@ s= Math.round(s*255);
 l = Math.round(l*255);
 return {sat:s,bri:l};
 }
+
 function rgb2hsv (r,g,b) {
  var computedH = 0;
  var computedS = 0;
@@ -185,3 +187,4 @@ function rgb2hsv (r,g,b) {
  return {h:computedH,s:computedS,v:computedV};
 }
 
+*/

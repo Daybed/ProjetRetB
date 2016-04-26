@@ -2,27 +2,26 @@
 <html>
 	<head>
 		<title>Chenillard</title>
-		<script type="text/javascript" src="./node_modules/jquery/dist/jquery.min.js" ></script>
-		<link link rel="shortcut icon" type="image/x-icon" href="img/bb8.png"/>
-		<link rel="stylesheet" href="./css/style.css"/>
-		<link rel="stylesheet" href="./node_modules/bootstrap/css/bootstrap.min.css"/>
-		<script type="text/javascript" src="./node_modules/bootstrap/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
-		<script type="text/javascript" src="node_modules/angular-animate/angular-animate.min.js"></script>
+		<link link rel="shortcut icon" type="image/x-icon" href="./public/img/bb8.png"/>
 
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
-  		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+		<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js" ></script>
+		<link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+		<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
+		<link rel="stylesheet" href="./bower_components/angular-material/angular-material.min.css">
+  		<script type="text/javascript" src="bower_components/angular-aria/angular-aria.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-material/angular-material.min.js"></script>
+		<script type="text/javascript" src="bower_components/jscolor/jscolor.js"></script>
+		<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+		<script type="text/javascript" src="bower_components/ngToast/dist/ngToast.min.js"></script>
+		<link rel="stylesheet" href="./bower_components/ngToast/dist/ngToast.min.css">
 
-		<script type="text/javascript" src="node_modules/jscolor/jscolor.js"></script>
+	<!--	<script type="text/javascript" src="bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js"></script>
+		<link rel="stylesheet" href="./bower_components/angular-bootstrap-colorpicker/css/colorpicker.min.css">
+		<script type="text/javascript" src="bower_components/angularjs-slider/dist/rzslider.min.js"></script>
+		<link rel="stylesheet" href="./bower_components/angularjs-slider/dist/rzslider.min.css">
 
-
-		<!--
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
-		<script src="https://rawgit.com/rzajac/angularjs-slider/master/dist/rzslider.js"></script>
-		<link rel="stylesheet" href="./node_modules/angularjs-slider/dist/rzslider.css"/>
-		<script type="text/javascript" src="./node_modules/ng-toast/dist/ngToast.min.js"></script>
-		<link rel="stylesheet" href="./node_modules/ng-toast/dist/ngToast.min.css">
 
 
 	<div class="col-md-6">
@@ -32,23 +31,21 @@
 
     -->
 
-		<script type="text/javascript" src="./node_modules/socket.io-client/socket.io.js"></script>
-		<script type="text/javascript" src="./js/client.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="./public/css/style.css"/>
+		<script type="text/javascript" src="public/js/client.js"></script>
 	</head>
 
 <body>
-	
-Color: <input class="jscolor" onchange='couleur(this)' value="cc66ff">
-	
 	<div ng-app="myApp">
 	<div ng-controller="myCtrl">
-
-		<div class="row">
+		<toast></toast>
+		<div class="box"></div>
+		<!--<div class="row">
 			<div class"col-md-12">
-			<rzslider rz-slider-model="slider.value" rz-slider-options="slider.options"></rzslider>
-		
+			<rzslider rz-slider-model="slider.value" min="0" max="255" rz-slider-options="slider.options"></rzslider>
 			</div>
-		</div>
+		</div>-->
 		<div class="row">
 
 			<div class= "col-md-4">
@@ -69,30 +66,46 @@ Color: <input class="jscolor" onchange='couleur(this)' value="cc66ff">
 	<div class="row">
 		<div class="col-md-offset-1">
 			<div class="col-md-1 col-md-offset-1" ng-repeat="x in lampes track by $index">
-		            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="200" width="200">
+		            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="100" width="100">
 		    </div>
-		</div>
+		</div> 
 	</div>
 
 	<div class="row">
 
 			<div class="col-md-3" ng-repeat="x in Hue track by $index">
-		           	<div class="col-md-7">
-		           	 <img ng-src="{{HueImg}}" ng-click="changeonhue(x.lampe)" height="200" width="200"> {{x.on}}
-		           	</div>
-		           	<div class="col-md-1">
+		           	 <img ng-src="{{HueImg}}" ng-click="changeonhue(x.lampe)" height="100" width="100"  ng-style="{'background-color': fond}"> 
+		           	 <p> Lampe {{x.lampe}} : {{x.on}}</p><p> Couleur : {{x.xy}} </p>
+		    </div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<input class="jscolor {valueElement:'chosen-value'} " onchange="couleur(this)">
+		      <!-- Couleur : <input class="jscolor" ng-model = "hey" ng-change="couleur(this)">-->
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3" ng-repeat="x in Hue track by $index">
+		           	<div class="col-md-5">
 		           		<md-slider flex ng-model="x.bri" min="0" max="254" aria-label="brightness" id="brigthness-slider" class="md-accent" md-vertical md-range ng-click="changebrihue(x.lampe)"></md-slider> <md-slider-container>Luminosité de la Hue {{x.lampe}} : {{x.bri}}</md-slider-container>
 		           	</div>
-		           	<div class="col-md-1 col-md-offset-2">
+		           	<div class="col-md-5">
 		           		<md-slider flex ng-model="x.sat" min="0" max="254" aria-label="saturation" id="saturation-slider" class="md-accent" md-vertical md-range ng-click="changesathue(x.lampe)"></md-slider> <md-slider-container>Saturation de la Hue {{x.lampe}} : {{x.sat}}</md-slider-container>
 		           	</div>
 		    </div>
+
 	</div>
+	     <!--  <input colorpicker="rgb" class="span2" type="text" ng-model="your_model" />-->
+
+
+
+
       
 
 
 	</div>
 	</div>
+	
 </body>
 
 </html>
