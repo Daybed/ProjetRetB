@@ -19,9 +19,9 @@ function initHue(callback){
 };
 
 function init(socket){
-initHue(function(hue){
-socket.emit('initHue',hue);
-});
+  initHue(function(hue){
+    socket.emit('initHue',hue);
+  });
 }
 
 
@@ -34,11 +34,11 @@ function Get(url) {
 }
 
 function Put(url,paramASend){
-    xmlHttpPut.open("PUT", url, false ); 
-    xmlHttpPut.send(paramASend);
-        if(xmlHttpPut.status==200){
-            return xmlHttpPut.responseText;
-        }
+  xmlHttpPut.open("PUT", url, false ); 
+  xmlHttpPut.send(paramASend);
+    if(xmlHttpPut.status==200){
+      return xmlHttpPut.responseText;
+    }
 }
 
  function getIPAddress() {
@@ -56,23 +56,23 @@ function Put(url,paramASend){
 }
 
 
-  function getall(){
-    for(var i in light){
+function getall(){
+  for(var i in light){
     getknx(light[i].adresse);
+  }
+} 
+function connectionknx(callback){
+  connection.Connect(function (){callback();});
 }
-  } 
-  function connectionknx(callback){
-    connection.Connect(function (){callback();});
-  }
-  function deconnectionknx(callback){
-    connection.Disconnect(function(){callback();});
-  }
-  function setknx(adresse,value){
-    connection.Action(adresse,value);
-  }
-  function getknx(adresse){
-    connection.RequestStatus(adresse);
-  }
+function deconnectionknx(callback){
+  connection.Disconnect(function(){callback();});
+}
+function setknx(adresse,value){
+  connection.Action(adresse,value);
+}
+function getknx(adresse){
+  connection.RequestStatus(adresse);
+}
 
 
 function exec(callback){
@@ -168,7 +168,7 @@ function rgbToXyBri(Red,Green,Blue) {
           y: cy,
           bri: Y*255
       };
-  }
+}
 /*
 function rgb2xy(R,G,B){
 

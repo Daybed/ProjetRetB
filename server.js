@@ -6,27 +6,17 @@ var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
 var io= require('socket.io')(http);
-
-// charger l'adresse ip des hue avec le lien :https://www.meethue.com/api/nupnp
-    
-eval(fs.readFileSync(__dirname + '/js/function.js')+'');
-eval(fs.readFileSync(__dirname + '/js/objet.js')+'');
-app.use('/node_modules',express.static('d:/Documents/David/Javascript/ProjetRetB/node_modules'));
-app.use('/public',express.static(__dirname + '/public'));
-app.use('/bower_components',express.static(__dirname + '/bower_components'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-var ipserver=getIPAddress();
-
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
 var xmlHttpPut = new XMLHttpRequest(); 
+var fs = require("fs");
 
-var endAugmenter;
-var intervalUp;
-var intervalDown;
+eval(fs.readFileSync(__dirname + '/js/function.js')+'');
+eval(fs.readFileSync(__dirname + '/js/objet.js')+'');
 
+app.use('/public',express.static(__dirname + '/public'));
+app.use('/node_modules',express.static(__dirname +'/node_modules'));
+app.use('/bower_components',express.static(__dirname+'/bower_components'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -37,26 +27,16 @@ var endAugmenter;
 var intervalUp;
 var intervalDown;
 var conf = JSON.parse(fs.readFileSync('conf.json'));
-var ipserver=getIPAddress();
+var ipServer=getIPAddress();
 //|===================================================================================|
 //|=================================== Module KNX ====================================|
 //|===================================================================================|
-
 KnxHelper = require('./src/KnxHelper.js');
 KnxConnectionTunneling = require('./src/KnxConnectionTunneling.js');
 exports.KnxHelper = KnxHelper;
 exports.KnxConnectionTunneling = KnxConnectionTunneling;
-//crée les variables de connexion à la plaque KNX
 var KnxConnectionTunneling = require('knx.js').KnxConnectionTunneling;
-var connection = new KnxConnectionTunneling(ipplateauknx, portplateauknx,ipserver,portserver );
-
-// Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe
-//var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
-
-//connectionknx(function(){getall();});
-var conf = JSON.parse(fs.readFileSync('conf.json'));
-
-// adresse ip serveur hue : https://www.meethue.com/api/nupnp
+var connection = new KnxConnectionTunneling(conf.ipPlateauknx, conf.portPlateauknx,ipServer,conf.portServer );
 
 //|===================================================================================|
 //|============================= Initialisation Lampes================================|----------------------------------peut etre à supprimer et a placer avec le init() pour les hues ? 
@@ -77,7 +57,6 @@ if (connection.connected){
 //|===================================================================================|
 //|================================== A m'expliquer===================================|------------------------------------------------------
 //|===================================================================================|
-
 app.use(function (req, res, next) {
     var origin = req.headers.origin;
     //Message qui s'affiche à chaque fois qu'on envoie une requête au serveur (GET/POST/...)
@@ -170,7 +149,7 @@ io.on('connection',function(socket){
     
     socket.emit('lampes',light);
 
-    socket.emit('init',{ipserver: ipserver, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
+    socket.emit('init',{ipserver: ipServer, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
     //--------------------------------------------------------------------------------------------ne faut il pas initialiser les lampe knx aussi ? 
 
     init(socket);
@@ -277,8 +256,8 @@ io.on('connection',function(socket){
 //|===================================================================================|
 //|============================== Lancement du server  ===============================|
 //|===================================================================================|
-http.listen(conf.portserver, function(){
-  console.log('listening adresse : '+ipserver+ ' on : '+conf.portserver);
+http.listen(conf.portServer, function(){
+  console.log('listening adresse : '+ipServer+ ' on : '+conf.portServer);
 });
 
 //|===================================================================================|
