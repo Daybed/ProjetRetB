@@ -1,13 +1,13 @@
-var chenillard = {
+module.exports.chenillard ={
   on: false,
   speed: 500,
   clockwise: true,
 
   changestate : function(){
     this.on=!this.on;
-    /*if (this.on==true){
+    if (this.on==true){
       looptest();
-    }*/
+    }
   },
   changeclockwise : function(){
     this.clockwise=!this.clockwise;

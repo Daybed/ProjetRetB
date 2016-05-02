@@ -6,13 +6,10 @@ var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
 var io= require('socket.io')(http);
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var xmlHttpGet = new XMLHttpRequest();
-var xmlHttpPut = new XMLHttpRequest(); 
 var fs = require("fs");
 
-eval(fs.readFileSync(__dirname + '/js/function.js')+'');
-eval(fs.readFileSync(__dirname + '/js/objet.js')+'');
+var objet = require("./js/objet.js");
+var funct= require("./js/function.js");
 
 app.use('/public',express.static(__dirname + '/public'));
 app.use('/node_modules',express.static(__dirname +'/node_modules'));
@@ -27,7 +24,7 @@ var endAugmenter;
 var intervalUp;
 var intervalDown;
 var conf = JSON.parse(fs.readFileSync('conf.json'));
-var ipServer=getIPAddress();
+var ipServer=funct.getIPAddress();
 //|===================================================================================|
 //|=================================== Module KNX ====================================|
 //|===================================================================================|
@@ -105,19 +102,19 @@ if (connection.connected){
         else if(data[0]==1){    
             if(data1==1){
                 if(data[4]==1){
-                chenillard.changestate();
+                objet.chenillard.changestate();
                 io.emit('etat chenillard',chenillard.on);
                 }
                 else if(data[4]==2){
-                chenillard.changeclockwise();
+                objet.chenillard.changeclockwise();
                 }
                 else if(data[4]==3){
                 startDiminuer = new Date().getTime();
-                intervalDown = setInterval(function(){chenillard.setspeed(chenillard.speed+10);},100);
+                intervalDown = setInterval(function(){objet.chenillard.setspeed(objet.chenillard.speed+10);},100);
                 }
                 else if(data[4]==4){
                 startAugmenter = new Date().getTime();
-                intervalUp = setInterval(function(){chenillard.setspeed(chenillard.speed-10);},100);
+                intervalUp = setInterval(function(){objet.chenillard.setspeed(chenillard.speed-10);},100);
                  }
              }
             else if(data1==0){
@@ -125,14 +122,14 @@ if (connection.connected){
                     endDiminuer = new Date().getTime();
                     clearInterval(intervalDown);
                     if((endDiminuer-startDiminuer)<100){
-                        chenillard.setspeed(chenillard.speed+100);
+                        objet.chenillard.setspeed(objet.chenillard.speed+100);
                     }
                 }
                 else if(data[4]==4){
                     endAugmenter = new Date().getTime();
                     clearInterval(intervalUp);
                     if((endAugmenter-startAugmenter)<100){
-                        chenillard.setspeed(chenillard.speed-100);
+                        objet.chenillard.setspeed(objet.chenillard.speed-100);
                     }
                 }
             }        
@@ -149,22 +146,22 @@ io.on('connection',function(socket){
     
     socket.emit('lampes',light);
 
-    socket.emit('init',{ipserver: ipServer, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
+    socket.emit('init',{ipserver: ipServer, chenillardstate: objet.chenillard.on, chenillardspeed: objet.chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
     //--------------------------------------------------------------------------------------------ne faut il pas initialiser les lampe knx aussi ? 
 
    // init(socket);
 
     socket.on('setspeed',function(vitesse){
-       chenillard.setspeed(vitesse); 
+       objet.chenillard.setspeed(vitesse); 
        console.log("Vitesse actuelle : " + vitesse);
     });
 
     socket.on('changedirection',function(){
-        chenillard.changeclockwise();
+        objet.chenillard.changeclockwise();
     });
 
     socket.on('changestate', function(){
-        chenillard.changestate();
+        objet.chenillard.changestate();
         io.emit('etat chenillard',chenillard.on);
     });
 
@@ -173,11 +170,11 @@ io.on('connection',function(socket){
     });
 
     socket.on('setlampe',function(data){
-        if(chenillard.on==true){
-            chenillard.changestate();
+        if(objet.chenillard.on==true){
+            objet.chenillard.changestate();
         }
-        io.emit('etat chenillard',chenillard.on);
-        setknx(data.adresse, data.etat);
+        io.emit('etat chenillard',objet.chenillard.on);
+        funct.setknx(data.adresse, data.etat);
     });
 
 
@@ -188,7 +185,7 @@ io.on('connection',function(socket){
         var json = JSON.parse(res);
        if(json[0].success){
         //io.emit('ChangementOnHue',data);
-        init(socket);
+        funct.init(socket,conf.ipAdresseHue,conf.hueUsername);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à l'état " + data.on+". Type de l'erreur : "+ json[0].error.description);
@@ -206,7 +203,7 @@ io.on('connection',function(socket){
         var json = JSON.parse(res);
        if(json[0].success){
         // io.emit('ChangementBriHue',data);
-        init(socket);
+        funct.init(socket,conf.ipAdresseHue,conf.hueUsername);
         }
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à la lum " + data.bri+". Type de l'erreur : "+ json[0].error.description);
@@ -222,8 +219,8 @@ io.on('connection',function(socket){
         var json = JSON.parse(res);
        if(json[0].success){
        // io.emit('ChangementSatHue',data);
-       init(socket);
-        }
+      funct.init(socket,conf.ipAdresseHue,conf.hueUsername);
+       }
 
         else{
         console.log("Erreur lors du passage de la Hue " + data.lampe + " à la saturation " + data.sat+". Type de l'erreur : "+ json[0].error.description);
@@ -241,7 +238,7 @@ io.on('connection',function(socket){
         var json = JSON.parse(res);
         
         if(json[0].success){
-        init(socket);
+              funct.init(socket,conf.ipAdresseHue,conf.hueUsername);
         }
 
         else{
@@ -266,7 +263,7 @@ http.listen(conf.portServer, function(){
 process.on('SIGINT', function(){
     if (connection.connected){
         console.log('deconnection du tunel');
-        deconnectionknx(function(){
+        funct.deconnectionknx(function(){
             console.log('shut down server');
             process.exit();
         });
