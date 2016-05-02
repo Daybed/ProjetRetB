@@ -40,17 +40,16 @@
 	<div ng-app="myApp">
 	<div ng-controller="myCtrl">
 		<toast></toast>
-		<div class="box"></div>
+		<div class="box">
+		<img class="left" src="public/img/chevron-double-left.png">
+		<img class="center" ng-src="{{loopstart}}" ng-click="loop()">
+		</div>
 		<!--<div class="row">
 			<div class"col-md-12">
 			<rzslider rz-slider-model="slider.value" min="0" max="255" rz-slider-options="slider.options"></rzslider>
 			</div>
 		</div>-->
 		<div class="row">
-
-			<div class= "col-md-4">
-				<button type="button" ng-click="loop()" class="btn btn-primary btn-lg btn-block">{{loopstart}}</button>	
-			</div>
 
 			<div class="col-md-4">
 				<br>

@@ -11,13 +11,25 @@ body h1{
 	font-family: "Comic Sans Ms";
 	font-size: 30px;
 }	
-	
-#ex1Slider .slider-selection {
-	background: #BABABA;
-}
 
 .box {
     margin-bottom: 20px;
     padding: 30px 15px;
     background: rgba(0,0,0,1);
+}
+
+img{
+outline:0;
+}
+img.center{
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+img.left{
+display : block;
+margin-left : auto;
+margin-right:auto;
+left:100px;
 }

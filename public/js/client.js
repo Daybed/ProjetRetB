@@ -58,6 +58,7 @@ function add() {
     }
 }
 </script>*/
+    
 
     socket.on('init',function(data){
       ip = data.ipserver;
@@ -65,10 +66,10 @@ function add() {
 
       $scope.$apply(function () {
        if (data.chenillardstate==true){
-        $scope.loopstart="Stop chenillard";
+        $scope.loopstart="public/img/pause.png";
        }
        else{
-        $scope.loopstart="Start chenillard";
+        $scope.loopstart="public/img/play.png";
        }
      });
     });
@@ -95,10 +96,10 @@ function add() {
      socket.on('etat chenillard',function(data){
         $scope.$apply(function () {
               if (data==true){
-              $scope.loopstart="Stop chenillard";
+              $scope.loopstart="public/img/pause.png";
               }
               else{
-              $scope.loopstart="Start chenillard";
+              $scope.loopstart="public/img/play.png";
               }
         });
      });

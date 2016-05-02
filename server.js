@@ -152,7 +152,7 @@ io.on('connection',function(socket){
     socket.emit('init',{ipserver: ipServer, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
     //--------------------------------------------------------------------------------------------ne faut il pas initialiser les lampe knx aussi ? 
 
-    init(socket);
+   // init(socket);
 
     socket.on('setspeed',function(vitesse){
        chenillard.setspeed(vitesse); 
