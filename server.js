@@ -34,19 +34,18 @@ exports.KnxHelper = KnxHelper;
 exports.KnxConnectionTunneling = KnxConnectionTunneling;
 var KnxConnectionTunneling = require('knx.js').KnxConnectionTunneling;
 var connection = new KnxConnectionTunneling(conf.ipPlateauknx, conf.portPlateauknx,ipServer,conf.portServer );
-
+console.log(connection);
 //|===================================================================================|
 //|============================= Initialisation Lampes================================|----------------------------------peut etre à supprimer et a placer avec le init() pour les hues ? 
 //|===================================================================================|----------------------------------a tester quand on à la plaque 
 //Lampes KNX
 var light=[];
 if (connection.connected){
- 
         for(var k =1; k<5;k++){
             light[k]={adresse:"0/1/"+k,etat:null, numero: k,nberreur:0};
         }
 }
-console.log(connection);
+
 
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
 //var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
