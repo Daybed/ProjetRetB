@@ -2,7 +2,10 @@
   "ipAdresseHue" : "192.168.0.108",
   "hueUsername" : "38b48817b59067f2a4a36072729568f",
   "portServer" : 8000,
+<<<<<<< HEAD
   "name":"test",
+=======
+>>>>>>> 09dd1fd8527b76b5365806b64efd9953818ec17f
   "ipPlateauknx" :"192.168.0.117",
   "portPlateauknx": 3671
 
