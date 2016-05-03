@@ -3,10 +3,10 @@ module.exports.chenillard ={
   speed: 500,
   clockwise: true,
 
-  changestate : function(){
+  changestate : function(funct,light){
     this.on=!this.on;
     if (this.on==true){
-      looptest();
+      funct.looptest(light);
     }
   },
   changeclockwise : function(){

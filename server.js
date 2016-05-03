@@ -39,13 +39,15 @@ var connection = new KnxConnectionTunneling(conf.ipPlateauknx, conf.portPlateauk
 //|============================= Initialisation Lampes================================|----------------------------------peut etre à supprimer et a placer avec le init() pour les hues ? 
 //|===================================================================================|----------------------------------a tester quand on à la plaque 
 //Lampes KNX
+var light=[];
 if (connection.connected){
-    var light=[];
+ 
         for(var k =1; k<5;k++){
             light[k]={adresse:"0/1/"+k,etat:null, numero: k,nberreur:0};
         }
-
 }
+console.log(connection);
+
 // Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
 //var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
 
@@ -102,7 +104,7 @@ if (connection.connected){
         else if(data[0]==1){    
             if(data1==1){
                 if(data[4]==1){
-                objet.chenillard.changestate();
+                objet.chenillard.changestate(funct,light);
                 io.emit('etat chenillard',chenillard.on);
                 }
                 else if(data[4]==2){
@@ -161,8 +163,8 @@ io.on('connection',function(socket){
     });
 
     socket.on('changestate', function(){
-        objet.chenillard.changestate();
-        io.emit('etat chenillard',chenillard.on);
+        objet.chenillard.changestate(funct,light);
+        io.emit('etat chenillard',objet.chenillard.on);
     });
 
     socket.on('disconnection',function(socket){
@@ -171,7 +173,7 @@ io.on('connection',function(socket){
 
     socket.on('setlampe',function(data){
         if(objet.chenillard.on==true){
-            objet.chenillard.changestate();
+            objet.chenillard.changestate(funct,light);
         }
         io.emit('etat chenillard',objet.chenillard.on);
         funct.setknx(data.adresse, data.etat);

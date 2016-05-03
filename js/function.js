@@ -4,6 +4,7 @@ var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
 var xmlHttpPut = new XMLHttpRequest(); 
+var objet = require("./objet.js");
 module.exports ={
 
 
@@ -71,7 +72,7 @@ module.exports ={
     },
 
 
-    getall:function (){
+    getall:function (light){
       for(var i in light){
         getknx(light[i].adresse);
       }
@@ -90,7 +91,7 @@ module.exports ={
     },
 
 
-    exec:function (callback){
+    exec:function (callback,light){
 
           if(objet.chenillard.clockwise==true){
 
@@ -145,14 +146,14 @@ module.exports ={
             callback();
     },
 
-    looptest:function  (){
+    looptest : function(light){
 
         if(objet.chenillard.on==true){
-          exec(function(){
+          this.exec(function(){
           setTimeout(function(){
-            looptest();}, objet.chenillard.speed
+            module.exports.looptest(light);}, objet.chenillard.speed
           );
-        });
+        },light);
         }
         else{
           return;
