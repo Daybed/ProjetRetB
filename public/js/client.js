@@ -173,18 +173,6 @@ function add() {
       }
       
     };
-/*
-
-  socket.on('ChangementBriHue',function(data){
-      for (i in data){
-        console.log("xy : " + data[i].xy +", bri :" + data[i].bri);
-      }
-  });
-
-  socket.on('ChangementSatHue',function(data){
-      console.log(data);
-  });
-*/
 
 
 });

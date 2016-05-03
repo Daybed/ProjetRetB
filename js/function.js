@@ -5,6 +5,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
 var xmlHttpPut = new XMLHttpRequest(); 
 var objet = require("./objet.js");
+
 module.exports ={
 
 
@@ -23,7 +24,6 @@ module.exports ={
         
       }
       callback(tab);
-
     },
 
     init : function (socket,ip,user){
@@ -72,26 +72,27 @@ module.exports ={
     },
 
 
-    getall:function (light){
+    getall:function (connection,light){
       for(var i in light){
-        getknx(light[i].adresse);
+        this.getknx(connection,light[i].adresse);
       }
     } ,
-    connectionknx : function (callback){
-      connection.Connect(function (){callback();});
+    connectionknx : function (connection,callback){
+      connection.Connect(function(){callback();});
     },
-    deconnectionknx:function (callback){
+    deconnectionknx:function (connection,callback){
       connection.Disconnect(function(){callback();});
     },
-    setknx:function (adresse,value){
+    setknx:function (connection,adresse,value){
       connection.Action(adresse,value);
     },
-    getknx:function (adresse){
-      connection.RequestStatus(adresse);
+    getknx:function (connection,adresse){
+     connection.RequestStatus(adresse);
+    
     },
 
 
-    exec:function (callback,light){
+    exec:function (connection,callback,light){
 
           if(objet.chenillard.clockwise==true){
 
@@ -126,15 +127,13 @@ module.exports ={
                 }
               }
 
-
             if(somme==light.length || somme==0){
               console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
-              //toast
             }
             
             else if(objet.chenillard.on==true){
                 for(var i in newtab){
-                  setknx(light[i].adresse,newtab[i].etat);
+                  this.setknx(connection,light[i].adresse,newtab[i].etat);
                 }
             }
 
@@ -146,13 +145,12 @@ module.exports ={
             callback();
     },
 
-    looptest : function(light){
-
+    looptest : function(connection,light){
         if(objet.chenillard.on==true){
-          this.exec(function(){
+          this.exec(connection,function(){
           setTimeout(function(){
-            module.exports.looptest(light);}, objet.chenillard.speed
-          );
+            module.exports.looptest(connection,light);}, objet.chenillard.speed
+            );
         },light);
         }
         else{
