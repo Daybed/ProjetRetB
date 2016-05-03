@@ -16,6 +16,9 @@
 		<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
 		<script type="text/javascript" src="bower_components/ngToast/dist/ngToast.min.js"></script>
 		<link rel="stylesheet" href="./bower_components/ngToast/dist/ngToast.min.css">
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="./public/css/style.css"/>
+		<script type="text/javascript" src="public/js/client.js"></script>
 
 	<!--	<script type="text/javascript" src="bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js"></script>
 		<link rel="stylesheet" href="./bower_components/angular-bootstrap-colorpicker/css/colorpicker.min.css">
@@ -30,36 +33,42 @@
 	</div>
 
     -->
-
-		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<link rel="stylesheet" href="./public/css/style.css"/>
-		<script type="text/javascript" src="public/js/client.js"></script>
 	</head>
 
 <body>
 	<div ng-app="myApp">
 	<div ng-controller="myCtrl">
 		<toast></toast>
+
 		<div class="box">
-		<img class="left" src="public/img/chevron-double-left.png">
-		<img class="center" ng-src="{{loopstart}}" ng-click="loop()">
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4">
+					<div class="col-md-2">
+						<img  ng-src="{{leftSens}}" ng-click="sens(false)">
+					</div>
+					<div class="col-md-2 col-md-offset-3">
+						<img  ng-src="{{loopstart}}" ng-click="loop()">
+					</div>
+					<div class="col-md-2 col-md-offset-3">
+						<img  ng-src="{{rightSens}}" ng-click="sens(true)">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4">
+					<md-slider flex="100" ng-model="speed" min="500" max="10000" aria-label="vitesse" class="md-accent" md-horizontal ng-click="setspeed()">
+					</md-slider> 
+					<div class="center">
+						<p ng-style="{color:'white'}">Vitesse actuelle : {{speed}}<p>
+					</div>
+				</div>
+			</div>
 		</div>
 		<!--<div class="row">
 			<div class"col-md-12">
 			<rzslider rz-slider-model="slider.value" min="0" max="255" rz-slider-options="slider.options"></rzslider>
 			</div>
 		</div>-->
-		<div class="row">
-
-			<div class="col-md-4">
-				<br>
-				<label for="usr">Vitesse :</label>
-				<input type="Number" ng-model="vitesse"><br>
-				<p>Vitesse actuelle : {{speed}}</p>
-				<br><button type="button" ng-click="setspeed()" class="btn btn-secondary btn-lg btn-block">Send Vitesse</button><br>
-				<button type="button" ng-click="changedirection()" class="btn btn-secondary btn-lg btn-block">Changer de sens</button><br>
-			</div>
-		</div>
 		
 
 	<div class="row">
@@ -73,35 +82,29 @@
 	<div class="row">
 
 			<div class="col-md-3" ng-repeat="x in Hue track by $index">
-		           	 <img ng-src="{{HueImg}}" ng-click="changeonhue(x.lampe)" height="100" width="100"  ng-style="{'background-color': fond}"> 
+		           	 <img src="public/img/hue.png" ng-click="changehue(x.lampe,true)" height="100" width="100"  ng-style="{'background-color': fond}"> 
 		           	 <p> Lampe {{x.lampe}} : {{x.on}}</p><p> Couleur : {{x.xy}} </p>
 		    </div>
 	</div>
 	<div class="row">
 		<div class="col-md-3">
-			<input class="jscolor {valueElement:'chosen-value'} " onchange="couleur(this)">
+			<input class="jscolor {valueElement:'chosen-value'}" onchange="couleur(this)">
 		      <!-- Couleur : <input class="jscolor" ng-model = "hey" ng-change="couleur(this)">-->
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-3" ng-repeat="x in Hue track by $index">
 		           	<div class="col-md-5">
-		           		<md-slider flex ng-model="x.bri" min="0" max="254" aria-label="brightness" id="brigthness-slider" class="md-accent" md-vertical md-range ng-click="changebrihue(x.lampe)"></md-slider> <md-slider-container>Luminosité de la Hue {{x.lampe}} : {{x.bri}}</md-slider-container>
+		           		<md-slider flex ng-model="x.bri" min="0" max="254" aria-label="brightness" id="brigthness-slider" class="md-accent" md-vertical md-range ng-click="changehue(x.lampe,false)"></md-slider> <md-slider-container>Luminosité de la Hue {{x.lampe}} : {{x.bri}}</md-slider-container>
 		           	</div>
 		           	<div class="col-md-5">
-		           		<md-slider flex ng-model="x.sat" min="0" max="254" aria-label="saturation" id="saturation-slider" class="md-accent" md-vertical md-range ng-click="changesathue(x.lampe)"></md-slider> <md-slider-container>Saturation de la Hue {{x.lampe}} : {{x.sat}}</md-slider-container>
+		           		<md-slider flex ng-model="x.sat" min="0" max="254" aria-label="saturation" id="saturation-slider" class="md-accent" md-vertical md-range ng-click="changehue(x.lampe,false)"></md-slider> <md-slider-container>Saturation de la Hue {{x.lampe}} : {{x.sat}}</md-slider-container>
 		           	</div>
 		    </div>
 
 	</div>
-	     <!--  <input colorpicker="rgb" class="span2" type="text" ng-model="your_model" />-->
 
-
-
-
-      
-
-
+     
 	</div>
 	</div>
 	

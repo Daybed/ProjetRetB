@@ -5,12 +5,14 @@ var chenillard = {
 
   changestate : function(){
     this.on=!this.on;
-    /*if (this.on==true){
+    io.emit('etat chenillard',this.on);
+    if (this.on==true){
       looptest();
-    }*/
+    }
   },
   changeclockwise : function(){
     this.clockwise=!this.clockwise;
+    io.emit('sens chenillard', chenillard.clockwise);
   },
 
   setspeed : function(newspeed){

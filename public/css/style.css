@@ -4,6 +4,7 @@ overflow-x: hidden
 }
 body{
 background : url("../img/10.jpg") fixed center center ;
+overflow-x: hidden;
 	}
 
 
@@ -14,22 +15,15 @@ body h1{
 
 .box {
     margin-bottom: 20px;
-    padding: 30px 15px;
-    background: rgba(0,0,0,1);
+    margin-top : 30px;
+    padding: 15px;
+    background: rgba(40,40,40,1);
 }
 
 img{
 outline:0;
 }
-img.center{
-	display: block;
-	margin-left: auto;
-    margin-right: auto;
-}
 
-img.left{
-display : block;
-margin-left : auto;
-margin-right:auto;
-left:100px;
+.center{
+text-align: center;
 }

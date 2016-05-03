@@ -42,21 +42,18 @@ var connection = new KnxConnectionTunneling(conf.ipPlateauknx, conf.portPlateauk
 //|============================= Initialisation Lampes================================|----------------------------------peut etre à supprimer et a placer avec le init() pour les hues ? 
 //|===================================================================================|----------------------------------a tester quand on à la plaque 
 //Lampes KNX
-if (connection.connected){
+
     var light=[];
-        for(var k =1; k<5;k++){
-            light[k]={adresse:"0/1/"+k,etat:null, numero: k,nberreur:0};
+    (function(){
+        for(var k =0; k<4;k++){
+            light[k]={adresse:"0/1/"+k,etat:"error", numero: k+1,nbessai:0};
         }
+    })();
+        
 
-}
-// Pas terrible car on ne prévoit pas le rajout et la supression d'une lampe--------------------------------------------------avec la version du dessus on peut supprimer cette ligne ? 
-//var light = [{adresse:"0/1/1",etat:null,numero:1, nberreur:0},{adresse:"0/1/2",etat:null,numero:2, nberreur:0},{adresse:"0/1/3",etat:null,numero:3, nberreur:0},{adresse:"0/1/4",etat:null,numero:4, nberreur:0}];
+connectionknx(function(){getall();});
 
-//connectionknx(function(){getall();});---------------------------------------------------------------------------------------------c'est quoi ?
 
-//|===================================================================================|
-//|================================== A m'expliquer===================================|------------------------------------------------------
-//|===================================================================================|
 app.use(function (req, res, next) {
     var origin = req.headers.origin;
     //Message qui s'affiche à chaque fois qu'on envoie une requête au serveur (GET/POST/...)
@@ -68,9 +65,11 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+
 //|===================================================================================|
 //|============================== Affichage de la page ===============================|
 //|===================================================================================|
+
 app.all('/', function(req, res) {
     res.sendFile('/index.html', {
         root: __dirname
@@ -91,10 +90,8 @@ if (connection.connected){
         light[data[4]-1].nberreur++;
         
         }
-        else if(data1!=0 && data1!=1 && light[data[4]-1].nberreur>=10){
-        light[data[4]-1].etat=data1;
-        }
     }); 
+
     connection.on('event', function(data, data1, data2) {
         console.log('event : L\'adresse '+data+" est a l'état : "+data1);
         
@@ -106,7 +103,6 @@ if (connection.connected){
             if(data1==1){
                 if(data[4]==1){
                 chenillard.changestate();
-                io.emit('etat chenillard',chenillard.on);
                 }
                 else if(data[4]==2){
                 chenillard.changeclockwise();
@@ -149,10 +145,10 @@ io.on('connection',function(socket){
     
     socket.emit('lampes',light);
 
-    socket.emit('init',{ipserver: ipServer, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed});//---- préciser dans le socket que c'est KNX ou hue
+    socket.emit('init',{ipserver: ipServer, chenillardstate: chenillard.on, chenillardspeed: chenillard.speed, chenillardsens: chenillard.clockwise});//---- préciser dans le socket que c'est KNX ou hue
     //--------------------------------------------------------------------------------------------ne faut il pas initialiser les lampe knx aussi ? 
 
-   // init(socket);
+    init(socket);
 
     socket.on('setspeed',function(vitesse){
        chenillard.setspeed(vitesse); 
@@ -163,11 +159,6 @@ io.on('connection',function(socket){
         chenillard.changeclockwise();
     });
 
-    socket.on('changestate', function(){
-        chenillard.changestate();
-        io.emit('etat chenillard',chenillard.on);
-    });
-
     socket.on('disconnection',function(socket){
         console.log("Un client s'est déconnecté");
     });
@@ -176,59 +167,22 @@ io.on('connection',function(socket){
         if(chenillard.on==true){
             chenillard.changestate();
         }
-        io.emit('etat chenillard',chenillard.on);
         setknx(data.adresse, data.etat);
     });
 
-
-    socket.on('on',function(data){
-        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
-        var param = JSON.stringify({"on":data.on});
-        var res = Put(url,param);
-        var json = JSON.parse(res);
-       if(json[0].success){
-        //io.emit('ChangementOnHue',data);
+    socket.on('hue',function(data){
+    var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
+    var param = JSON.stringify({"on":data.on,"bri":data.bri,"sat":data.sat});
+    var res = Put(url,param);
+    var json = JSON.parse(res);
+     if(json[0].success){
         init(socket);
         }
         else{
-        console.log("Erreur lors du passage de la Hue " + data.lampe + " à l'état " + data.on+". Type de l'erreur : "+ json[0].error.description);
+        console.log("Erreur : La lampe " + data.lampe + " ne peut pas prendre les paramètres : "+data+". Type de l'erreur : "+ json[0].error.description);
         }
     });
 
-    
-
-    socket.on('bri',function(data){
-        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
-        var param = JSON.stringify({"bri":data.bri});
-
-        var res = Put(url,param);
-        
-        var json = JSON.parse(res);
-       if(json[0].success){
-        // io.emit('ChangementBriHue',data);
-        init(socket);
-        }
-        else{
-        console.log("Erreur lors du passage de la Hue " + data.lampe + " à la lum " + data.bri+". Type de l'erreur : "+ json[0].error.description);
-        }
-    });
-
-
-    socket.on('sat',function(data){
-        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
-        var param = JSON.stringify({"sat":data.sat});
-        var res = Put(url,param);
-
-        var json = JSON.parse(res);
-       if(json[0].success){
-       // io.emit('ChangementSatHue',data);
-       init(socket);
-        }
-
-        else{
-        console.log("Erreur lors du passage de la Hue " + data.lampe + " à la saturation " + data.sat+". Type de l'erreur : "+ json[0].error.description);
-        }
-    });
 
     socket.on('color',function(data){
         var lampe = data.lampe;
@@ -249,6 +203,15 @@ io.on('connection',function(socket){
         }
 
     });
+
+    socket.on('sens',function(data){
+        chenillard.clockwise=data;
+        io.emit('sens chenillard',chenillard.clockwise);
+    });
+
+    socket.on('changestate', function(){
+        chenillard.changestate();
+    });
 });
       
 
@@ -263,6 +226,7 @@ http.listen(conf.portServer, function(){
 //|===================================================================================|
 //|====================== Deconnection et shut down du server  =======================|
 //|===================================================================================|
+
 process.on('SIGINT', function(){
     if (connection.connected){
         console.log('deconnection du tunel');
