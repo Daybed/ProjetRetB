@@ -1,18 +1,16 @@
 //|===================================================================================|
 //|============================== Ajout des frameworks ===============================|
 //|===================================================================================|
+
 var express = require('express'); 
 var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
 var io= require('socket.io')(http);
 var fs = require("fs");
-
-var objet = require("./js/objet.js");
-var fonction= require("./js/function.js");
-/*
-eval(fs.readFileSync(__dirname + '/js/function.js')+'');
-eval(fs.readFileSync(__dirname + '/js/objet.js')+'');*/
+var chenillard = require("./js/chenillard.js");
+var fonction= require("./js/fonction.js");
+var socket=require("./js/mySocket.js");
 app.use('/public',express.static(__dirname + '/public'));
 app.use('/node_modules',express.static(__dirname +'/node_modules'));
 app.use('/bower_components',express.static(__dirname+'/bower_components'));
@@ -22,14 +20,14 @@ app.use(bodyParser.json());
 //|===================================================================================|
 //|==================== Déclaration/initialisation des variables =====================|
 //|===================================================================================|
-var endAugmenter;
-var intervalUp;
-var intervalDown;
+
 var conf = JSON.parse(fs.readFileSync('conf.json'));
-var ipServer=fonction.getIPAddress();
+var ipServer=fonction.getIpAddress();
+
 //|===================================================================================|
 //|=================================== Module KNX ====================================|
 //|===================================================================================|
+
 KnxHelper = require('./src/KnxHelper.js');
 KnxConnectionTunneling = require('./src/KnxConnectionTunneling.js');
 exports.KnxHelper = KnxHelper;
@@ -37,28 +35,26 @@ exports.KnxConnectionTunneling = KnxConnectionTunneling;
 var KnxConnectionTunneling = require('knx.js').KnxConnectionTunneling;
 var connection = new KnxConnectionTunneling(conf.ipPlateauknx,conf.portPlateauknx,ipServer,conf.portServer );
 
-
 //|===================================================================================|
-//|============================= Initialisation Lampes================================|----------------------------------peut etre à supprimer et a placer avec le init() pour les hues ? 
-//|===================================================================================|----------------------------------a tester quand on à la plaque 
-//Lampes KNX
+//|============================= Initialisation Lampes================================|
+//|===================================================================================|
 
-    var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
-     /*   for(var k =0; k<4;k++){
-            light[k]={adresse:"0/1/"+k,etat:"error", numero: k+1,nbessai:0};
-        };*/
-        
-
+var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
+/*   
+for(var k =0; k<4;k++){
+    light[k]={adresse:"0/1/"+k,etat:"error", numero: k+1,nbessai:0};
+};
+*/    
 fonction.connectionknx(connection,function(){
-    fonction.getall(connection,light);
+    fonction.getAll(connection,light);
 });
 
-
+//|===================================================================================|
+//|========================== Régle les pb de cross domain ===========================|
+//|===================================================================================|
 
 app.use(function (req, res, next) {
     var origin = req.headers.origin;
-    //Message qui s'affiche à chaque fois qu'on envoie une requête au serveur (GET/POST/...)
-    console.log('Something is happening.');
     res.setHeader('Access-Control-Allow-Origin', "null");
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
@@ -76,148 +72,20 @@ app.all('/', function(req, res) {
         root: __dirname
     });
 });
-//|===================================================================================|
-//|================================== Listener KNK====================================|----------------------a tester si c'est bien pris en compte le fait que j'ai mis le if 
-//|===================================================================================|----------------------peut on les mettres dans un autre fichier pour rendre le code plus lisible ? 
-//if (connection.connected){
-
-    connection.on('status', function(data, data1, data2) {
-        console.log('status : L\'adresse '+data+" est a l'état : "+data1);
-
-        if(data1==0 || data1==1){
-        light[data[4]-1].etat=data1;
-        }
-        else if(data1!=0 && data1!=1 && light[data[4]-1].nberreur<10){
-        getknx(connection,data);
-        light[data[4]-1].nberreur++;
-        
-        }
-    }); 
-
-    connection.on('event', function(data, data1, data2) {
-        console.log('event : L\'adresse '+data+" est a l'état : "+data1);
-        
-        if(data[0]==0){
-            light[data[4]-1].etat=data1;
-            io.emit('lampes',light);
-        }
-        else if(data[0]==1){    
-            if(data1==1){
-                if(data[4]==1){
-                objet.chenillard.changestate(io,fonction,light,connection);
-                }
-                else if(data[4]==2){
-                objet.chenillard.changeclockwise(io);
-                }
-                else if(data[4]==3){
-                startDiminuer = new Date().getTime();
-                intervalDown = setInterval(function(){objet.chenillard.setspeed(io,objet.chenillard.speed+10);},100);
-                }
-                else if(data[4]==4){
-                startAugmenter = new Date().getTime();
-                intervalUp = setInterval(function(){objet.chenillard.setspeed(io,objet.chenillard.speed-10);},100);
-                 }
-             }
-            else if(data1==0){
-                if(data[4]==3){
-                    endDiminuer = new Date().getTime();
-                    clearInterval(intervalDown);
-                    if((endDiminuer-startDiminuer)<100){
-                        objet.chenillard.setspeed(io,objet.chenillard.speed+100);
-                    }
-                }
-                else if(data[4]==4){
-                    endAugmenter = new Date().getTime();
-                    clearInterval(intervalUp);
-                    if((endAugmenter-startAugmenter)<100){
-                        objet.chenillard.setspeed(io,objet.chenillard.speed-100);
-                    }
-                }
-            }        
-        }
-    });
-//}
 
 //|===================================================================================|
-//|============================= Socket avec le client ===============================|
-//|===================================================================================|
-io.on('connection',function(socket){
-    
-    console.log("Un client s'est connecté");
+//|========================== Appel des listeners et socket ==========================|
+//|===================================================================================|  
 
-    socket.emit('lampes',light);
-
-    socket.emit('Chenillard',{on: objet.chenillard.on, speed: objet.chenillard.speed, sens: objet.chenillard.clockwise});
-
-    fonction.init(socket,conf.ipAdresseHue, conf.hueUsername);
-
-
-    socket.on('disconnection',function(socket){
-        console.log("Un client s'est déconnecté");
-    });
-
-    socket.on('setlampe',function(data){
-        if(objet.chenillard.on==true){
-            objet.chenillard.changestate(io,fonction,light,connection);
-        }
-        fonction.setknx(connection,data.adresse, data.etat);
-    });
-
-    socket.on('hue',function(data){
-    var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
-    var param = JSON.stringify({"on":data.on,"bri":data.bri,"sat":data.sat});
-    var res = Put(url,param);
-    var json = JSON.parse(res);
-     if(json[0].success){
-        fonction.init(socket,conf.ipAdresseHue,conf.hueUsername);
-    }
-    else{
-        console.log("Erreur : La lampe " + data.lampe + " ne prend pas les paramètres : " + data+". Type de l'erreur : "+ json[0].error.description);
-    }
-
-    });
-
-    socket.on('color',function(data){
-        var lampe = data.lampe;
-        var r=data.r;
-        var g=data.g;
-        var b = data.b;
-        var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+lampe+"/state";
-        var param = JSON.stringify({"xy": [rgbToXyBri(r,g,b).x,rgbToXyBri(r,g,b).y],"bri" : Math.round(rgbToXyBri(r,g,b).bri) });
-        var res = Put(url,param);
-        var json = JSON.parse(res);
-        
-        if(json[0].success){
-              fonction.init(socket,conf.ipAdresseHue,conf.hueUsername);
-        }
-
-        else{
-        console.log("Erreur lors du passage de la Hue 2 à la couleur"+data+". Type de l'erreur : "+ json[0].error.description);
-        }
-
-    });
-
-    socket.on('setsens',function(data){
-        objet.chenillard.clockwise=data;
-    });
-
-    socket.on('setspeed',function(vitesse){
-       objet.chenillard.setspeed(io,vitesse); 
-    });
-
-    socket.on('setstate', function(){
-        objet.chenillard.changestate(io,fonction,light,connection);
-
-    });
-});
-      
-
+socket.socketClient(io,fonction,socket,chenillard,conf,light);   
+socket.socketListenerKNX(io,fonction,chenillard,connection,light);
 
 //|===================================================================================|
 //|============================== Lancement du server  ===============================|
 //|===================================================================================|
+
 http.listen(conf.portServer, function(){
-  console.log('listening adresse : '+ipServer+ ' on : '+conf.portServer);
+  console.log('listening adresse : '+ipServer+ ' on port : '+conf.portServer);
 });
 
 //|===================================================================================|
@@ -226,7 +94,7 @@ http.listen(conf.portServer, function(){
 
 process.on('SIGINT', function(){
     if (connection.connected){
-        console.log('deconnection du tunel');
+        console.log('deconnection du tunel KNX');
         fonction.deconnectionknx(connection,function(){
             console.log('shut down server');
             process.exit();
