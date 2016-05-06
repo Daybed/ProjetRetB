@@ -13,11 +13,20 @@ body h1{
 	font-size: 30px;
 }	
 
-.box {
+.Blackbox {
     margin-bottom: 20px;
     margin-top : 30px;
     padding: 15px;
     background: rgba(40,40,40,1);
+}
+
+.Whitebox{
+	margin-bottom: 20px;
+    margin-top : 150px;
+    margin-left : 150px;
+    margin-right: 150px;
+    padding: 30px;
+    background: rgba(255,255,255,1);
 }
 
 img{

@@ -34,14 +34,14 @@ module.exports.chenillard ={
 
   changestate : function(io,fonction,light,connection){
     this.on=!this.on;
-    io.emit('etat chenillard',this.on);
+    io.emit('Chenillard',{on : this.on, speed: this.speed, sens: this.clockwise});
     if(this.on==true){
       fonction.looptest(connection,light);
     }
   },
   changeclockwise : function(io){
     this.clockwise=!this.clockwise;
-    io.emit('sens chenillard', this.clockwise);
+   io.emit('Chenillard',{on : this.on, speed: this.speed, sens: this.clockwise});
   },
 
   setspeed : function(io,newspeed){
@@ -51,6 +51,6 @@ module.exports.chenillard ={
     else{
       this.speed=newspeed;
     }
-    io.emit('speedchenillard',this.speed);
+    io.emit('Chenillard',{on : this.on, speed: this.speed, sens: this.clockwise});
   }
 }

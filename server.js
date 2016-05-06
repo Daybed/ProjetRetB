@@ -147,18 +147,9 @@ io.on('connection',function(socket){
 
     socket.emit('lampes',light);
 
-    socket.emit('init',{ipserver: ipServer, chenillardstate: objet.chenillard.on, chenillardspeed: objet.chenillard.speed, chenillardsens: objet.chenillard.clockwise});
+    socket.emit('Chenillard',{on: objet.chenillard.on, speed: objet.chenillard.speed, sens: objet.chenillard.clockwise});
 
-    fonction.init(socket);
-
-    socket.on('setspeed',function(vitesse){
-       objet.chenillard.setspeed(io,vitesse); 
-       console.log("Vitesse actuelle : " + vitesse);
-    });
-
-    socket.on('changedirection',function(){
-        objet.chenillard.changeclockwise(io);
-    });
+    fonction.init(socket,conf.ipAdresseHue, conf.hueUsername);
 
 
     socket.on('disconnection',function(socket){
@@ -206,14 +197,17 @@ io.on('connection',function(socket){
 
     });
 
-    socket.on('sens',function(data){
+    socket.on('setsens',function(data){
         objet.chenillard.clockwise=data;
-        io.emit('sens chenillard',objet.chenillard.clockwise);
     });
 
-    socket.on('changestate', function(){
+    socket.on('setspeed',function(vitesse){
+       objet.chenillard.setspeed(io,vitesse); 
+    });
+
+    socket.on('setstate', function(){
         objet.chenillard.changestate(io,fonction,light,connection);
-        //io.emit('etat chenillard',objet.chenillard.on);
+
     });
 });
       

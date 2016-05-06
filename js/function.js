@@ -10,29 +10,29 @@ module.exports ={
 
 
     initHue : function(callback,ip,user){
-      var tab=[];
+      var hue=[];
       var rep = this.Get('http://'+ip+'/api/'+user+'/lights/');
-
+      console.log(rep);
       if (rep!='error'){
         rep=JSON.parse(rep);
         for(i in rep){
             if (rep[i].state.reachable==true){
                 var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, xy: [rep[i].state.xy[0],rep[i].state.xy[1]], hue:rep[i].state.hue, sat:rep[i].state.sat};
-                tab.push(lampe);
+                hue.push(lampe);
             }
         }
         
       }
-      callback(tab);
+      callback(hue);
     },
 
     init : function (socket,ip,user){
       this.initHue(function(hue){
         if (hue!=[]){
-           socket.emit('initHue',hue);
+           socket.emit('Hue',hue);
         }
         else{
-          console.log('oui');
+          console.log('tableau hue vide');
         }
       },ip,user);
     },

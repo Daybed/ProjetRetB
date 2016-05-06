@@ -51,23 +51,26 @@ function add() {
 </script>*/
     
 
-    socket.on('init',function(data){
-      ip = data.ipserver;
-      
+    socket.on('Chenillard',function(data){
+
       $scope.$apply(function () {
-        $scope.speed=data.chenillardspeed;
-       if (data.chenillardstate==true){
+
+        $scope.speed=data.speed;
+        $scope.sens=data.sens;
+        $scope.on = data.on;
+
+       if (data.on==true){
         $scope.loopstart="public/img/pause.png";
        }
        else{
         $scope.loopstart="public/img/play.png";
        }
 
-        if(data.chenillardsens==true){
+        if(data.sens==true){
           $scope.rightSens="public/img/chevron-double-right_on.png";
           $scope.leftSens="public/img/chevron-double-left_off.png";
         }
-        else if(data.chenillardsens==false){
+        else if(data.sens==false){
           $scope.rightSens="public/img/chevron-double-right_off.png";
           $scope.leftSens="public/img/chevron-double-left_on.png";
         }
@@ -93,37 +96,13 @@ function add() {
        
 
 
-     socket.on('etat chenillard',function(data){
-        $scope.$apply(function () {
-              if (data==true){
-              $scope.loopstart="public/img/pause.png";
-              }
-              else{
-              $scope.loopstart="public/img/play.png";
-              }
-        });
-     });
-
      $scope.loop=function(){
-      socket.emit('changestate');
+      socket.emit('setstate');
      };
 
      $scope.sens=function(sens){
-      socket.emit('sens',sens);
+      socket.emit('setsens',sens);
      };
-
-     socket.on('sens chenillard',function(sens){
-      $scope.$apply(function(){
-         if(sens==true){
-          $scope.rightSens="public/img/chevron-double-right_on.png";
-          $scope.leftSens="public/img/chevron-double-left_off.png";
-        }
-        else if(sens==false){
-          $scope.rightSens="public/img/chevron-double-right_off.png";
-          $scope.leftSens="public/img/chevron-double-left_on.png";
-        }
-      });
-     });
 
      $scope.setspeed = function(){
      socket.emit('setspeed',$scope.speed);
@@ -143,23 +122,18 @@ function add() {
      }
     };
 
-    socket.on('speedchenillard',function(vitesse){
-      $scope.speed=vitesse;
-    });
+    $scope.infoversbdd = function(){
+      var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens}};
+      $scope.infosBdd = modele;
+    }
 
-
-
-
-    socket.on('initHue',function(data){
+    socket.on('Hue',function(data){
         console.log(data);
         $scope.$apply(function(){
         $scope.Hue=data;
       });
     
     });
-
-    
-
     $scope.changeHue = function(numero,commutation){
       for(i in $scope.Hue){
         if($scope.Hue[i].lampe == numero){
