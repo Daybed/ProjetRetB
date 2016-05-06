@@ -77,7 +77,7 @@ app.all('/', function(req, res) {
 //|========================== Appel des listeners et socket ==========================|
 //|===================================================================================|  
 
-socket.socketClient(io,fonction,socket,chenillard,conf,light);   
+socket.socketClient(io,fonction,socket,chenillard,conf,connection,light);   
 socket.socketListenerKNX(io,fonction,chenillard,connection,light);
 
 //|===================================================================================|

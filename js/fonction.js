@@ -112,10 +112,10 @@ var detectionHue = function(callback,ip,user){
 	}
 	callback(hue);
 }
-var initialisationHue = function (socket,ip,user){
+var initialisationHue = function (socket,mySocket,ip,user){
 	detectionHue(function(hue){
 		if (hue!=[]){
-			socket.emit('Hue',hue);
+			mySocket.socketInitHue(socket,hue);
 		}
 		else{
 			console.log('tableau hue vide');

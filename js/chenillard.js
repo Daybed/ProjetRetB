@@ -1,25 +1,26 @@
 var on = false;
 var speed = 500;
 var clockwise = true; 
-var changestate = function(io,fonction,objet,socket,connection,light){
-    on=!on;
-    socket.socketEmitChenillard(io,this);
-    if(this.on==true){
-        fonction.looptest(connection,objet,light);
+var changestate = function(io,fonction,chenillard,mySocket,connection,light){
+    chenillard.on=!chenillard.on;
+    mySocket.socketEmitChenillard(io,chenillard);
+    if(on==true){
+        fonction.looptest(connection,chenillard,light);
     }
 }
-var changeclockwise = function(io,socket){
-    clockwise=!clockwise;
-    socket.socketEmitChenillard(io,this);
+var changeclockwise = function(io,mySocket,chenillard){
+    chenillard.clockwise=!chenillard.clockwise;
+    console.log (chenillard.clockwise);
+    mySocket.socketEmitChenillard(io,chenillard);
 }
-var setspeed = function(io,socket,newspeed){
+var setspeed = function(io,mySocket,newspeed,chenillard){
     if(newspeed<500){
-        speed=500;
+        chenillard.speed=500;
     }
     else{
-        speed=newspeed;
+        chenillard.speed=newspeed;
     }
-    socket.socketEmitChenillard(io,this);
+    mySocket.socketEmitChenillard(io,chenillard);
 }
 
 exports.changestate=changestate;

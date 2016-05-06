@@ -2,7 +2,7 @@
 //|================================== socket client ==================================|
 //|===================================================================================|
 
-var socketClient = function (io,fonction,chenillard,conf,light){
+var socketClient = function (io,fonction,mySocket,chenillard,conf,connection,light){
 
     io.on('connection',function(socket){
         console.log("Un client s'est connecté");
@@ -11,7 +11,7 @@ var socketClient = function (io,fonction,chenillard,conf,light){
 
         socket.emit('Chenillard',{on: chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
 
-        fonction.initialisationHue(socket,conf.ipAdresseHue, conf.hueUsername);
+        fonction.initialisationHue(socket,mySocket,conf.ipAdresseHue, conf.hueUsername);
 
         socket.on('disconnection',function(socket){
             console.log("Un client s'est déconnecté");
@@ -19,7 +19,7 @@ var socketClient = function (io,fonction,chenillard,conf,light){
 
         socket.on('setlampe',function(data){
             if(chenillard.on==true){
-                chenillard.changestate(io,fonction,chenillard,socket,connection,light);
+                chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
             }
             fonction.setknx(connection,data.adresse, data.etat);
         });
@@ -30,7 +30,7 @@ var socketClient = function (io,fonction,chenillard,conf,light){
             var res = Put(url,param);
             var json = JSON.parse(res);
             if(json[0].success){
-                fonction.initialisationHue(socket,conf.ipAdresseHue,conf.hueUsername);
+                fonction.initialisationHue(socket,mySocket,conf.ipAdresseHue,conf.hueUsername);
             }
             else{
                 console.log("Erreur : La lampe " + data.lampe + " ne prend pas les paramètres : " + data+". Type de l'erreur : "+ json[0].error.description);
@@ -47,7 +47,7 @@ var socketClient = function (io,fonction,chenillard,conf,light){
             var res = Put(url,param);
             var json = JSON.parse(res);
             if(json[0].success){
-                fonction.initialisationHue(socket,conf.ipAdresseHue,conf.hueUsername);
+                fonction.initialisationHue(socket,mySocket,conf.ipAdresseHue,conf.hueUsername);
             }
             else{
                 console.log("Erreur lors du passage de la Hue 2 à la couleur"+data+". Type de l'erreur : "+ json[0].error.description);
@@ -60,11 +60,11 @@ var socketClient = function (io,fonction,chenillard,conf,light){
         });
 
         socket.on('setspeed',function(vitesse){
-           chenillard.setspeed(io,socket,vitesse); 
+           chenillard.setspeed(io,mySocket,vitesse,chenillard); 
         });
 
         socket.on('setstate', function(){
-            chenillard.changestate(io,fonction,chenillard,socket,connection,light);
+            chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
 
         });
     });
@@ -78,7 +78,7 @@ var startDiminuer,endDiminuer;
 var startAugmenter,endAugmenter;
 var intervalUp,intervalDown;
 
-var socketListenerKNX = function (io,fonction,chenillard,connection,light){
+var socketListenerKNX = function (io,fonction,chenillard,connection,mySocket,light){
 
     connection.on('status', function(data, data1, data2) {
         console.log('status : L\'adresse '+data+" est a l'état : "+data1);
@@ -100,18 +100,18 @@ var socketListenerKNX = function (io,fonction,chenillard,connection,light){
         else if(data[0]==1){    
             if(data1==1){
                 if(data[4]==1){
-                    chenillard.changestate(io,fonction,chenillard,socket,connection,light);
+                    chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
                 }
                 else if(data[4]==2){
-                    chenillard.changeclockwise(io,socket);
+                    chenillard.changeclockwise(io,mySocket,chenillard);
                 }
                 else if(data[4]==3){
                     startDiminuer = new Date().getTime();
-                    intervalDown = setInterval(function(){chenillard.setspeed(io,socket,chenillard.speed+10);},100);
+                    intervalDown = setInterval(function(){chenillard.setspeed(io,mySocket,chenillard.speed+10);},100);
                 }
                 else if(data[4]==4){
                     startAugmenter = new Date().getTime();
-                    intervalUp = setInterval(function(){chenillard.setspeed(io,socket,chenillard.speed-10);},100);
+                    intervalUp = setInterval(function(){chenillard.setspeed(io,mySocket,chenillard.speed-10);},100);
                 }
             }
             else if(data1==0){
@@ -119,14 +119,14 @@ var socketListenerKNX = function (io,fonction,chenillard,connection,light){
                     endDiminuer = new Date().getTime();
                     clearInterval(intervalDown);
                     if((endDiminuer-startDiminuer)<100){
-                        chenillard.setspeed(io,socket,chenillard.speed+100);
+                        chenillard.setspeed(io,mySocket,chenillard.speed+100);
                     }
                 }
                 else if(data[4]==4){
                     endAugmenter = new Date().getTime();
                     clearInterval(intervalUp);
                     if((endAugmenter-startAugmenter)<100){
-                        chenillard.setspeed(io,socket,chenillard.speed-100);
+                        chenillard.setspeed(io,mySocket,chenillard.speed-100);
                     }
                 }
             }        
@@ -138,16 +138,11 @@ var socketListenerKNX = function (io,fonction,chenillard,connection,light){
 //|===================================================================================|
 
 var socketEmitChenillard = function(io,chenillard){
-    console.log(chenillard.speed);
     io.emit('Chenillard',{on : chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
 }
-
-
-
-
-
-
-
+var socketInitHue = function(io,hue){
+     io.emit('Hue',hue);
+}
 
 //|===================================================================================|
 //|============================= Exports des fonctions utiles ========================|
@@ -156,3 +151,4 @@ var socketEmitChenillard = function(io,chenillard){
 exports.socketClient=socketClient;
 exports.socketListenerKNX=socketListenerKNX;
 exports.socketEmitChenillard=socketEmitChenillard;
+exports.socketInitHue=socketInitHue;
