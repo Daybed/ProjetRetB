@@ -5,6 +5,7 @@ var clockwise = true;
 var changestate = function(io,fonction,chenillard,mySocket,connection,light){
     chenillard.on=!chenillard.on;
     mySocket.socketEmitChenillard(io,chenillard);
+    console.log('le chenillard est en marche : '+chenillard.on);
     if(on==true){
         fonction.looptest(connection,chenillard,light);
     }
@@ -26,6 +27,7 @@ var setspeed = function(io,mySocket,newspeed,chenillard){
     else{
         chenillard.speed=newspeed;
     }
+    console.log('la vitesse du chenillard est maintenant à : '+chenillard.speed+' ms.');
     mySocket.socketEmitChenillard(io,chenillard);
 }
 

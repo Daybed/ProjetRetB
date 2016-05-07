@@ -78,54 +78,23 @@ var xyBriToRgb = function(x,y,bri){
     var z = 1.0 - x - y;
     var X = (bri / y) * x;
     var Z = (bri / y) * z;
-    var r = X * 1.612 - Y * 0.203 - Z * 0.302;
-    var g = -X * 0.509 + Y * 1.412 + Z * 0.066;
-    var b = X * 0.026 - Y * 0.072 + Z * 0.962;
+    var r = X * 1.612 - bri * 0.203 - Z * 0.302;
+    var g = -X * 0.509 + bri * 1.412 + Z * 0.066;
+    var b = X * 0.026 - bri * 0.072 + Z * 0.962;
     r = r <= 0.0031308 ? 12.92 * r : (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055;
     g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
     b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
     var cap = function(x) {
         return Math.max(0, Math.min(1, x));
     };
+
     return {
-        r: cap(r),
-        g: cap(g),
-        b: cap(b)
+        r: cap(r)*255,
+        g: cap(g)*255,
+        b: cap(b)*255
     };
 }
-/*      xyBriToRgb: function(xyb) {
-      if (0 > xyb.x || xyb.x > .8) {
-          throw 'x property must be between 0 and .8, but is: ' + xyb.x;
-      }
-      if (0 > xyb.y || xyb.y > 1) {
-          throw 'y property must be between 0 and 1, but is: ' + xyb.y;
-      }
-      if (0 > xyb.bri || xyb.bri > 1) {
-          throw 'bri property must be between 0 and 1, but is: ' + xyb.bri;
-      }
-      var x = xyb.x;
-      var y = xyb.y;
-      var z = 1.0 - x - y;
-      var Y = xyb.bri;
-      var X = (Y / y) * x;
-      var Z = (Y / y) * z;
-      var r = X * 1.612 - Y * 0.203 - Z * 0.302;
-      var g = -X * 0.509 + Y * 1.412 + Z * 0.066;
-      var b = X * 0.026 - Y * 0.072 + Z * 0.962;
-      r = r <= 0.0031308 ? 12.92 * r : (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055;
-      g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
-      b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
-      var cap = function(x) {
-          return Math.max(0, Math.min(1, x));
-      };
-      return {
-          r: cap(r),
-          g: cap(g),
-          b: cap(b)
-      }   
 
-}
-*/
 
 //|===================================================================================|
 //|================================= Fonctions spécifiques ===========================|

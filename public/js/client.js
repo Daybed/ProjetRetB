@@ -14,7 +14,6 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
     
 
     socket.on('Chenillard',function(data){
-
       $scope.$apply(function () {
 
         $scope.speed=data.speed;
