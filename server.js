@@ -44,9 +44,6 @@ var connection = new KnxConnectionTunneling(conf.ipPlateauknx,conf.portPlateaukn
 //Lampes KNX
 
     var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
-     /*   for(var k =0; k<4;k++){
-            light[k]={adresse:"0/1/"+k,etat:"error", numero: k+1,nbessai:0};
-        };*/
         
 
 fonction.connectionknx(connection,function(){
@@ -88,7 +85,7 @@ app.all('/', function(req, res) {
         light[data[4]-1].etat=data1;
         }
         else if(data1!=0 && data1!=1 && light[data[4]-1].nberreur<10){
-        getknx(connection,data);
+        fonction.getknx(connection,data);
         light[data[4]-1].nberreur++;
         
         }
@@ -163,10 +160,10 @@ io.on('connection',function(socket){
         fonction.setknx(connection,data.adresse, data.etat);
     });
 
-    socket.on('hue',function(data){
+    socket.on('sethue',function(data){
     var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+data.lampe+"/state";
     var param = JSON.stringify({"on":data.on,"bri":data.bri,"sat":data.sat});
-    var res = Put(url,param);
+    var res = fonction.Put(url,param);
     var json = JSON.parse(res);
      if(json[0].success){
         fonction.init(socket,conf.ipAdresseHue,conf.hueUsername);
@@ -177,17 +174,25 @@ io.on('connection',function(socket){
 
     });
 
-    socket.on('color',function(data){
+    socket.on('setCouleurHue',function(data){
         var lampe = data.lampe;
+        var rgb = [data.r,data.g,data.b];
         var r=data.r;
         var g=data.g;
         var b = data.b;
+
+        console.log("rgb : "+ rgb);;
+
         var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+lampe+"/state";
-        var param = JSON.stringify({"xy": [rgbToXyBri(r,g,b).x,rgbToXyBri(r,g,b).y],"bri" : Math.round(rgbToXyBri(r,g,b).bri) });
-        var res = Put(url,param);
+        var param = JSON.stringify({"xy": [fonction.rgbToXyBri(r,g,b).x,fonction.rgbToXyBri(r,g,b).y],"bri" : Math.round(fonction.rgbToXyBri(r,g,b).bri) });
+
+        console.log("xy : " +[fonction.rgbToXyBri(r,g,b).x,fonction.rgbToXyBri(r,g,b).y] + " bri : " + Math.round(fonction.rgbToXyBri(r,g,b).bri)); 
+       console.log("r : " + fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).r + ", g : "+fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).g + ", b : "+fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).b);
+
+        var res = fonction.Put(url,param);
         var json = JSON.parse(res);
-        
         if(json[0].success){
+              io.emit('changementCouleurHue',{numero:data.lampe,rgb:rgb});
               fonction.init(socket,conf.ipAdresseHue,conf.hueUsername);
         }
 

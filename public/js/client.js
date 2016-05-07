@@ -2,53 +2,15 @@ var app = angular.module("myApp",['ngMaterial','ngToast']);
 var ip;
 var socket=io();
 var Lampes=[];
+var initialisation = false;
 
-function couleur(picker){
-console.log("here");
-  var res=["","",""];
-  var k = 0;
-  for(i in picker.style.backgroundColor){
-    if(i>3 && i<picker.style.backgroundColor.length-1){
-      if(picker.style.backgroundColor[i]==","){
-        res[k]=parseInt(res[k]);
-        k+=1;
-      }
-      else{
-      res[k]+=picker.style.backgroundColor[i];
-    }
-  }
-  }
-//$scope.fond=rgb({{res[0]}},{{res[1]}},{{res[2]}})"
- var resultat = {lampe : 2, r: parseInt(res[0]), g: parseInt(res[1]), b: parseInt(res[2])};
- console.log(resultat);
- socket.emit('color',resultat);
+function couleur(picker,numero){
+  var resultat = {lampe : numero, r: parseInt(picker.rgb[0]), g: parseInt(picker.rgb[1]), b: parseInt(picker.rgb[2])};
+  socket.emit('setCouleurHue',resultat);
+
 };
- 
 
 app.controller('myCtrl', function($scope,$http,ngToast) {
-
-  $scope.fond="rgb(214,83,127)";
-
- /* 
-  $scope.couleur = function(picker){
-    console.log(picker.rgb);
-  };
-
-<button onclick="add()">Add 100 pickers</button>
-
-<p id="container"></p>
-
-<script>
-function add() {
-    for(var i = 0; i < 100; i++) {
-        var input = document.createElement('INPUT')
-        var picker = new jscolor(input)
-        picker.fromHSV(360 / 100 * i, 100, 100)
-    
-        document.getElementById('container').appendChild(input)
-    }
-}
-</script>*/
     
 
     socket.on('Chenillard',function(data){
@@ -94,7 +56,30 @@ function add() {
           $scope.$apply(function(){$scope.lampes=Lampes;});
       });
        
+       socket.on('changementCouleurHue',function(data){
+        console.log(data);
+         document.getElementById("hue "+data.numero).style.backgroundColor = 'rgb('+data.rgb[0]+','+data.rgb[1]+','+data.rgb[2]+')';
+       });
 
+    socket.on('Hue',function(data){
+        $scope.$apply(function(){
+        $scope.Hue=data;
+      });
+
+        if(initialisation == false){
+            initialisation = true;
+            for(i in data){
+            var input = document.createElement('INPUT');
+            var picker = new jscolor(input);
+            picker.hash=true;
+            picker.onchange=function(){
+            couleur(picker,data[i].lampe);
+            };
+            document.getElementById('container ' + data[i].lampe).appendChild(input);
+          }
+      }
+    
+    });
 
      $scope.loop=function(){
       socket.emit('setstate');
@@ -123,25 +108,20 @@ function add() {
     };
 
     $scope.infoversbdd = function(){
-      var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens}};
+      var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens, color : $scope.fond}};
       $scope.infosBdd = modele;
-    }
+      setTimeout(function(){$scope.$apply(function(){$scope.infosBdd=""})},3000); 
+  };
 
-    socket.on('Hue',function(data){
-        console.log(data);
-        $scope.$apply(function(){
-        $scope.Hue=data;
-      });
-    
-    });
-    $scope.changeHue = function(numero,commutation){
+
+    $scope.changehue = function(numero,commutation){
       for(i in $scope.Hue){
         if($scope.Hue[i].lampe == numero){
           if(commutation==true){
-          socket.emit('hue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
+          socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
           }
           else{
-            socket.emit('hue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
+            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
           }
         }
       }

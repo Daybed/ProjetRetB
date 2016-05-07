@@ -671,10 +671,20 @@ var jsc = {
 
 	dispatchChange : function (thisObj) {
 		if (thisObj.valueElement) {
-			if (jsc.isElementType(thisObj.valueElement, 'input')) {
-				jsc.fireEvent(thisObj.valueElement, 'change');
+			if(thisObj.onchange){
+				if (jsc.isElementType(thisObj.valueElement, 'input')) {
+					jsc.fireEvent(thisObj.valueElement, 'change');
+				}
+			var callback;
+			if (typeof thisObj.onchange === 'string') {
+				callback = new Function (thisObj.onchange);
+			} else {
+				callback = thisObj.onchange;
+			}
+			callback.call(thisObj);
 			}
 		}
+
 	},
 
 
@@ -986,6 +996,7 @@ var jsc = {
 		this.hash = false; // whether to prefix the HEX color code with # symbol
 		this.uppercase = true; // whether to uppercase the color code
 		this.onFineChange = null; // called instantly every time the color changes (value can be either a function or a string with javascript code)
+		this.onchange=null;
 		this.activeClass = 'jscolor-active'; // class to be set to the target element when a picker window is open on it
 		this.minS = 0; // min allowed saturation (0 - 100)
 		this.maxS = 100; // max allowed saturation (0 - 100)
