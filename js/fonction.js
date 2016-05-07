@@ -235,4 +235,6 @@ exports.connectionknx=connectionknx;
 exports.deconnectionknx=deconnectionknx;
 exports.setknx=setknx;
 exports.getknx=getknx;
+exports.Put=Put;
+exports.Get=Get;
 exports.looptest=looptest;

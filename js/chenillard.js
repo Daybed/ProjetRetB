@@ -1,6 +1,7 @@
 var on = false;
 var speed = 500;
 var clockwise = true; 
+
 var changestate = function(io,fonction,chenillard,mySocket,connection,light){
     chenillard.on=!chenillard.on;
     mySocket.socketEmitChenillard(io,chenillard);
@@ -8,11 +9,16 @@ var changestate = function(io,fonction,chenillard,mySocket,connection,light){
         fonction.looptest(connection,chenillard,light);
     }
 }
-var changeclockwise = function(io,mySocket,chenillard){
+var changeclockwise = function(io,mySocket,chenillard,sens){
+    if(sens==true || sens==false){
+        chenillard.clockwise = sens;
+    }
+    else{
     chenillard.clockwise=!chenillard.clockwise;
-    console.log (chenillard.clockwise);
-    mySocket.socketEmitChenillard(io,chenillard);
+    }
+mySocket.socketEmitChenillard(io,chenillard);
 }
+
 var setspeed = function(io,mySocket,newspeed,chenillard){
     if(newspeed<500){
         chenillard.speed=500;
