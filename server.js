@@ -10,7 +10,7 @@ var io= require('socket.io')(http);
 var fs = require("fs");
 var chenillard = require("./js/chenillard.js");
 var fonction= require("./js/fonction.js");
-var socket=require("./js/mySocket.js");
+var mySocket=require("./js/mySocket.js");
 app.use('/public',express.static(__dirname + '/public'));
 app.use('/node_modules',express.static(__dirname +'/node_modules'));
 app.use('/bower_components',express.static(__dirname+'/bower_components'));
@@ -72,8 +72,8 @@ app.all('/', function(req, res) {
 });
 
 
-socket.socketClient(io,fonction,socket,chenillard,conf,connection,light);   
-socket.socketListenerKNX(io,fonction,chenillard,connection,light);
+mySocket.socketClient(io,fonction,mySocket,chenillard,conf,connection,light);   
+mySocket.socketListenerKNX(io,fonction,chenillard,connection,light);
 
 //|===================================================================================|
 //|============================== Lancement du server  ===============================|
