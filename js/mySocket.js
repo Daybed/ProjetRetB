@@ -51,7 +51,7 @@ var socketClient = function (io,fonction,mySocket,chenillard,conf,connection,lig
         var param = JSON.stringify({"xy": [fonction.rgbToXyBri(r,g,b).x,fonction.rgbToXyBri(r,g,b).y],"bri" : Math.round(fonction.rgbToXyBri(r,g,b).bri) });
 
        console.log("xy : " +[fonction.rgbToXyBri(r,g,b).x,fonction.rgbToXyBri(r,g,b).y] + " bri : " + Math.round(fonction.rgbToXyBri(r,g,b).bri)); 
-       console.log("r : " + fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).r + ", g : "+fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).g + ", b : "+fonction.xyBriToRgb({x:0.1,y:0.2,bri:0.6}).b);
+       console.log("r : " + fonction.xyBriToRgb(0.1,0.2,0.6).r + ", g : "+fonction.xyBriToRgb(0.1,0.2,0.6).g + ", b : "+fonction.xyBriToRgb(0.1,0.2,0.6).b);
 
         var res = fonction.Put(url,param);
         var json = JSON.parse(res);
