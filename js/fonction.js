@@ -1,9 +1,12 @@
+var conf=require("../conf.json");
+var chenillard= require("./chenillard.js");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
 var xmlHttpPut = new XMLHttpRequest(); 
 var somme =0;
 var k;
 var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
+var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
 //|===================================================================================|
 //|======================= Detection de l'adresse ip du serveur ======================|
 //|===================================================================================|
@@ -25,14 +28,15 @@ var	getIpAddress = function () {
 //|================================== Fonctions générales ============================|
 //|===================================================================================|
 var Get = function (url) {
-    xmlHttpGet.open( "GET", url , false ); 
+	xmlHttpGet.open( "GET", url , false ); 
     xmlHttpGet.send( null );
-        if(xmlHttpGet.status==200){
-        	return xmlHttpGet.responseText;
-        }
-        else{
-        	return 'error';
-        }
+    if(xmlHttpGet.status==200){
+    	return xmlHttpGet.responseText;
+    }
+    else{
+    	return 'error';
+    }
+
 }
 var Put = function (url,paramASend){
 	xmlHttpPut.open("PUT", url, false ); 
@@ -87,11 +91,10 @@ var xyBriToRgb = function(x,y,bri){
     var cap = function(x) {
         return Math.max(0, Math.min(1, x));
     };
-
     return {
-        r: cap(r)*255,
-        g: cap(g)*255,
-        b: cap(b)*255
+        r:  Math.round(cap(r)*255),
+        g:  Math.round(cap(g)*255),
+        b:  Math.round(cap(b)*255)
     };
 }
 
@@ -99,10 +102,10 @@ var xyBriToRgb = function(x,y,bri){
 //|===================================================================================|
 //|================================= Fonctions spécifiques ===========================|
 //|===================================================================================|
-var detectionHue = function(callback,ip,user){
+var detectionHue = function(callback){
 	var hue=[];
-	var rep = Get('http://'+ip+'/api/'+user+'/lights/');
-	if (rep!='error'){
+	var rep = Get('http://'+conf.ipAdresseHue+'/api/'+conf.hueUsername+'/lights/');
+	if (rep.indexOf('error')=='-1'){
 		rep=JSON.parse(rep);
 		for(i in rep){
 			if (rep[i].state.reachable==true){
@@ -113,34 +116,46 @@ var detectionHue = function(callback,ip,user){
 	}
 	callback(hue);
 }
-var initialisationHue = function (socket,mySocket,ip,user){
+var initialisationHue = function (socket,mySocket){
 	detectionHue(function(hue){
-		if (hue!=[]){
+		if (hue[0]!=null){
+			chenillard.presenceHue(true);
 			mySocket.socketInitHue(socket,hue);
 		}
 		else{
+			chenillard.presenceHue(false);
 			console.log('tableau hue vide');
 		}
-	},ip,user);
+
+	});
+
 }
-var getAll = function (connection,light){
+var getAll = function (connection){
+
 	for(var i in light){
 		getknx(connection,light[i].adresse);
 	}
 } 
 var connectionknx = function (connection,callback){
-	connection.Connect(function(){callback();});
+
+	setTimeout(function(){ 
+		connection.Connect(function(){ callback();}); 
+	}, 500);
+	callback();
+	
 }
 var deconnectionknx = function (connection,callback){
 	connection.Disconnect(function(){callback();});
 }
 var setknx = function (connection,adresse,value){
-	connection.Action(adresse,value);
+	if(connection.connected){
+		connection.Action(adresse,value);
+	}
 }
 var getknx = function (connection,adresse){
 	connection.RequestStatus(adresse);
 }
-var exec = function (connection,chenillard,callback,light){
+var exec = function (connection,callback){
 	if(chenillard.clockwise==true){
 		for (var j=0; j<light.length;j++){
 			k = (j+1+light.length) % light.length;
@@ -179,13 +194,13 @@ var exec = function (connection,chenillard,callback,light){
 	somme = 0;
 	callback();
 }
-var looptest = function(connection,chenillard,light){
+var looptest = function(connection){
     if(chenillard.on==true){
-		exec(connection,chenillard,function(){
+		exec(connection,function(){
 			setTimeout(function(){
-				module.exports.looptest(connection,light);}, chenillard.speed
+				module.exports.looptest(connection);}, chenillard.speed
 			);
-		},light);
+		});
 		}
 	else{
 		return;
@@ -207,3 +222,4 @@ exports.getknx=getknx;
 exports.looptest=looptest;
 exports.Put=Put;
 exports.Get=Get;
+exports.light=light;

@@ -14,6 +14,7 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
     
 
     socket.on('Chenillard',function(data){
+      console.log(data.sens);
       $scope.$apply(function () {
 
         $scope.speed=data.speed;
@@ -40,19 +41,24 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
     
 
      socket.on('lampes',function(data){
+      var total = 0;
           for(i in data){
             if(data[i].etat==1){
               Lampes[i]={img:"public/img/lampeon.png",adresse:data[i].adresse,etat:true, num: data[i].numero}; 
+              total++;
             }
             else if(data[i].etat==0){
               Lampes[i]={img:"public/img/lampeoff.png",adresse:data[i].adresse,etat:false, num:data[i].numero};
+              total++;
             }
             else{
               Lampes[i]={img:"public/img/lampeerror.png",adresse:data[i].adresse,etat:"error", num: data[i].numero};
         
           }
         }
+        if(total!=0){
           $scope.$apply(function(){$scope.lampes=Lampes;});
+        }
       });
        
        socket.on('changementCouleurHue',function(data){
@@ -68,11 +74,14 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
         if(initialisation == false){
             initialisation = true;
             for(i in data){
+
             var input = document.createElement('INPUT');
             var picker = new jscolor(input);
             picker.hash=true;
             picker.onchange=function(){
+              console.log(data[i].lampe);
             couleur(picker,data[i].lampe);
+
             };
             document.getElementById('container ' + data[i].lampe).appendChild(input);
           }
@@ -84,7 +93,7 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
       socket.emit('setstate');
      };
 
-     $scope.sens=function(sens){
+     $scope.setsens=function(sens){
       socket.emit('setsens',sens);
      };
 
@@ -110,14 +119,14 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
       var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens, color : $scope.fond}};
       $scope.infosBdd = modele;
       setTimeout(function(){$scope.$apply(function(){$scope.infosBdd=""})},3000); 
-  };
+    };
 
 
     $scope.changehue = function(numero,commutation){
       for(i in $scope.Hue){
         if($scope.Hue[i].lampe == numero){
           if(commutation==true){
-          socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
+            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
           }
           else{
             socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
