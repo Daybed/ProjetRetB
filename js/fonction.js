@@ -219,7 +219,8 @@ exports.connectionknx=connectionknx;
 exports.deconnectionknx=deconnectionknx;
 exports.setknx=setknx;
 exports.getknx=getknx;
-exports.looptest=looptest;
 exports.Put=Put;
 exports.Get=Get;
 exports.light=light;
+exports.looptest=looptest;
+

@@ -49,6 +49,7 @@ var socketClient = function (io,mySocket,connection){
             var r=data.r;
             var g=data.g;
             var b = data.b;
+
             var url = "http://"+conf.ipAdresseHue+'/api/'+conf.hueUsername+"/lights/"+lampe+"/state";
             var param = JSON.stringify({"xy": [fonction.rgbToXyBri(r,g,b).x,fonction.rgbToXyBri(r,g,b).y],"bri" : Math.round(fonction.rgbToXyBri(r,g,b).bri) });
             var res = fonction.Put(url,param);
@@ -61,11 +62,12 @@ var socketClient = function (io,mySocket,connection){
                 io.emit('changementCouleurHue',{numero:data.lampe,rgb:rgb});
                 fonction.initialisationHue(socket,mySocket);
             }
-
         });
 
         socket.on('setsens',function(data){
+
             chenillard.changeclockwise(io,mySocket,data);
+
         });
 
         socket.on('setspeed',function(vitesse){

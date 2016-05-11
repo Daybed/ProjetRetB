@@ -1,4 +1,4 @@
-var app = angular.module("myApp",['ngMaterial','ngToast']);
+var app = angular.module("myApp",['ngMaterial','ngToast','ngSanitize']);
 var ip;
 var socket=io();
 var Lampes=[];
@@ -41,11 +41,14 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
     
 
      socket.on('lampes',function(data){
+
       var total = 0;
           for(i in data){
             if(data[i].etat==1){
               Lampes[i]={img:"public/img/lampeon.png",adresse:data[i].adresse,etat:true, num: data[i].numero}; 
-              total++;
+
+              total ++;
+
             }
             else if(data[i].etat==0){
               Lampes[i]={img:"public/img/lampeoff.png",adresse:data[i].adresse,etat:false, num:data[i].numero};
@@ -53,7 +56,6 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
             }
             else{
               Lampes[i]={img:"public/img/lampeerror.png",adresse:data[i].adresse,etat:"error", num: data[i].numero};
-        
           }
         }
         if(total!=0){
@@ -62,28 +64,31 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
       });
        
        socket.on('changementCouleurHue',function(data){
-        console.log(data);
          document.getElementById("hue "+data.numero).style.backgroundColor = 'rgb('+data.rgb[0]+','+data.rgb[1]+','+data.rgb[2]+')';
        });
 
     socket.on('Hue',function(data){
+
         $scope.$apply(function(){
         $scope.Hue=data;
       });
 
         if(initialisation == false){
             initialisation = true;
+
             for(i in data){
 
             var input = document.createElement('INPUT');
             var picker = new jscolor(input);
             picker.hash=true;
+
             picker.onchange=function(){
               console.log(data[i].lampe);
             couleur(picker,data[i].lampe);
 
             };
-            document.getElementById('container ' + data[i].lampe).appendChild(input);
+
+            document.getElementById('container').appendChild(input);
           }
       }
     
@@ -115,7 +120,7 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
      }
     };
 
-    $scope.infoversbdd = function(){
+  $scope.infoversbdd = function(){
       var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens, color : $scope.fond}};
       $scope.infosBdd = modele;
       setTimeout(function(){$scope.$apply(function(){$scope.infosBdd=""})},3000); 
@@ -136,5 +141,42 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
       
     };
 
-
 });
+/*
+
+.controller('HomeCtrl',function($scope,$state){
+  $scope.voir_page=function(){
+  $state.go('modele');
+  }
+})
+
+.controller('ModeleCtrl',function($scope){
+      $scope.infoversbdd = function(){
+      var modele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : $scope.sens, color : $scope.fond}};
+      $scope.infosBdd = modele;
+      setTimeout(function(){$scope.$apply(function(){$scope.infosBdd=""})},3000); 
+  };
+})
+
+.config(function($stateProvider, $urlRouterProvider){
+
+   $stateProvider.state('home',{
+    url :'/home',
+    templateUrl: 'public/templates/home.html',
+    controller: 'HomeCtrl'
+  })
+   .state('PageDeGarde',{
+    url :'/PageDeGarde',
+    templateUrl: 'public/templates/PageDeGarde.html',
+    controller: 'MyCtrl'
+  })
+
+  .state('modele',{
+    url :'/modele',
+    templateUrl: 'public/templates/modele.html',
+    controller: 'ModeleCtrl'
+  })
+
+  $urlRouterProvider.otherwise('/home');
+});*/
+
