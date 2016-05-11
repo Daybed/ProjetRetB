@@ -8,9 +8,10 @@ var app = express();
 var http = require('http').Server(app);
 var io= require('socket.io')(http);
 var fs = require("fs");
-var chenillard = require("./js/chenillard.js");
 var fonction= require("./js/fonction.js");
 var mySocket=require("./js/mySocket.js");
+var mongoose = require('mongoose');
+var MongoClient = require('mongodb').MongoClient;
 app.use('/public',express.static(__dirname + '/public'));
 app.use('/node_modules',express.static(__dirname +'/node_modules'));
 app.use('/bower_components',express.static(__dirname+'/bower_components'));
@@ -37,14 +38,10 @@ var connection = new KnxConnectionTunneling(conf.ipPlateauknx,conf.portPlateaukn
 
 
 var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
-/*   
-for(var k =0; k<4;k++){
-    light[k]={adresse:"0/1/"+k,etat:"error", numero: k+1,nbessai:0};
-};
-*/    
+exports.light=light;   
 
 fonction.connectionknx(connection,function(){
-    fonction.getAll(connection,light);
+    fonction.getAll(connection);
 });
 
 //|===================================================================================|
@@ -72,9 +69,26 @@ app.all('/', function(req, res) {
 });
 
 
-mySocket.socketClient(io,fonction,mySocket,chenillard,conf,connection,light);   
-mySocket.socketListenerKNX(io,fonction,chenillard,connection,light);
+mySocket.socketClient(io,fonction,mySocket,conf,connection);   
+mySocket.socketListenerKNX(io,fonction,connection);
 
+/*
+
+mongoose.connection.on('open', function(ref) {
+console.log('Connecté au serveur MongoDB');
+});
+
+mongoose.connection.on('error', function(err) {
+    console.log('Impossible de se connecter au serveur!');
+    console.log(err);
+});
+
+mongoose.connect('mongodb://localhost:27016/modeles', function(err) {
+  if (err) { throw err; }
+  else{
+    console.log("mongodb modeles install");
+  }
+});*/
 //|===================================================================================|
 //|============================== Lancement du server  ===============================|
 //|===================================================================================|

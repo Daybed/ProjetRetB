@@ -1,10 +1,14 @@
 html
 {
-overflow-x: hidden
+overflow-x: hidden;
+/*overflow-y:hidden;*/
+zoom:1;
 }
 body{
-background : url("../img/10.jpg") fixed center center ;
+/*background : url("../img/10.jpg") fixed center center ;*/
+background-color: rgb(60,60,60);
 overflow-x: hidden;
+/*overflow-y:hidden;*/
 	}
 
 
@@ -17,16 +21,34 @@ body h1{
     margin-bottom: 20px;
     margin-top : 30px;
     padding: 15px;
-    background: rgba(40,40,40,1);
+    background-color: rgb(40,40,40);
 }
 
 .Whitebox{
 	margin-bottom: 20px;
-    margin-top : 150px;
+    margin-top : 20px;
     margin-left : 150px;
     margin-right: 150px;
     padding: 30px;
-    background: rgba(255,255,255,1);
+    background: rgb(255,255,255);
+}
+.modele{
+background-color: rgb(255,255,255);
+padding-top: 30px;
+border: 2px solid black;
+}
+
+.bdd{
+background-color:rgb(40,40,40);
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+
+.affichage{
+background-color: rgb(255,255,255);
+padding: 30px;
+border: 2px solid black;
+
 }
 
 img{

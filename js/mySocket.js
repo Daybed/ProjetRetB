@@ -1,14 +1,16 @@
 //|===================================================================================|
 //|================================== socket client ==================================|
 //|===================================================================================|
+var chenillard = require("./chenillard.js");
+var server = require("../server.js");
 
-var socketClient = function (io,fonction,mySocket,chenillard,conf,connection,light){
+var socketClient = function (io,fonction,mySocket,conf,connection){
 
     io.on('connection',function(socket){
         
         console.log("Un client s'est connecté");
 
-        socket.emit('lampes',light);
+        socket.emit('lampes',server.light);
 
         socket.emit('Chenillard',{on: chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
 
@@ -20,7 +22,7 @@ var socketClient = function (io,fonction,mySocket,chenillard,conf,connection,lig
 
         socket.on('setlampe',function(data){
             if(chenillard.on==true){
-                chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
+                chenillard.changestate(io,fonction,mySocket,connection);
             }
             fonction.setknx(connection,data.adresse, data.etat);
         });
@@ -62,15 +64,15 @@ var socketClient = function (io,fonction,mySocket,chenillard,conf,connection,lig
         });
 
         socket.on('setsens',function(data){
-            chenillard.changeclockwise(io,mySocket,chenillard,data)
+            chenillard.changeclockwise(io,mySocket,data)
         });
 
         socket.on('setspeed',function(vitesse){
-           chenillard.setspeed(io,mySocket,vitesse,chenillard); 
+           chenillard.setspeed(io,mySocket,vitesse); 
         });
 
         socket.on('setstate', function(){
-            chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
+            chenillard.changestate(io,fonction,mySocket,connection);
 
         });
     });
@@ -84,32 +86,32 @@ var startDiminuer,endDiminuer;
 var startAugmenter,endAugmenter;
 var intervalUp,intervalDown;
 
-var socketListenerKNX = function (io,fonction,chenillard,connection,mySocket,light){
+var socketListenerKNX = function (io,fonction,connection,mySocket){
 
     connection.on('status', function(data, data1, data2) {
         console.log('status : L\'adresse '+data+" est a l'état : "+data1);
         if(data1==0 || data1==1){
-            light[data[4]-1].etat=data1;
+            server.light[data[4]-1].etat=data1;
         }
-        else if(data1!=0 && data1!=1 && light[data[4]-1].nberreur<10){
+        else if(data1!=0 && data1!=1 && server.light[data[4]-1].nberreur<10){
             fonction.getknx(connection,data);
-            light[data[4]-1].nberreur++;
+            server.light[data[4]-1].nberreur++;
         }
     }); 
 
     connection.on('event', function(data, data1, data2) {
         console.log('event : L\'adresse '+data+" est a l'état : "+data1);
         if(data[0]==0){
-            light[data[4]-1].etat=data1;
-            io.emit('lampes',light);
+            server.light[data[4]-1].etat=data1;
+            io.emit('lampes',server.light);
         }
         else if(data[0]==1){    
             if(data1==1){
                 if(data[4]==1){
-                    chenillard.changestate(io,fonction,chenillard,mySocket,connection,light);
+                    chenillard.changestate(io,fonction,mySocket,connection);
                 }
                 else if(data[4]==2){
-                    chenillard.changeclockwise(io,mySocket,chenillard);
+                    chenillard.changeclockwise(io,mySocket);
                 }
                 else if(data[4]==3){
                     startDiminuer = new Date().getTime();
@@ -200,7 +202,7 @@ var socketListenerKNX = function (io,fonction,chenillard,connection,mySocket,lig
 //|========================================= Emit ====================================|
 //|===================================================================================|
 
-var socketEmitChenillard = function(io,chenillard){
+var socketEmitChenillard = function(io){
     io.emit('Chenillard',{on : chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
 }
 var socketInitHue = function(io,hue){

@@ -2,33 +2,36 @@ var on = false;
 var speed = 500;
 var clockwise = true; 
 
-var changestate = function(io,fonction,chenillard,mySocket,connection,light){
-    chenillard.on=!chenillard.on;
-    mySocket.socketEmitChenillard(io,chenillard);
-    console.log('le chenillard est en marche : '+chenillard.on);
+var changestate = function(io,fonction,mySocket,connection){
+    on=!on;
+    exports.on=on;
+    mySocket.socketEmitChenillard(io);
+    console.log('le chenillard est en marche : '+on);
     if(on==true){
-        fonction.looptest(connection,chenillard,light);
+        fonction.looptest(connection);
     }
 }
-var changeclockwise = function(io,mySocket,chenillard,sens){
+var changeclockwise = function(io,mySocket,sens){
     if(sens==true || sens==false){
-        chenillard.clockwise = sens;
+        clockwise = sens;
     }
     else{
-    chenillard.clockwise=!chenillard.clockwise;
+    clockwise=!clockwise;
     }
-mySocket.socketEmitChenillard(io,chenillard);
+    exports.clockwise=clockwise;
+    mySocket.socketEmitChenillard(io);
 }
 
-var setspeed = function(io,mySocket,newspeed,chenillard){
+var setspeed = function(io,mySocket,newspeed){
     if(newspeed<500){
-        chenillard.speed=500;
+        speed=500;
     }
     else{
-        chenillard.speed=newspeed;
+        speed=newspeed;
     }
-    console.log('la vitesse du chenillard est maintenant à : '+chenillard.speed+' ms.');
-    mySocket.socketEmitChenillard(io,chenillard);
+    console.log('la vitesse du chenillard est maintenant à : '+speed+' ms.');
+    exports.speed=speed;
+    mySocket.socketEmitChenillard(io);
 }
 
 exports.changestate=changestate;
