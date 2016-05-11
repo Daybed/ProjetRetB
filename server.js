@@ -37,13 +37,17 @@ var KnxConnectionTunneling = require('knx.js').KnxConnectionTunneling;
 var connection = new KnxConnectionTunneling(conf.ipPlateauknx,conf.portPlateauknx,ipServer,conf.portServer );
 
 
-var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
-exports.light=light;   
+
 
 fonction.connectionknx(connection,function(){
-    fonction.getAll(connection);
+
+    if(connection.connected){
+        fonction.getAll(connection);
+        mySocket.socketListenerKNX(io,connection);
+    }
 });
 
+mySocket.socketClient(io,mySocket,connection);  
 //|===================================================================================|
 //|========================== Régle les pb de cross domain ===========================|
 //|===================================================================================|
@@ -69,8 +73,6 @@ app.all('/', function(req, res) {
 });
 
 
-mySocket.socketClient(io,fonction,mySocket,conf,connection);   
-mySocket.socketListenerKNX(io,fonction,connection);
 
 /*
 

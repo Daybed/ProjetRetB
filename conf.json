@@ -1,8 +1,8 @@
 { 
   "ipAdresseHue" : "192.168.1.102",
-  "hueUsername" : "38b48817b59067f2a4a36072729568f",
+  "hueUsername" : "212150cb11b2432f33c7c9d315fb08b7",
   "portServer" : 8000,
-  "ipPlateauknx" :"192.168.1.200",
+  "ipPlateauknx" :"192.168.1.117",
   "portPlateauknx": 3671
 
 }

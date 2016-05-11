@@ -15,6 +15,7 @@ app.controller('myCtrl', function($scope,$http,ngToast) {
 $scope.test=[1,2,5,5,2,9,0,0,0,1,2,980];
 
     socket.on('Chenillard',function(data){
+      console.log(data.sens);
       $scope.$apply(function () {
 
         $scope.speed=data.speed;
@@ -51,12 +52,15 @@ $scope.test=[1,2,5,5,2,9,0,0,0,1,2,980];
      socket.emit('setspeed',$scope.speed);
    }; 
 
-     socket.on('lampes',function(data){ 
+     socket.on('lampes',function(data){
+
       var total = 0;
           for(i in data){
             if(data[i].etat==1){
               Lampes[i]={img:"public/img/lampeon.png",adresse:data[i].adresse,etat:true, num: data[i].numero}; 
+
               total ++;
+
             }
             else if(data[i].etat==0){
               Lampes[i]={img:"public/img/lampeoff.png",adresse:data[i].adresse,etat:false, num:data[i].numero};
@@ -104,7 +108,9 @@ $scope.test=[1,2,5,5,2,9,0,0,0,1,2,980];
             picker.hash=true;
 
             picker.onchange=function(){
+              console.log(data[i].lampe);
             couleur(picker,data[i].lampe);
+
             };
 
             document.getElementById('container').appendChild(input);
@@ -143,7 +149,7 @@ $scope.test=[1,2,5,5,2,9,0,0,0,1,2,980];
       for(i in $scope.Hue){
         if($scope.Hue[i].lampe == numero){
           if(commutation==true){
-          socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
+            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
           }
           else{
             socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
