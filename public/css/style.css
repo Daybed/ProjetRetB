@@ -1,60 +1,59 @@
-html
-{
-overflow-x: hidden;
-/*overflow-y:hidden;*/
-zoom:1;
+html {
+    overflow-x: hidden;
+    /*overflow-y:hidden;*/
+    zoom: 1;
 }
-body{
-/*background : url("../img/10.jpg") fixed center center ;*/
-background-color: rgb(60,60,60);
-overflow-x: hidden;
-/*overflow-y:hidden;*/
-	}
 
+body {
+    /*background : url("../img/10.jpg") fixed center center ;*/
+    background-color: rgb(60, 60, 60);
+    overflow-x: hidden;
+    /*overflow-y:hidden;*/
+}
 
-body h1{
-	font-family: "Comic Sans Ms";
-	font-size: 30px;
-}	
+body h1 {
+    font-family: "Comic Sans Ms";
+    font-size: 30px;
+}
 
 .Blackbox {
     margin-bottom: 20px;
-    margin-top : 30px;
+    margin-top: 30px;
     padding: 15px;
-    background-color: rgb(40,40,40);
+    background-color: rgb(40, 40, 40);
 }
 
-.Whitebox{
-	margin-bottom: 20px;
-    margin-top : 20px;
-    margin-left : 150px;
+.Whitebox {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-left: 150px;
     margin-right: 150px;
     padding: 30px;
-    background: rgb(255,255,255);
-}
-.modele{
-background-color: rgb(255,255,255);
-padding-top: 30px;
-border: 2px solid black;
+    background: rgb(255, 255, 255);
 }
 
-.bdd{
-background-color:rgb(40,40,40);
-border-top: 1px solid black;
-border-bottom: 1px solid black;
+.modele {
+    background-color: rgb(255, 255, 255);
+    padding-top: 30px;
+    border: 2px solid black;
 }
 
-.affichage{
-background-color: rgb(255,255,255);
-padding: 30px;
-border: 2px solid black;
-
+.bdd {
+    background-color: rgb(40, 40, 40);
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
-img{
-outline:0;
+.affichage {
+    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    border: 2px solid black;
 }
 
-.center{
-text-align: center;
+img {
+    outline: 0;
+}
+
+.center {
+    text-align: center;
 }
