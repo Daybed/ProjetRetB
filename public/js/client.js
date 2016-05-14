@@ -2,12 +2,18 @@ var app = angular.module("myApp",['ngMaterial','ngToast','ngSanitize','ui.router
 var ip;
 var socket=io();
 var initialisation = false;
+var Lampes=[];
 
-function couleur(picker,numero){
-  var resultat = {lampe : numero, r: parseInt(picker.rgb[0]), g: parseInt(picker.rgb[1]), b: parseInt(picker.rgb[2])};
-  socket.emit('setCouleurHue',resultat);
-
+function couleur(picker, numero) {
+    var resultat = {
+        lampe: numero,
+        r: parseInt(picker.rgb[0]),
+        g: parseInt(picker.rgb[1]),
+        b: parseInt(picker.rgb[2])
+    };
+    socket.emit('setCouleurHue', resultat);
 };
+
 
 app.controller('myCtrl', function($scope,$http,ngToast,$state) {
     $scope.modeles=[];
@@ -49,48 +55,57 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
      socket.emit('setspeed',$scope.speed);
    }; 
 
-     socket.on('lampes',function(data){
-      var Lampes=[];
-      var total = 0;
-          for(i in data){
-            if(data[i].etat==1){
-              Lampes[i]={img:"public/img/lampeon.png",adresse:data[i].adresse,etat:true, num: data[i].numero}; 
-
-              total ++;
-
+    socket.on('lampes', function(data) {
+        var total = 0;
+        for (i in data) {
+            if (data[i].etat == 1) {
+                Lampes[i] = {
+                    img: "public/img/lampeon.png",
+                    adresse: data[i].adresse,
+                    etat: true,
+                    num: data[i].numero
+                };
+                total++;
+            } else if (data[i].etat == 0) {
+                Lampes[i] = {
+                    img: "public/img/lampeoff.png",
+                    adresse: data[i].adresse,
+                    etat: false,
+                    num: data[i].numero
+                };
+                total++;
+            } else {
+                Lampes[i] = {
+                    img: "public/img/lampeerror.png",
+                    adresse: data[i].adresse,
+                    etat: "error",
+                    num: data[i].numero
+                };
             }
-            else if(data[i].etat==0){
-              Lampes[i]={img:"public/img/lampeoff.png",adresse:data[i].adresse,etat:false, num:data[i].numero};
-              total++;
-            }
-            else{
-              Lampes[i]={img:"public/img/lampeerror.png",adresse:data[i].adresse,etat:"error", num: data[i].numero};
-          }
         }
 
           $scope.$apply(function(){$scope.lampes=Lampes;});
 
-          /*if(total>0){
+          if(total>0){
            $scope.lampeKnx=true;
           }
           else{
             $scope.lampeKnx=false;
-          }*/
-          $scope.lampeKnx=true;
+          }
       });
        
 
 
     socket.on('Hue',function(data){
+      console.log(data);
         $scope.$apply(function(){
         $scope.Hue=data;
-       /* if(data==undefined){
-          $lampeHue=false;
+        if(data[0]==null){
+          $scope.lampeHue=false;
         }
         else{
-          $lampeHue=true;
-        }*/
-        $lampeHue=true;
+          $scope.lampeHue=true;
+        }
       });
 
         if(initialisation == false){
@@ -143,7 +158,7 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
       else{
         sens="gauche";
       }
-    if($scope.Hue==undefined){
+    if($scope.Hue[0]==null){
         $scope.lampeHue=false;
       }
       else{
@@ -156,7 +171,7 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
    
     }
     else{
-      if(modele.hue==undefined){
+      if(modele.hue[0]==null){
         $scope.lampeHue=false;
       }
       else{
@@ -206,7 +221,7 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
   };
 
   socket.on("lastModeleEnclenché",function(data){
-    console.log(data);
+    console.log("dernier modele enclenché : "+data);
     if(data!=null || data!=""){
     //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
     // coloré le modele enclenché
@@ -229,7 +244,6 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
           }
         }
       }
-      
     };
 
     socket.on('nouveauModele',function(data){
@@ -279,6 +293,4 @@ controller:"myCtrl"
 });
 
 });
-
-
 

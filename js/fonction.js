@@ -1,54 +1,81 @@
-var conf=require("../conf.json");
-var chenillard= require("./chenillard.js");
+var conf = require("../conf.json");
+var chenillard = require("./chenillard.js");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xmlHttpGet = new XMLHttpRequest();
-var xmlHttpPut = new XMLHttpRequest(); 
-var somme =0;
+var xmlHttpPut = new XMLHttpRequest();
+var somme = 0;
 var k;
-var newtab=[{etat:false},{etat:false},{etat:false},{etat:false}];
-var light=[{adresse:"0/1/1",etat:"error", numero: 1,nbessai:0},{adresse:"0/1/2",etat:"error", numero: 2,nbessai:0},{adresse:"0/1/3",etat:"error", numero: 3,nbessai:0},{adresse:"0/1/4",etat:"error", numero: 4,nbessai:0}];
+var newtab = [{
+    etat: false
+}, {
+    etat: false
+}, {
+    etat: false
+}, {
+    etat: false
+}];
+var light = [{
+    adresse: "0/1/1",
+    etat: "error",
+    numero: 1,
+    nbessai: 0
+}, {
+    adresse: "0/1/2",
+    etat: "error",
+    numero: 2,
+    nbessai: 0
+}, {
+    adresse: "0/1/3",
+    etat: "error",
+    numero: 3,
+    nbessai: 0
+}, {
+    adresse: "0/1/4",
+    etat: "error",
+    numero: 4,
+    nbessai: 0
+}];
 //|===================================================================================|
 //|======================= Detection de l'adresse ip du serveur ======================|
 //|===================================================================================|
-var	getIpAddress = function () {
-	var interfaces = require('os').networkInterfaces();
-	for (var devName in interfaces) {
-		var iface = interfaces[devName];
-
-		for (var i = 0; i < iface.length; i++) {
-			var alias = iface[i];
-			if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
-				return alias.address;
-			}
-		}
-	}
-	return '0.0.0.0';
+var getIpAddress = function() {
+    var interfaces = require('os').networkInterfaces();
+    for (var devName in interfaces) {
+        var iface = interfaces[devName];
+        for (var i = 0; i < iface.length; i++) {
+            var alias = iface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+    return '0.0.0.0';
 }
 //|===================================================================================|
 //|================================== Fonctions générales ============================|
 //|===================================================================================|
-var Get = function (url) {
-	xmlHttpGet.open( "GET", url , false ); 
-    xmlHttpGet.send( null );
-    if(xmlHttpGet.status==200){
-    	return xmlHttpGet.responseText;
+var Get = function(url) {
+    xmlHttpGet.open("GET", url, false);
+    xmlHttpGet.timeout=200;
+    xmlHttpGet.ontimeout=function(){};
+    xmlHttpGet.send(null);
+    if (xmlHttpGet.status == 200) {
+        return xmlHttpGet.responseText;
+    } else {
+        return 'error';
     }
-    else{
-    	return 'error';
+}
+var Put = function(url, paramASend) {
+    xmlHttpPut.open("PUT", url, false);
+    xmlHttpPut.send(paramASend);
+    if (xmlHttpPut.status == 200) {
+        return xmlHttpPut.responseText;
     }
-
 }
-var Put = function (url,paramASend){
-	xmlHttpPut.open("PUT", url, false ); 
-	xmlHttpPut.send(paramASend);
-	if(xmlHttpPut.status==200){
-		return xmlHttpPut.responseText;
-	}
-}
-var rgbToXyBri =function (Red,Green,Blue) {
-    var red = Red/255;;
-    var green = Green/255;
-    var blue = Blue/255;
+var rgbToXyBri = function(Red, Green, Blue) {
+    var red = Red / 255;;
+    var green = Green / 255;
+    var blue = Blue / 255;
     var r = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
     var g = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
     var b = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
@@ -64,13 +91,13 @@ var rgbToXyBri =function (Red,Green,Blue) {
         cy = 0.0;
     }
     return {
-		x: cx,
-		y: cy,
-		bri: Y*255
+        x: cx,
+        y: cy,
+        bri: Y * 255
     };
 }
-var xyBriToRgb = function(x,y,bri){
-	if (0 > x || x > .8) {
+var xyBriToRgb = function(x, y, bri) {
+    if (0 > x || x > .8) {
         throw 'x property must be between 0 and .8, but is: ' + x;
     }
     if (0 > y || y > 1) {
@@ -88,140 +115,134 @@ var xyBriToRgb = function(x,y,bri){
     r = r <= 0.0031308 ? 12.92 * r : (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055;
     g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
     b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
-    var cap = function(x) {
-        return Math.max(0, Math.min(1, x));
-    };
     return {
-        r:  Math.round(cap(r)*255),
-        g:  Math.round(cap(g)*255),
-        b:  Math.round(cap(b)*255)
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
     };
 }
-
-
 //|===================================================================================|
 //|================================= Fonctions spécifiques ===========================|
 //|===================================================================================|
-var detectionHue = function(callback){
-	var hue=[];
-	var rep = Get('http://'+conf.ipAdresseHue+'/api/'+conf.hueUsername+'/lights/');
-	if (rep.indexOf('error')=='-1'){
-		rep=JSON.parse(rep);
-		for(i in rep){
-			if (rep[i].state.reachable==true){
-				var rgb = xyBriToRgb(rep[i].state.xy[0],rep[i].state.xy[1],rep[i].state.bri/255);
-				var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, rgb:rgb,couleur: "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", hue:rep[i].state.hue, sat:rep[i].state.sat};
-				hue.push(lampe);
-			}
-		}
-	}
-	callback(hue);
-}
-var initialisationHue = function (socket,mySocket){
-	detectionHue(function(hue){
-		if (hue[0]!=null){
-			chenillard.presenceHue(true);
-			mySocket.socketInitHue(socket,hue);
-		}
-		else{
-			chenillard.presenceHue(false);
-		}
 
-	});
-
+var detectionHue = function(callback) {
+    var hue = [];
+    var rep = Get('http://' + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights/');
+    if (rep.indexOf('error') == '-1'&& rep !='error') {
+        rep = JSON.parse(rep);
+        for (i in rep) {
+            if (rep[i].state.reachable == true) {
+                var lampe = {
+                    lampe: i,
+                    on: rep[i].state.on,
+                    bri: rep[i].state.bri,
+                    xy: [rep[i].state.xy[0], rep[i].state.xy[1]],
+                    hue: rep[i].state.hue,
+                    sat: rep[i].state.sat
+                };
+                hue.push(lampe);
+            }
+        }
+    }
+    callback(hue);
 }
-var getAll = function (connection){
-
-	for(var i in light){
-		getknx(connection,light[i].adresse);
-	}
-} 
-var connectionknx = function (connection,callback){
-
-	setTimeout(function(){ 
-		connection.Connect(function(){ callback();}); 
-	}, 500);
-	callback();
-	
+var initialisationHue = function(socket, mySocket) {
+    detectionHue(function(hue) {
+        if (hue[0] != null) {
+            chenillard.presenceHue(true);
+            for (i in hue) {
+                hue[i].rgb = xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255);
+            }
+        } else {
+            chenillard.presenceHue(false);
+        }
+     mySocket.socketInitHue(socket, hue);
+    });
 }
-var deconnectionknx = function (connection,callback){
-	connection.Disconnect(function(){callback();});
+var getAll = function(connection) {
+    for (var i in light) {
+        getknx(connection, light[i].adresse);
+    }
 }
-var setknx = function (connection,adresse,value){
-	if(connection.connected){
-		connection.Action(adresse,value);
-	}
+var connectionknx = function(connection, callback) {
+    setTimeout(function() {
+        connection.Connect(function() {
+            callback();
+        });
+    }, 500);
+    callback();
 }
-var getknx = function (connection,adresse){
-	connection.RequestStatus(adresse);
+var deconnectionknx = function(connection, callback) {
+    connection.Disconnect(function() {
+        callback();
+    });
 }
-
-var exec = function (connection,callback){
-	if(chenillard.clockwise==true){
-		for (var j=0; j<light.length;j++){
-			k = (j+1+light.length) % light.length;
-			somme+=light[j].etat;
-			if(light[j].etat==1){
-				newtab[k].etat=true;
-			}
-			else{
-				newtab[k].etat=false;
-			}
-		}
-	}
-	else if(chenillard.clockwise==false){
-		for (var j=0; j<light.length;j++){
-			k = (j-1+light.length) % light.length;
-			somme+=light[j].etat;
-			if(light[j].etat==1){
-				newtab[k].etat=true;
-			}
-			else{
-				newtab[k].etat=false;
-			}
-		}
-	}
-	if(somme==light.length || somme==0){
-		console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
-	}
-	else if(chenillard.on==true){
-		for(var i in newtab){
-			setknx(connection,light[i].adresse,newtab[i].etat);
-		}
-	}
-	else{
-		console.log("Erreur");
-	}
-	somme = 0;
-	callback();
+var setknx = function(connection, adresse, value) {
+    if (connection.connected) {
+        connection.Action(adresse, value);
+    }
 }
-var looptest = function(connection){
-    if(chenillard.on==true){
-		exec(connection,function(){
-			setTimeout(function(){
-				module.exports.looptest(connection);}, chenillard.speed
-			);
-		});
-		}
-	else{
-		return;
-	}
+var getknx = function(connection, adresse) {
+    connection.RequestStatus(adresse);
+}
+var exec = function(connection, callback) {
+    if (chenillard.clockwise == true) {
+        for (var j = 0; j < light.length; j++) {
+            k = (j + 1 + light.length) % light.length;
+            somme += light[j].etat;
+            if (light[j].etat == 1) {
+                newtab[k].etat = true;
+            } else {
+                newtab[k].etat = false;
+            }
+        }
+    } else if (chenillard.clockwise == false) {
+        for (var j = 0; j < light.length; j++) {
+            k = (j - 1 + light.length) % light.length;
+            somme += light[j].etat;
+            if (light[j].etat == 1) {
+                newtab[k].etat = true;
+            } else {
+                newtab[k].etat = false;
+            }
+        }
+    }
+    if (somme == light.length || somme == 0) {
+        console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
+    } else if (chenillard.on == true) {
+        for (var i in newtab) {
+            setknx(connection, light[i].adresse, newtab[i].etat);
+        }
+    } else {
+        console.log("Erreur");
+    }
+    somme = 0;
+    callback();
+}
+var looptest = function(connection) {
+    if (chenillard.on == true) {
+        exec(connection, function() {
+            setTimeout(function() {
+                module.exports.looptest(connection);
+            }, chenillard.speed);
+        });
+    } else {
+        return;
+    }
 }
 //|===================================================================================|
 //|============================= Exports des fonctions utiles ========================|
 //|===================================================================================|
-
-exports.getIpAddress=getIpAddress;
-exports.rgbToXyBri=rgbToXyBri;
-exports.xyBriToRgb=xyBriToRgb;
-exports.initialisationHue=initialisationHue;
-exports.getAll= getAll;
-exports.connectionknx=connectionknx;
-exports.deconnectionknx=deconnectionknx;
-exports.setknx=setknx;
-exports.getknx=getknx;
-exports.Put=Put;
-exports.Get=Get;
-exports.light=light;
-exports.looptest=looptest;
-
+exports.getIpAddress = getIpAddress;
+exports.rgbToXyBri = rgbToXyBri;
+exports.xyBriToRgb = xyBriToRgb;
+exports.initialisationHue = initialisationHue;
+exports.getAll = getAll;
+exports.connectionknx = connectionknx;
+exports.deconnectionknx = deconnectionknx;
+exports.setknx = setknx;
+exports.getknx = getknx;
+exports.Put = Put;
+exports.Get = Get;
+exports.light = light;
+exports.looptest = looptest;

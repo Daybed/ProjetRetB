@@ -1,8 +1,7 @@
-html
-{
-overflow-x: hidden;
-/*overflow-y:hidden;*/
-zoom:1;
+html {
+    overflow-x: hidden;
+    /*overflow-y:hidden;*/
+    zoom: 1;
 }
 body{
 /*background : url("../img/10.jpg") fixed center center ;*/
@@ -34,9 +33,9 @@ background-color:rgb(255,64,129);
 
 .Blackbox {
     margin-bottom: 20px;
-    margin-top : 30px;
+    margin-top: 30px;
     padding: 15px;
-    background-color: rgb(40,40,40);
+    background-color: rgb(40, 40, 40);
 }
 
 
@@ -128,10 +127,10 @@ margin-bottom : 20px;
 color:white;
 }
 
-img{
-outline:0;
+img {
+    outline: 0;
 }
 
-.center{
-text-align: center;
+.center {
+    text-align: center;
 }
