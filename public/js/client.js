@@ -106,13 +106,9 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 window['picker' + i] = new jscolor(window['input' + i]);
                 window['picker' + i].hash = true;
                 listernerColor(window['picker'+i],data[i].lampe);
-           
                 document.getElementById('container').appendChild(window['input' + i]);
             }
         }
-        console.log(picker1.rgb);
-        console.log(picker1.rgb);
-        console.log(picker1.rgb);
         for (i in data) {
             if (data[i].on == true) {
                 document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
