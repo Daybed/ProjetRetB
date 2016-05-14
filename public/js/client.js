@@ -5,8 +5,6 @@ var initialisation = false;
 var Lampes = [];
 
 function couleur(picker, numero) {
-    console.log(picker.rgb);
-    console.log(numero);
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -15,13 +13,12 @@ function couleur(picker, numero) {
     };
     socket.emit('setCouleurHue', resultat);
 };
-function listernerColor(picker,numero){
+
+function listernerColor(picker, numero) {
     picker.onchange = function() {
-        console.log('j y passe');
-        couleur(picker,numero);
+        couleur(picker, numero);
     };
 }
-              
 app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     $scope.modeles = [];
     socket.on('Chenillard', function(data) {
@@ -89,7 +86,6 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             $scope.lampeKnx = false;
         }
     });
-
     socket.on('Hue', function(data) {
         $scope.$apply(function() {
             $scope.Hue = data;
@@ -105,10 +101,15 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 window['input' + i] = document.createElement('INPUT');
                 window['picker' + i] = new jscolor(window['input' + i]);
                 window['picker' + i].hash = true;
-                listernerColor(window['picker'+i],data[i].lampe);
+                listernerColor(window['picker' + i], data[i].lampe);
                 //window['picker' + i].rgb='rgb( 0 , 0 , 0 )';
                 document.getElementById('container').appendChild(window['input' + i]);
             }
+            /*for (i in data){
+                var test = document.getElementById('INPUT');
+                console.log (test);
+                test.jscolor.fromRGB(255, 255, 255);
+            }*/
         }
         for (i in data) {
             if (data[i].on == true) {
@@ -136,139 +137,105 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             });
         }
     };
-
-  $scope.VoirModele = function(modele){
-  var sens;
-    if(modele==undefined){
-      if($scope.sens == true){
-        sens = "droite";
-      }
-      else{
-        sens="gauche";
-      }
-    if($scope.Hue[0]==null){
-        $scope.lampeHue=false;
-      }
-      else{
-        $scope.lampeHue=true;
-      } 
-    
-    var theModele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : sens}};
-    console.log(theModele);
-    $scope.EnregistrementModele = theModele;
-   
-    }
-    else{
-      if(modele.hue[0]==null){  
-        $scope.lampeHue=false;
-      }
-      else{
-        $scope.lampeHue=true;
-      }
-    var infos = $scope.modeles[$scope.modeles.indexOf(modele)].infos;
-      if(infos.chenillard.sens == true){
-        infos.chenillard.sens = "droite";
-      }
-      else{
-        infos.chenillard.sens="gauche";
-      }
-      $scope.EnregistrementModele = infos;
-      $scope.nomModele=modele.nom;
-
-    }
-    $scope.modele=true;
-  };
-
-  $scope.EnregistrerModele=function(){
-    var nom = document.getElementById('name_modele').value;
-    if(nom==""){
-      ngToast.create({
-         content: "Vous devez indiquer un nom pour votre nouveau modèle",
-         dismissOnTimeout : true,
-         timeout: 3000,
-         className:"danger",
-        });
-    }
-    else{
-  socket.emit('NouveauModele',{nom:nom, infos : $scope.EnregistrementModele});
-  document.getElementById("bdd").style.visibility="visible";
-  document.getElementById('name_modele').value="";
-  }
-  };
-
-  $scope.LancerModele = function(modele){
-    socket.emit("modeleEnclenché",modele);
-  };
-
-  socket.on("lastModeleEnclenché",function(data){
-    if(data!=null || data!=""){
-      console.log("dernier modele enclenché : "+data);
-    //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
-    // coloré le modele enclenché
-    }
-
-  });
-
-  socket.on('Modeles',function(listeModeles){
-    $scope.modeles=listeModeles;
-  });
-
-    $scope.changehue = function(numero,commutation){
-      for(i in $scope.Hue){
-        if($scope.Hue[i].lampe == numero){
-          if(commutation==true){
-            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
-          }
-          else{
-            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
-          }
+    $scope.VoirModele = function(modele) {
+        var sens;
+        if (modele == undefined) {
+            if ($scope.sens == true) {
+                sens = "droite";
+            } else {
+                sens = "gauche";
+            }
+            if ($scope.Hue[0] == null) {
+                $scope.lampeHue = false;
+            } else {
+                $scope.lampeHue = true;
+            }
+            var theModele = {
+                hue: $scope.Hue,
+                lampes: $scope.lampes,
+                chenillard: {
+                    on: $scope.on,
+                    speed: $scope.speed,
+                    sens: sens
+                }
+            };
+            $scope.EnregistrementModele = theModele;
+        } else {
+            console.log(modele.hue);
+            if (modele.hue[0] == null) {
+                $scope.lampeHue = false;
+            } else {
+                $scope.lampeHue = true;
+            }
+            var infos = {
+                chenillard: {
+                    sens: $scope.modeles[$scope.modeles.indexOf(modele)].sens,
+                    speed: $scope.modeles[$scope.modeles.indexOf(modele)].speed
+                },
+                hue: $scope.modeles[$scope.modeles.indexOf(modele)].hue,
+                lampes: $scope.modeles[$scope.modeles.indexOf(modele)].light
+            };
+            if (infos.chenillard.sens == true) {
+                infos.chenillard.sens = "droite";
+            } else {
+                infos.chenillard.sens = "gauche";
+            }
+            $scope.EnregistrementModele = infos;
+            $scope.nomModele = modele.nom;
         }
         $scope.modele = true;
     };
     $scope.EnregistrerModele = function() {
-        var nom = document.getElementById('name_modele').value;
-        if (nom == "") {
+       // if ($scope.modeles.length < 10) {
+            var nom = document.getElementById('name_modele').value;
+            if (nom == "") {
+                ngToast.create({
+                    content: "Vous devez indiquer un nom pour votre nouveau modèle",
+                    dismissOnTimeout: true,
+                    timeout: 3000,
+                    className: "danger",
+                });
+            } else {
+            console.log($scope.EnregistrementModele);
+                socket.emit('NouveauModele', {
+                    nom: nom,
+                    infos: $scope.EnregistrementModele
+                });
+                console.log($scope.EnregistrementModele.chenillard.sens)
+                document.getElementById("bdd").style.visibility = "visible";
+                document.getElementById('name_modele').value = "";
+            }
+       /* } else {
             ngToast.create({
-                content: "Vous devez indiquer un nom pour votre nouveau modèle",
+                content: "Nombre de modèles max atteint, veuillez en supprimer un.",
                 dismissOnTimeout: true,
                 timeout: 3000,
                 className: "danger",
             });
-        } else {
-            socket.emit('NouveauModele', {
-                nom: nom,
-                infos: $scope.EnregistrementModele
-            });
-            document.getElementById("bdd").style.visibility = "visible";
-            document.getElementById('name_modele').value = "";
-        }
+        }*/
     };
     $scope.LancerModele = function(modele) {
-        for (i in modele.hue) {
-            socket.emit("sethue", {
-                lampe: modele.hue[i].lampe,
-                bri: modele.hue[i].bri,
-                sat: modele.hue[i].sat,
-                on: modele.hue[i].on
-            });
-            socket.emit('setCouleurHue', {
-                lampe: modele.hue[i].lampe,
-                r: parseInt(modele.hue[i].rgb.r),
-                g: parseInt(modele.hue[i].rgb.g),
-                b: parseInt(modele.hue[i].rgb.b)
-            });
-        }
-        socket.emit("modeleEnclenché", modele.nom);
+        socket.emit("modeleEnclenché", modele);
     };
     socket.on("lastModeleEnclenché", function(data) {
-        if (data != null || data != "") {
-          console.log(data);
-            //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
-            // coloré le modele enclenché
+
+        if (/*data.nouveau != null || data.nouveau != ""|| */data.nouveau!=undefined) {
+            document.getElementById(data.nouveau).style.backgroundColor = "rgb(255,255,255)";
+            document.getElementById(data.nouveau).style.color = "black";
         }
+        if (/*data.last != null || data.last != "" || */data.last!=undefined) {
+            console.log("dernier modele enclenché : " + data);
+            document.getElementById(data.last).style.backgroundColor = "rgb(40,40,40)";
+            document.getElementById(data.last).style.color = "white";
+        }
+    
     });
     socket.on('Modeles', function(listeModeles) {
-        $scope.modeles = listeModeles;
+        document.getElementById("bdd").style.visibility = "visible";
+        $scope.$apply(function() {
+            $scope.modeles = listeModeles;
+        });
+
     });
     $scope.changehue = function(numero, commutation) {
         for (i in $scope.Hue) {
@@ -290,6 +257,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 }
             }
         }
+        $scope.modele = true;
     };
     socket.on('nouveauModele', function(data) {
         ngToast.create({
@@ -298,17 +266,15 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             timeout: 3000,
         });
     });
-
-    socket.on('modeleSupprimé',function(data){
-          ngToast.create({
-         content: "Le modèle " +data+ " est supprimé",
-         dismissOnTimeout : true,
-         timeout: 3000,
+    socket.on('modeleSupprimé', function(data) {
+        ngToast.create({
+            content: "Le modèle " + data + " est supprimé",
+            dismissOnTimeout: true,
+            timeout: 3000,
         });
     });
-
-    $scope.SupprimerModele=function(nom){
-      soket.emit('supprimerModele',nom);
+    $scope.SupprimerModele = function(nom) {
+        socket.emit('supprimerModele', nom);
     };
 }).config(function($stateProvider, $urlRouterProvider) {
     $stateProvider.state('activerModele', {

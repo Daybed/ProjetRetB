@@ -8,9 +8,9 @@
 
 var mongoose = require('mongoose');
 var scenarioSchema = new mongoose.Schema({
-    name: String,
-    sens: Boolean,
-    speed: String,
+    nom: String,
+    sens : String,
+    speed : String,
     light: String,
     hue: String
 });
@@ -31,21 +31,23 @@ var connection = function(name, callback) {
     });
 }
 var add = function(nom, chenillard, light, hue, callback) {
+
     if (connected) {
       findByName(nom,function(rep){
         if(rep==null){
           var monScenario = new scenarioModel({
-              name: nom
+              nom: nom
           });
-          monScenario.sens = sens;
-          monScenario.speed = speed;
-          monScenario.ligth = ligth;
+          monScenario.speed=chenillard.speed;
+          monScenario.sens = chenillard.sens;
+          monScenario.light = light;
           monScenario.hue = hue;
           monScenario.save(function(err,answer) {
-              mongoose.connection.close();
+              //mongoose.connection.close();
               if (err) {
                   callback('error');
               } else {
+
                   callback(answer);
               }
           });
@@ -77,7 +79,7 @@ var findById = function(id, callback) {
 var findByName = function(name, callback) {
   if(connected){
     scenarioModel.findOne({
-        'name': name
+        'nom': name
     }, function(err, answer) {
         if (err) {
             callback('error');
@@ -105,13 +107,14 @@ var findAll=function(callback){
 var removeByName = function(name, callback) {
   if(connected){
     scenarioModel.findOneAndRemove({
-        'name': name
+        'nom': name
     }, function(err, answer) {
         if (err) {
             callback('error');
         } else {
             callback(answer);
         }
+
     })
   }
   else{
