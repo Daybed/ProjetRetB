@@ -97,15 +97,14 @@ var socketClient = function(io, mySocket, connection) {
             var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights';
             var requete;
             for(i in modele.infos.hue){
-                requete+=modele.infos.hue[i].lampe :{"state":{
-                    "on":modele.infos.hue[i].on,
-                    "bri":modele.infos.hue[i].bri,
-                    "sat":modele.infos.hue[i].sat,
-                    "xy":[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y];
-                }};
+                requete+=modele.infos.hue[i].lampe +":{'state':{"+
+                    "'on':"+modele.infos.hue[i].on+","+
+                    "'bri':"+modele.infos.hue[i].bri+","+
+                    "'sat':"+modele.infos.hue[i].sat+","+
+                    "'xy':"+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+
+                "}}";
             }
-            var param = JSON.stringify({requete});
-            var res = fonction.Put(url, param);
+            var res = fonction.Put(url, "{"+requete+"}");
             var json = JSON.parse(res);
             if (json[0].success) {
                 fonction.initialisationHue(socket, mySocket);
