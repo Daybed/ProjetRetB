@@ -50,7 +50,7 @@ var socketClient = function(io, mySocket, connection) {
             var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + "/lights/"+data.lampe+"/state";
             var param = JSON.stringify({
                 "xy": [fonction.rgbToXyBri(data.r, data.g, data.b).x, fonction.rgbToXyBri(data.r, data.g, data.b).y],
-                "bri": Math.round(fonction.rgbToXyBri(data.r, data.g, data.b).bri);
+                "bri": Math.round(fonction.rgbToXyBri(data.r, data.g, data.b).bri)
             });
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
@@ -69,18 +69,16 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('NouveauModele',function(data){
-         //   BDD.add()
-           io.emit('nouveauModele',data);
-           // A FAIRE
-
-           //ajouter le nouveau modele à la bdd
-           //Si nom existe dejà, envoyer un message aux clients
-           //Sinon, envoyer aux clients tous les modeles  io.emit("Modeles",);
+            BDD.add(data.nom,data.infos.chenillard,data.infos.light,data.infos.hue,function(data){
+                io.emit('nouveauModele',data.name);
+            })
+        BDD.findAll(function(rep){
+            socket.emit('Modeles',rep);
+        });
         });
 
          socket.on('modeleEnclenché',function(modele){
             io.emit('lastModeleEnclenché',lastModeleEnclenché);
-            console.log(modele);
             if(modele.infos.chenillard.sens=='droite'){
                 chenillard.changeclockwise(io,mySocket,true);
             }
@@ -119,12 +117,12 @@ var socketClient = function(io, mySocket, connection) {
         });
 
          socket.on('supprimerModele',function(nom){
-            io.emit('modeleSupprimé',nom);
-            
-            // A FAIRE
-
-        //supprimer le modele et renvoyer aux cliens tous les modeles io.emit("Modeles",);
-
+            BDD.removeByName(nom,function(fichier){
+                io.emit('modeleSupprimé',fichier.name);
+            });
+            BDD.findAll(function(rep){
+             io.emit('Modeles',rep);
+            });
          });
 
     });

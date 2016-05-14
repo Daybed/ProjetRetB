@@ -200,16 +200,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
   };
 
   $scope.LancerModele = function(modele){
-   console.log(modele);
-   /*
-    for(i in modele.hue){
-      socket.emit("sethue",{lampe:modele.hue[i].lampe,bri:modele.hue[i].bri,sat:modele.hue[i].sat,on:modele.hue[i].on});
-      socket.emit('setCouleurHue',{lampe : modele.hue[i].lampe, r: parseInt(modele.hue[i].rgb.r), g: parseInt(modele.hue[i].rgb.g), b: parseInt(modele.hue[i].rgb.b)});
-    }*/
-
     socket.emit("modeleEnclenché",modele);
-    // coloré le modele enclenché
-   // document.getElementById(modele.nom).style.backgroundColor="rgb(255,64,129)";
   };
 
   socket.on("lastModeleEnclenché",function(data){
@@ -271,11 +262,10 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             });
         }
         socket.emit("modeleEnclenché", modele.nom);
-        // coloré le modele enclenché
-        // document.getElementById(modele.nom).style.backgroundColor="rgb(255,64,129)";
     };
     socket.on("lastModeleEnclenché", function(data) {
         if (data != null || data != "") {
+          console.log(data);
             //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
             // coloré le modele enclenché
         }
@@ -305,18 +295,14 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         }
     };
     socket.on('nouveauModele', function(data) {
-        $scope.$apply(function() {
-            $scope.modeles.push(data);
-        });
         ngToast.create({
-            content: "Le modèle " + data.nom + " est enregistré",
+            content: "Le modèle " + data + " est enregistré",
             dismissOnTimeout: true,
             timeout: 3000,
         });
     });
 
     socket.on('modeleSupprimé',function(data){
-
           ngToast.create({
          content: "Le modèle " +data+ " est supprimé",
          dismissOnTimeout : true,
