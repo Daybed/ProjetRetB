@@ -30,7 +30,7 @@ var connection = function(name, callback) {
         }
     });
 }
-var add = function(nom, chenillard, light, hue, callback) {//nom, sens, speed, light, hue, callback
+var add = function(nom, chenillard, light, hue, callback) {
     if (connected) {
       findByName(nom,function(rep){
         if(rep==null){
