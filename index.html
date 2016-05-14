@@ -65,13 +65,13 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-{{12-lampes.length}}">
+			<div class="col-md-{{Hue.length}}">
 				<div ng-init="lampeHue = false">
 					<div ng-show="lampeHue">
 						<div id="hue" class="Whitebox">
 							<div class="row text">
-									<div class="col-md-3" ng-repeat="x in Hue track by $index">
-								           	 <img src="public/img/hue.png" ng-click="changehue(x.lampe,true)" height="50" width="50"  id= "hue {{x.lampe}}"> 
+									<div class="col-md-{{12/Hue.length}}" ng-repeat="x in Hue track by $index">
+								           	 <img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" height="50" width="50"  id= "hue {{x.lampe}}"> 
 								         
 								    </div>
 							</div>

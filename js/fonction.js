@@ -152,6 +152,7 @@ var initialisationHue = function(socket, mySocket) {
             chenillard.presenceHue(true);
             for (i in hue) {
                 hue[i].rgb = xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255);
+                hue[i].couleur="rgb("+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).r+","+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).g+","+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).b+")";
             }
         } else {
             chenillard.presenceHue(false);

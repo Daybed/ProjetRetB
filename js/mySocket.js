@@ -3,6 +3,7 @@ var fonction= require("./fonction.js");
 var BDD = require("./BDD.js");
 var chenillard= require("./chenillard.js");
 var lastModeleEnclenché="";
+var modeleActuel="";
 //|===================================================================================|
 //|================================== socket client ==================================|
 //|===================================================================================|
@@ -20,7 +21,7 @@ var socketClient = function(io, mySocket, connection) {
 
         fonction.initialisationHue(socket,mySocket);
 
-        socket.emit('lastModeleEnclenché',lastModeleEnclenché);
+        socket.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modeleActuel});
 
         socket.on('disconnection',function(socket){
             console.log("Un client s'est déconnecté");
@@ -69,38 +70,42 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('NouveauModele',function(data){
-            BDD.add(data.nom,data.infos.chenillard,data.infos.light,data.infos.hue,function(data){
-                io.emit('nouveauModele',data.name);
-            })
-        BDD.findAll(function(rep){
-            socket.emit('Modeles',rep);
-        });
+            BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
+                io.emit('nouveauModele',data.nom);
+             BDD.findAll(function(rep){
+            io.emit('Modeles',rep);
+            });
+            });
+
         });
 
          socket.on('modeleEnclenché',function(modele){
-            io.emit('lastModeleEnclenché',lastModeleEnclenché);
-            if(modele.infos.chenillard.sens=='droite'){
+            modelActuel=modele.nom;
+            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
+            lastModeleEnclenché=modele.nom;
+
+            if(modele.sens=='droite'){
                 chenillard.changeclockwise(io,mySocket,true);
             }
-            else if(modele.infos.chenillard.sens=="gauche"){
+            else if(modele.sens=="gauche"){
                 chenillard.changeclockwise(io,mySocket,false);
             }
-            chenillard.setspeed(io,mySocket,modele.infos.chenillard.speed);
-            for(i in modele.infos.lampes){
-                if(modele.infos.lampes[i].etat!="error"){
-                fonction.setknx(connection, modele.infos.lampes[i].adresse, modele.infos.lampes[i].etat);
+            chenillard.setspeed(io,mySocket,modele.speed);
+            for(i in modele.lampes){
+                if(modele.lampes[i].etat!="error"){
+                fonction.setknx(connection, modele.lampes[i].adresse, modele.lampes[i].etat);
                 }
                 else{
-                fonction.setknx(connection,modele.infos.lampes[i].adresse,false);
+                fonction.setknx(connection,modele.lampes[i].adresse,false);
                 }
             }
             var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights';
             var requete;
-            for(i in modele.infos.hue){
-                requete+=modele.infos.hue[i].lampe +":{'state':{"+
-                    "'on':"+modele.infos.hue[i].on+","+
-                    "'bri':"+modele.infos.hue[i].bri+","+
-                    "'sat':"+modele.infos.hue[i].sat+","+
+            for(i in modele.hue){
+                requete+=modele.hue[i].lampe +":{'state':{"+
+                    "'on':"+modele.hue[i].on+","+
+                    "'bri':"+modele.hue[i].bri+","+
+                    "'sat':"+modele.hue[i].sat+","+
                     "'xy':"+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+
                 "}}";
             }
@@ -111,17 +116,18 @@ var socketClient = function(io, mySocket, connection) {
             } else {
                 console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
             }
-            lastModeleEnclenché=modele.nom;
+            
 
         });
 
          socket.on('supprimerModele',function(nom){
             BDD.removeByName(nom,function(fichier){
-                io.emit('modeleSupprimé',fichier.name);
-            });
+                io.emit('modeleSupprimé',fichier.nom);
             BDD.findAll(function(rep){
              io.emit('Modeles',rep);
             });
+            });
+
          });
 
     });

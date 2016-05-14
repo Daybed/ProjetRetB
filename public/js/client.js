@@ -5,8 +5,6 @@ var initialisation = false;
 var Lampes = [];
 
 function couleur(picker, numero) {
-    console.log(picker.rgb);
-    console.log(numero);
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -154,7 +152,6 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
       } 
     
     var theModele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : sens}};
-    console.log(theModele);
     $scope.EnregistrementModele = theModele;
    
     }
@@ -165,7 +162,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
       else{
         $scope.lampeHue=true;
       }
-    var infos = $scope.modeles[$scope.modeles.indexOf(modele)].infos;
+    var infos = {chenillard:{sens:$scope.modeles[$scope.modeles.indexOf(modele)].sens,speed:$scope.modeles[$scope.modeles.indexOf(modele)].speed},hue:$scope.modeles[$scope.modeles.indexOf(modele)].hue,lampes:$scope.modeles[$scope.modeles.indexOf(modele)].light};
       if(infos.chenillard.sens == true){
         infos.chenillard.sens = "droite";
       }
@@ -179,38 +176,24 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     $scope.modele=true;
   };
 
-  $scope.EnregistrerModele=function(){
-    var nom = document.getElementById('name_modele').value;
-    if(nom==""){
-      ngToast.create({
-         content: "Vous devez indiquer un nom pour votre nouveau modèle",
-         dismissOnTimeout : true,
-         timeout: 3000,
-         className:"danger",
-        });
-    }
-    else{
-  socket.emit('NouveauModele',{nom:nom, infos : $scope.EnregistrementModele});
-  document.getElementById("bdd").style.visibility="visible";
-  document.getElementById('name_modele').value="";
-  }
-  };
-
   $scope.LancerModele = function(modele){
+
     socket.emit("modeleEnclenché",modele);
   };
 
   socket.on("lastModeleEnclenché",function(data){
-    if(data!=null || data!=""){
-      console.log("dernier modele enclenché : "+data);
-    //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
-    // coloré le modele enclenché
+        if(data.nouveau!=undefined){
+        document.getElementById(data.nouveau).style.backgroundColor="rgb(255,255,255)";
+        document.getElementById(data.nouveau).style.color="black";
     }
 
-  });
+    if(data.last!=undefined){
+      console.log("dernier modele enclenché : "+data);
+    document.getElementById(data.last).style.backgroundColor="rgb(40,40,40)";
+    document.getElementById(data.last).style.color="white";
+    }
 
-  socket.on('Modeles',function(listeModeles){
-    $scope.modeles=listeModeles;
+
   });
 
     $scope.changehue = function(numero,commutation){
@@ -223,74 +206,46 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
           }
         }
+      }
         $scope.modele = true;
     };
     $scope.EnregistrerModele = function() {
-        var nom = document.getElementById('name_modele').value;
-        if (nom == "") {
-            ngToast.create({
-                content: "Vous devez indiquer un nom pour votre nouveau modèle",
-                dismissOnTimeout: true,
-                timeout: 3000,
-                className: "danger",
-            });
-        } else {
-            socket.emit('NouveauModele', {
-                nom: nom,
-                infos: $scope.EnregistrementModele
-            });
-            document.getElementById("bdd").style.visibility = "visible";
-            document.getElementById('name_modele').value = "";
-        }
-    };
-    $scope.LancerModele = function(modele) {
-        for (i in modele.hue) {
-            socket.emit("sethue", {
-                lampe: modele.hue[i].lampe,
-                bri: modele.hue[i].bri,
-                sat: modele.hue[i].sat,
-                on: modele.hue[i].on
-            });
-            socket.emit('setCouleurHue', {
-                lampe: modele.hue[i].lampe,
-                r: parseInt(modele.hue[i].rgb.r),
-                g: parseInt(modele.hue[i].rgb.g),
-                b: parseInt(modele.hue[i].rgb.b)
-            });
-        }
-        socket.emit("modeleEnclenché", modele.nom);
-    };
-    socket.on("lastModeleEnclenché", function(data) {
-        if (data != null || data != "") {
-          console.log(data);
-            //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
-            // coloré le modele enclenché
-        }
-    });
-    socket.on('Modeles', function(listeModeles) {
-        $scope.modeles = listeModeles;
-    });
-    $scope.changehue = function(numero, commutation) {
-        for (i in $scope.Hue) {
-            if ($scope.Hue[i].lampe == numero) {
-                if (commutation == true) {
-                    socket.emit('sethue', {
-                        lampe: numero,
-                        bri: $scope.Hue[i].bri,
-                        sat: $scope.Hue[i].sat,
-                        on: !$scope.Hue[i].on
-                    });
-                } else {
-                    socket.emit('sethue', {
-                        lampe: numero,
-                        bri: $scope.Hue[i].bri,
-                        sat: $scope.Hue[i].sat,
-                        on: $scope.Hue[i].on
-                    });
-                }
+        //if($scope.modeles.length<10){
+            var nom = document.getElementById('name_modele').value;
+            if (nom == "") {
+                ngToast.create({
+                    content: "Vous devez indiquer un nom pour votre nouveau modèle",
+                    dismissOnTimeout: true,
+                    timeout: 3000,
+                    className: "danger",
+                });
+            } else {
+                socket.emit('NouveauModele', {
+                    nom: nom,
+                    infos: $scope.EnregistrementModele
+                });
+                document.getElementById("bdd").style.visibility = "visible";
+                document.getElementById('name_modele').value = "";
             }
-        }
+       /* }
+    else{
+        ngToast.create({
+                    content: "Nombre de modèles max atteint, veuillez en supprimer un.",
+                    dismissOnTimeout: true,
+                    timeout: 3000,
+                    className: "danger",
+                });
+    }*/
     };
+
+    socket.on('Modeles', function(listeModeles) {
+        document.getElementById('bdd').style.visibility="visible";
+       $scope.$apply(function(){
+        $scope.modeles = listeModeles;
+        });
+    });
+
+
     socket.on('nouveauModele', function(data) {
         ngToast.create({
             content: "Le modèle " + data + " est enregistré",
@@ -305,12 +260,20 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
          dismissOnTimeout : true,
          timeout: 3000,
         });
+          if($scope.nomModele==data){
+            $scope.$apply(
+                function(){$scope.modele=false;
+                };);
+          }
     });
 
     $scope.SupprimerModele=function(nom){
-      soket.emit('supprimerModele',nom);
+      socket.emit('supprimerModele',nom);
     };
-}).config(function($stateProvider, $urlRouterProvider) {
+
+})
+
+.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider.state('activerModele', {
         url: "/activationModele",
         views: {
