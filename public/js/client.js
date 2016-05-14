@@ -171,7 +171,7 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
    
     }
     else{
-      if(modele.hue[0]==null){
+      if(modele.hue[0]==null){  
         $scope.lampeHue=false;
       }
       else{
@@ -209,20 +209,20 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
   };
 
   $scope.LancerModele = function(modele){
-    console.log(modele);
+   /* console.log(modele);
     for(i in modele.hue){
       socket.emit("sethue",{lampe:modele.hue[i].lampe,bri:modele.hue[i].bri,sat:modele.hue[i].sat,on:modele.hue[i].on});
       socket.emit('setCouleurHue',{lampe : modele.hue[i].lampe, r: parseInt(modele.hue[i].rgb.r), g: parseInt(modele.hue[i].rgb.g), b: parseInt(modele.hue[i].rgb.b)});
-    }
+    }*/
 
-    socket.emit("modeleEnclenché",modele.nom);
+    socket.emit("modeleEnclenché",modele);
     // coloré le modele enclenché
    // document.getElementById(modele.nom).style.backgroundColor="rgb(255,64,129)";
   };
 
   socket.on("lastModeleEnclenché",function(data){
-    console.log("dernier modele enclenché : "+data);
     if(data!=null || data!=""){
+      console.log("dernier modele enclenché : "+data);
     //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
     // coloré le modele enclenché
     }

@@ -99,7 +99,7 @@ var findAll=function(callback){
       else{
         callback(answer);
       }
-    })
+    });
   }
 }
 var removeByName = function(name, callback) {

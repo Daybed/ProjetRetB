@@ -12,9 +12,9 @@ var socketClient = function(io, mySocket, connection) {
 
         socket.emit('lampes',fonction.light);
 
-        socket.emit('Modeles',[]);
-        //A FAIRE
-        //Envoyer tous les modeles de la bdd
+        BDD.findAll(function(rep){
+            socket.emit('Modeles',rep);
+        });
             
         socket.emit('Chenillard',{on: chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
 
@@ -78,9 +78,11 @@ var socketClient = function(io, mySocket, connection) {
            //Sinon, envoyer aux clients tous les modeles  io.emit("Modeles",);
         });
 
-         socket.on('modeleEnclenché',function(nom){
+         socket.on('modeleEnclenché',function(modele){
             io.emit('lastModeleEnclenché',lastModeleEnclenché);
-            lastModeleEnclenché=nom;
+            console.log(modele);
+            lastModeleEnclenché=modele.nom;
+
         });
 
          socket.on('supprimerModele',function(nom){
@@ -152,8 +154,8 @@ var socketListenerKNX = function(io, connection, mySocket) {
 //|===================================================================================|
 //|========================================= Emit ====================================|
 //|===================================================================================|
-var socketEmitChenillard = function(io) {
-    io.emit('Chenillard', {
+var socketEmitChenillard = function(socket) {
+    socket.emit('Chenillard', {
         on: chenillard.on,
         speed: chenillard.speed,
         sens: chenillard.clockwise
@@ -163,10 +165,6 @@ var socketInitHue = function(socket, hue) {
     socket.emit('Hue', hue);
 
 
-/*
-var socketBDD = function(io,Scenario){
-    io.emit('Scenario',Scenario);
-}*/
 //|===================================================================================|
 //|============================= Exports des fonctions utiles ========================|
 //|===================================================================================|
