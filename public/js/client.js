@@ -5,6 +5,7 @@ var initialisation = false;
 var Lampes = [];
 
 function couleur(picker, numero) {
+
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -140,23 +141,24 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             });
         }
     };
+/*
 
-  socket.on("lastModeleEnclenché",function(data){
+    socket.on("lastModeleEnclenché",function(data){
         if(data.nouveau!=undefined){
-        document.getElementById(data.nouveau).style.backgroundColor="rgb(255,255,255)";
-        document.getElementById(data.nouveau).style.color="black";
-    }
+            document.getElementById(data.nouveau).style.backgroundColor="rgb(255,255,255)";
+            document.getElementById(data.nouveau).style.color="black";
+        }
 
-    if(data.last!=undefined){
-      console.log("dernier modele enclenché : "+data);
-    document.getElementById(data.last).style.backgroundColor="rgb(40,40,40)";
-    document.getElementById(data.last).style.color="white";
-    }
-
-
-  });
+        if(data.last!=undefined){
+            console.log("dernier modele enclenché : "+data);
+            document.getElementById(data.last).style.backgroundColor="rgb(40,40,40)";
+            document.getElementById(data.last).style.color="white";
+        }
 
 
+    });
+
+*/
     $scope.VoirModele = function(modele) {
         var sens;
         if (modele == undefined) {
@@ -181,7 +183,8 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             };
             $scope.EnregistrementModele = theModele;
         } else {
-            console.log(modele.hue);
+            //il y a un bug ici je ne sais pas le quel !----------------------------------------------------------------
+            console.log(modele);
             if (modele.hue[0] == null) {
                 $scope.lampeHue = false;
             } else {
@@ -217,6 +220,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                     className: "danger",
                 });
             } else {
+
                 socket.emit('NouveauModele', {
                     nom: nom,
                     infos: $scope.EnregistrementModele
@@ -236,9 +240,10 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     };
 
     socket.on('Modeles', function(listeModeles) {
+
         document.getElementById('bdd').style.visibility="visible";
-       $scope.$apply(function(){
-        $scope.modeles = listeModeles;
+        $scope.$apply(function(){
+            $scope.modeles = listeModeles;
         });
     });
 
@@ -267,7 +272,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 }
             }
         }
-        $scope.modele = true;
+        //$scope.modele = true;
     };
 
     socket.on('nouveauModele', function(data) {
@@ -285,9 +290,9 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             timeout: 3000,
         });
           if($scope.nomModele==data){
-            $scope.$apply(
-                function(){$scope.modele=false;
-                };);
+            $scope.$apply(function(){
+                $scope.modele=false;
+            });
           }
     });
 
@@ -295,9 +300,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
       socket.emit('supprimerModele',nom);
     };
 
-})
-
-.config(function($stateProvider, $urlRouterProvider) {
+}).config(function($stateProvider, $urlRouterProvider) {
     $stateProvider.state('activerModele', {
         url: "/activationModele",
         views: {

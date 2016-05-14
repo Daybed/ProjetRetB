@@ -9,20 +9,20 @@ var modeleActuel="";
 //|===================================================================================|
 var socketClient = function(io, mySocket, connection) {
 
-       io.on('connection', function(socket) {
-            console.log("Un client s'est connecté");
+    io.on('connection', function(socket) {
+        console.log("Un client s'est connecté");
 
-            socket.emit('lampes', fonction.light);
+        socket.emit('lampes', fonction.light);
 
-            BDD.findAll(function(rep) {
-                socket.emit('Modeles', rep);
-            });
+        BDD.findAll(function(rep) {
+            socket.emit('Modeles', rep);
+        });
 
-            socket.emit('Chenillard', {
-                on: chenillard.on,
-                speed: chenillard.speed,
-                sens: chenillard.clockwise
-            });
+        socket.emit('Chenillard', {
+            on: chenillard.on,
+            speed: chenillard.speed,
+            sens: chenillard.clockwise
+        });
 
         fonction.initialisationHue(socket,mySocket);
 
@@ -43,7 +43,7 @@ var socketClient = function(io, mySocket, connection) {
                 "on": data.on,
                 "bri": data.bri,
                 "sat": data.sat
- 
+            });
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
             if(json[0].success){
@@ -63,14 +63,14 @@ var socketClient = function(io, mySocket, connection) {
         socket.on('NouveauModele',function(data){
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
-             BDD.findAll(function(rep){
-            io.emit('Modeles',rep);
-            });
+                BDD.findAll(function(rep){
+                    io.emit('Modeles',rep);
+                });
             });
 
         });
 
-         socket.on('modeleEnclenché',function(modele){
+        socket.on('modeleEnclenché',function(modele){
             modelActuel=modele.nom;
             io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
             lastModeleEnclenché=modele.nom;
@@ -110,61 +110,63 @@ var socketClient = function(io, mySocket, connection) {
             
 
         });
-
-         socket.on('supprimerModele',function(nom){
-            BDD.removeByName(nom,function(fichier){
-                io.emit('modeleSupprimé',fichier.nom);
-            BDD.findAll(function(rep){
-             io.emit('Modeles',rep);
+        socket.on('setCouleurHue', function(data) {
+            var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + "/lights/" + data.lampe + "/state";
+            var param = JSON.stringify({
+                "xy": [fonction.rgbToXyBri(data.r, data.g, data.b).x, fonction.rgbToXyBri(data.r, data.g, data.b).y],
+                "bri": Math.round(fonction.rgbToXyBri(data.r, data.g, data.b).bri)
             });
-            });
-
-         });
-
-            socket.on('modeleEnclenché', function(modele) {
-                modelActuel=modele.nom;
-                io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
-                lastModeleEnclenché=modele.nom;
-                if (modele.sens == 'droite') {
-                    chenillard.changeclockwise(io, mySocket, true);
-                } else if (modele.sens == "gauche") {
-                    chenillard.changeclockwise(io, mySocket, false);
-                }
-                chenillard.setspeed(io, mySocket, modele.speed);
-                for (i in modele.lampes) {
-                    if (modele.lampes[i].etat != "error") {
-                        fonction.setknx(connection, modele.lampes[i].adresse, modele.lampes[i].etat);
-                    } else {
-                        fonction.setknx(connection, modele.lampes[i].adresse, false);
-                    }
-                }
-                var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights';
-                var requete;
-                console.log(modele)
-                for (i in modele.hue) {
-                    requete += modele.hue[i].lampe + ":{'state':{" + "'on':" + modele.hue[i].on + "," + "'bri':" + modele.hue[i].bri + "," + "'sat':" + modele.hue[i].sat + "," + "'xy':" + [fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).x, fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).y] + "}}";
-                }
-                var res = fonction.Put(url, "{" + requete + "}");
-                var json = JSON.parse(res);
-                if (json[0].success) {
-                    fonction.initialisationHue(socket, mySocket);
+            var res = fonction.Put(url, param);
+            var json = JSON.parse(res);
+            if (json[0].success) {
+                fonction.initialisationHue(socket, mySocket);
+            }
+        });
+/*
+        socket.on('modeleEnclenché', function(modele) {
+            modelActuel=modele.nom;
+            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
+            lastModeleEnclenché=modele.nom;
+            if (modele.sens == 'droite') {
+                chenillard.changeclockwise(io, mySocket, true);
+            } else if (modele.sens == "gauche") {
+                chenillard.changeclockwise(io, mySocket, false);
+            }
+            chenillard.setspeed(io, mySocket, modele.speed);
+            for (i in modele.lampes) {
+                if (modele.lampes[i].etat != "error") {
+                    fonction.setknx(connection, modele.lampes[i].adresse, modele.lampes[i].etat);
                 } else {
-                    console.log("Erreur : :" + modele + ". Type de l'erreur : " + json[0].error.description);
+                    fonction.setknx(connection, modele.lampes[i].adresse, false);
                 }
+            }
+            var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights';
+            var requete;
+            for (i in modele.hue) {
+                requete += modele.hue[i].lampe + ":{'state':{" + "'on':" + modele.hue[i].on + "," + "'bri':" + modele.hue[i].bri + "," + "'sat':" + modele.hue[i].sat + "," + "'xy':" + [fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).x, fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).y] + "}}";
+            }
+            var res = fonction.Put(url, "{" + requete + "}");
+            var json = JSON.parse(res);
+            if (json[0].success) {
+                fonction.initialisationHue(socket, mySocket);
+            } else {
+                console.log("Erreur : :" + modele + ". Type de l'erreur : " + json[0].error.description);
+            }
+        });
+*/
+        socket.on('supprimerModele', function(nom) {
+            BDD.removeByName(nom, function(fichier) {
+                io.emit('modeleSupprimé', fichier.nom);
             });
-            socket.on('supprimerModele', function(nom) {
-                BDD.removeByName(nom, function(fichier) {
-                    io.emit('modeleSupprimé', fichier.nom);
-                });
-                BDD.findAll(function(rep) {
-                    io.emit('Modeles', rep);
-                });
+            BDD.findAll(function(rep) {
+                io.emit('Modeles', rep);
             });
         });
-    }
-    //|===================================================================================|
-    //|================================== Listener KNK====================================|
-    //|===================================================================================|
+    });
+}
+//|===================================================================================|
+//|================================== Listener KNK====================================|
+//|===================================================================================|
 var startDiminuer, endDiminuer;
 var startAugmenter, endAugmenter;
 var intervalUp, intervalDown;

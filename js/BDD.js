@@ -93,6 +93,7 @@ var findByName = function(name, callback) {
   }
 }
 var findAll=function(callback){
+
   if(connected){
     scenarioModel.find(function(err,answer){
       if(err){
@@ -106,6 +107,7 @@ var findAll=function(callback){
 }
 var removeByName = function(name, callback) {
   if(connected){
+
     scenarioModel.findOneAndRemove({
         'nom': name
     }, function(err, answer) {
