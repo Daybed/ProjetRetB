@@ -125,3 +125,4 @@ exports.findByName = findByName;
 exports.connected = connected;
 exports.connection = connection;
 exports.add = add;
+exports.findAll=findAll;

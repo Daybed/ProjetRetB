@@ -125,9 +125,13 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
             document.getElementById('container').appendChild(input);
           }
       }
-        for(i in data){
-         document.getElementById("hue "+data[i].lampe).style.backgroundColor = data[i].couleur;
-       }
+        for (i in data) {
+            if (data[i].on == true) {
+                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
+            } else {
+                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb( 0 , 0 , 0 )';
+            }
+        }
     
     });
 
@@ -209,7 +213,8 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
   };
 
   $scope.LancerModele = function(modele){
-   /* console.log(modele);
+   console.log(modele);
+   /*
     for(i in modele.hue){
       socket.emit("sethue",{lampe:modele.hue[i].lampe,bri:modele.hue[i].bri,sat:modele.hue[i].sat,on:modele.hue[i].on});
       socket.emit('setCouleurHue',{lampe : modele.hue[i].lampe, r: parseInt(modele.hue[i].rgb.r), g: parseInt(modele.hue[i].rgb.g), b: parseInt(modele.hue[i].rgb.b)});
@@ -257,6 +262,7 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
     });
 
     socket.on('modeleSupprimé',function(data){
+
           ngToast.create({
          content: "Le modèle " +data+ " est supprimé",
          dismissOnTimeout : true,
@@ -265,7 +271,6 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
     });
 
     $scope.SupprimerModele=function(nom){
-      console.log(nom);
       soket.emit('supprimerModele',nom);
     };
 
