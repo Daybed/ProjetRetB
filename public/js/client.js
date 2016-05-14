@@ -106,6 +106,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 window['picker' + i] = new jscolor(window['input' + i]);
                 window['picker' + i].hash = true;
                 listernerColor(window['picker'+i],data[i].lampe);
+                //window['picker' + i].rgb='rgb( 0 , 0 , 0 )';
                 document.getElementById('container').appendChild(window['input' + i]);
             }
         }
