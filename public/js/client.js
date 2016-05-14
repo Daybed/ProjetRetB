@@ -1,10 +1,12 @@
-var app = angular.module("myApp",['ngMaterial','ngToast','ngSanitize','ui.router']);
+var app = angular.module("myApp", ['ngMaterial', 'ngToast', 'ngSanitize', 'ui.router']);
 var ip;
-var socket=io();
+var socket = io();
 var initialisation = false;
-var Lampes=[];
+var Lampes = [];
 
 function couleur(picker, numero) {
+    console.log(picker.rgb);
+    console.log(numero);
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -13,48 +15,43 @@ function couleur(picker, numero) {
     };
     socket.emit('setCouleurHue', resultat);
 };
-
-
-app.controller('myCtrl', function($scope,$http,ngToast,$state) {
-    $scope.modeles=[];
-
-    socket.on('Chenillard',function(data){
-      $scope.$apply(function () {
-
-        $scope.speed=data.speed;
-        $scope.sens=data.sens;
-        $scope.on = data.on;
-
-       if (data.on==true){
-        $scope.loopstart="public/img/pause.png";
-       }
-       else{
-        $scope.loopstart="public/img/play.png";
-       }
-
-        if(data.sens==true){
-          $scope.rightSens="public/img/chevron-double-right_on.png";
-          $scope.leftSens="public/img/chevron-double-left_off.png";
-        }
-        else if(data.sens==false){
-          $scope.rightSens="public/img/chevron-double-right_off.png";
-          $scope.leftSens="public/img/chevron-double-left_on.png";
-        }
-     });
+function listernerColor(picker,numero){
+    picker.onchange = function() {
+        console.log('j y passe');
+        couleur(picker,numero);
+    };
+}
+              
+app.controller('myCtrl', function($scope, $http, ngToast, $state) {
+    $scope.modeles = [];
+    socket.on('Chenillard', function(data) {
+        $scope.$apply(function() {
+            $scope.speed = data.speed;
+            $scope.sens = data.sens;
+            $scope.on = data.on;
+            if (data.on == true) {
+                $scope.loopstart = "public/img/pause.png";
+            } else {
+                $scope.loopstart = "public/img/play.png";
+            }
+            if (data.sens == true) {
+                $scope.rightSens = "public/img/chevron-double-right_on.png";
+                $scope.leftSens = "public/img/chevron-double-left_off.png";
+            } else if (data.sens == false) {
+                $scope.rightSens = "public/img/chevron-double-right_off.png";
+                $scope.leftSens = "public/img/chevron-double-left_on.png";
+            }
+        });
     });
-
-     $scope.loop=function(){
-      socket.emit('setstate');
-     };
-
-     $scope.setsens=function(sens){
-      socket.emit('setsens',sens);
-     };
-
-     $scope.setspeed = function(){
-     socket.emit('setspeed',$scope.speed);
-   }; 
-
+    $scope.loop = function() {
+        socket.emit('setstate');
+    };
+    $scope.setsens = function(sens) {
+        socket.emit('setsens', sens);
+    };
+    $scope.setspeed = function() {
+        socket.emit('setspeed', $scope.speed);
+    };
     socket.on('lampes', function(data) {
         var total = 0;
         for (i in data) {
@@ -83,48 +80,39 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
                 };
             }
         }
-
-          $scope.$apply(function(){$scope.lampes=Lampes;});
-
-          if(total>0){
-           $scope.lampeKnx=true;
-          }
-          else{
-            $scope.lampeKnx=false;
-          }
-      });
-       
-
-
-    socket.on('Hue',function(data){
-      console.log(data);
-        $scope.$apply(function(){
-        $scope.Hue=data;
-        if(data[0]==null){
-          $scope.lampeHue=false;
+        $scope.$apply(function() {
+            $scope.lampes = Lampes;
+        });
+        if (total > 0) {
+            $scope.lampeKnx = true;
+        } else {
+            $scope.lampeKnx = false;
         }
-        else{
-          $scope.lampeHue=true;
-        }
-      });
+    });
 
-        if(initialisation == false){
+    socket.on('Hue', function(data) {
+        $scope.$apply(function() {
+            $scope.Hue = data;
+            if (data[0] == null) {
+                $scope.lampeHue = false;
+            } else {
+                $scope.lampeHue = true;
+            }
+        });
+        if (initialisation == false) {
             initialisation = true;
-
-            for(i in data){
-
-            var input = document.createElement('INPUT');
-            var picker = new jscolor(input);
-            picker.hash=true;
-
-            picker.onchange=function(){
-            couleur(picker,data[i].lampe);
-
-            };
-
-            document.getElementById('container').appendChild(input);
-          }
-      }
+            for (i in data) {
+                window['input' + i] = document.createElement('INPUT');
+                window['picker' + i] = new jscolor(window['input' + i]);
+                window['picker' + i].hash = true;
+                listernerColor(window['picker'+i],data[i].lampe);
+           
+                document.getElementById('container').appendChild(window['input' + i]);
+            }
+        }
+        console.log(picker1.rgb);
+        console.log(picker1.rgb);
+        console.log(picker1.rgb);
         for (i in data) {
             if (data[i].on == true) {
                 document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
@@ -132,25 +120,24 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
                 document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb( 0 , 0 , 0 )';
             }
         }
-    
     });
-
-       socket.on('changementCouleurHue',function(data){
-         document.getElementById("hue "+data.numero).style.backgroundColor = data[i].couleur;
-       });
-
-    $scope.lampe= function(numero){
-      if($scope.lampes[numero-1].etat==="error"){
-        ngToast.create({
-         content: "Erreur. Cette lampe ne fonctionne pas ou n'est pas branchée, veuillez utiliser les autres.",
-         dismissOnTimeout : true,
-         timeout: 3000,
-         className: 'danger',
-        });
-      }
-      else{
-      socket.emit('setlampe',{adresse:$scope.lampes[numero-1].adresse,etat:!$scope.lampes[numero-1].etat});
-     }
+    socket.on('changementCouleurHue', function(data) {
+        document.getElementById("hue " + data.numero).style.backgroundColor = data[i].couleur;
+    });
+    $scope.lampe = function(numero) {
+        if ($scope.lampes[numero - 1].etat === "error") {
+            ngToast.create({
+                content: "Erreur. Cette lampe ne fonctionne pas ou n'est pas branchée, veuillez utiliser les autres.",
+                dismissOnTimeout: true,
+                timeout: 3000,
+                className: 'danger',
+            });
+        } else {
+            socket.emit('setlampe', {
+                adresse: $scope.lampes[numero - 1].adresse,
+                etat: !$scope.lampes[numero - 1].etat
+            });
+        }
     };
 
   $scope.VoirModele = function(modele){
@@ -248,16 +235,83 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
             socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
           }
         }
-      }
+        $scope.modele = true;
     };
-
-    socket.on('nouveauModele',function(data){
-      $scope.$apply(function(){
-        $scope.modeles.push(data);});
-          ngToast.create({
-         content: "Le modèle " +data.nom+ " est enregistré",
-         dismissOnTimeout : true,
-         timeout: 3000,
+    $scope.EnregistrerModele = function() {
+        var nom = document.getElementById('name_modele').value;
+        if (nom == "") {
+            ngToast.create({
+                content: "Vous devez indiquer un nom pour votre nouveau modèle",
+                dismissOnTimeout: true,
+                timeout: 3000,
+                className: "danger",
+            });
+        } else {
+            socket.emit('NouveauModele', {
+                nom: nom,
+                infos: $scope.EnregistrementModele
+            });
+            document.getElementById("bdd").style.visibility = "visible";
+            document.getElementById('name_modele').value = "";
+        }
+    };
+    $scope.LancerModele = function(modele) {
+        for (i in modele.hue) {
+            socket.emit("sethue", {
+                lampe: modele.hue[i].lampe,
+                bri: modele.hue[i].bri,
+                sat: modele.hue[i].sat,
+                on: modele.hue[i].on
+            });
+            socket.emit('setCouleurHue', {
+                lampe: modele.hue[i].lampe,
+                r: parseInt(modele.hue[i].rgb.r),
+                g: parseInt(modele.hue[i].rgb.g),
+                b: parseInt(modele.hue[i].rgb.b)
+            });
+        }
+        socket.emit("modeleEnclenché", modele.nom);
+        // coloré le modele enclenché
+        // document.getElementById(modele.nom).style.backgroundColor="rgb(255,64,129)";
+    };
+    socket.on("lastModeleEnclenché", function(data) {
+        if (data != null || data != "") {
+            //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
+            // coloré le modele enclenché
+        }
+    });
+    socket.on('Modeles', function(listeModeles) {
+        $scope.modeles = listeModeles;
+    });
+    $scope.changehue = function(numero, commutation) {
+        for (i in $scope.Hue) {
+            if ($scope.Hue[i].lampe == numero) {
+                if (commutation == true) {
+                    socket.emit('sethue', {
+                        lampe: numero,
+                        bri: $scope.Hue[i].bri,
+                        sat: $scope.Hue[i].sat,
+                        on: !$scope.Hue[i].on
+                    });
+                } else {
+                    socket.emit('sethue', {
+                        lampe: numero,
+                        bri: $scope.Hue[i].bri,
+                        sat: $scope.Hue[i].sat,
+                        on: $scope.Hue[i].on
+                    });
+                }
+            }
+        }
+    };
+    socket.on('nouveauModele', function(data) {
+        $scope.$apply(function() {
+            $scope.modeles.push(data);
+        });
+        ngToast.create({
+            content: "Le modèle " + data.nom + " est enregistré",
+            dismissOnTimeout: true,
+            timeout: 3000,
         });
     });
 
@@ -273,29 +327,22 @@ app.controller('myCtrl', function($scope,$http,ngToast,$state) {
     $scope.SupprimerModele=function(nom){
       soket.emit('supprimerModele',nom);
     };
-
-})
-
-.config(function($stateProvider,$urlRouterProvider){
-
-$stateProvider.state('activerModele',{
-url:"/activationModele",
-views: {
-  "view":{
-    templateUrl:"public/templates/activationModele.html"
-  }
-},
-controller:"myCtrl"
-})
-.state('enregistrerModele',{
-url:"/enregistrementModele",
-views: {
-  "view":{
-    templateUrl:"public/templates/enregistrementModele.html"
-  }
-},
-controller:"myCtrl"
+}).config(function($stateProvider, $urlRouterProvider) {
+    $stateProvider.state('activerModele', {
+        url: "/activationModele",
+        views: {
+            "view": {
+                templateUrl: "public/templates/activationModele.html"
+            }
+        },
+        controller: "myCtrl"
+    }).state('enregistrerModele', {
+        url: "/enregistrementModele",
+        views: {
+            "view": {
+                templateUrl: "public/templates/enregistrementModele.html"
+            }
+        },
+        controller: "myCtrl"
+    });
 });
-
-});
-
