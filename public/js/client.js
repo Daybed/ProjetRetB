@@ -5,7 +5,6 @@ var Lampes = [];
 var initialisation = false;
 
 function couleur(picker, numero) {
-    console.log(numero);
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -17,7 +16,6 @@ function couleur(picker, numero) {
 app.controller('myCtrl', function($scope, $http, ngToast) {
     $scope.test = [1, 2, 5, 5, 2, 9, 0, 0, 0, 1, 2, 980];
     socket.on('Chenillard', function(data) {
-        console.log(data.sens);
         $scope.$apply(function() {
             $scope.speed = data.speed;
             $scope.sens = data.sens;
@@ -104,7 +102,11 @@ app.controller('myCtrl', function($scope, $http, ngToast) {
             }
         }
         for (i in data) {
-            document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
+            if (data[i].on == true) {
+                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
+            } else {
+                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb( 0 , 0 , 0 )';
+            }
         }
     });
     $scope.changehue = function(numero) {

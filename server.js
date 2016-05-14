@@ -23,6 +23,11 @@ app.use(bodyParser.json());
 //|===================================================================================|
 var conf = JSON.parse(fs.readFileSync('conf.json'));
 var ipServer = fonction.getIpAddress();
+var tabIp = ipServer.split('.');
+if(tabIp[0] != '192' && tabIp[1]!='168'){
+    console.log("vous n'etes pas connecté sur le bon réseau");
+    process.exit();
+}
 //|===================================================================================|
 //|=================================== Module KNX ====================================|
 //|===================================================================================|

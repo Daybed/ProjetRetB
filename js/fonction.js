@@ -56,6 +56,8 @@ var getIpAddress = function() {
 //|===================================================================================|
 var Get = function(url) {
     xmlHttpGet.open("GET", url, false);
+    xmlHttpGet.timeout=200;
+    xmlHttpGet.ontimeout=function(){};
     xmlHttpGet.send(null);
     if (xmlHttpGet.status == 200) {
         return xmlHttpGet.responseText;
