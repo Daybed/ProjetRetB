@@ -161,12 +161,7 @@ var socketEmitChenillard = function(io) {
 }
 var socketInitHue = function(socket, hue) {
     socket.emit('Hue', hue);
-
-
-/*
-var socketBDD = function(io,Scenario){
-    io.emit('Scenario',Scenario);
-}*/
+}
 //|===================================================================================|
 //|============================= Exports des fonctions utiles ========================|
 //|===================================================================================|
