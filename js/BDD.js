@@ -33,7 +33,7 @@ var connection = function(name, callback) {
 var add = function(nom, chenillard, light, hue, callback) {//nom, sens, speed, light, hue, callback
     if (connected) {
       findByName(nom,function(rep){
-        if(rep!='error'|| rep!=null){
+        if(rep==null){
           var monScenario = new scenarioModel({
               name: nom
           });
