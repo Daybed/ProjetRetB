@@ -127,7 +127,7 @@ var xyBriToRgb = function(x, y, bri) {
 var detectionHue = function(callback) {
     var hue = [];
     var rep = Get('http://' + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights/');
-    if (rep.indexOf('error') == '-1') {
+    if (rep.indexOf('error') == '-1'&& rep !='error') {
         rep = JSON.parse(rep);
         for (i in rep) {
             if (rep[i].state.reachable == true) {

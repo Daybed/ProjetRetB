@@ -9,8 +9,7 @@ var io = require('socket.io')(http);
 var fs = require("fs");
 var fonction = require("./js/fonction.js");
 var mySocket = require("./js/mySocket.js");
-var mongoose = require('mongoose');
-var MongoClient = require('mongodb').MongoClient;
+var BDD=require("./js/BDD.js");
 app.use('/public', express.static(__dirname + '/public'));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
@@ -28,6 +27,17 @@ if(tabIp[0] != '192' && tabIp[1]!='168'){
     console.log("vous n'etes pas connecté sur le bon réseau");
     process.exit();
 }
+//|===================================================================================|
+//|======================================= BDD =======================================|
+//|===================================================================================|
+BDD.connection(conf.nameBDD,function(rep){
+    if(rep){
+        console.log('vous etes connecté à la BDD ' + conf.nameBDD);
+    }
+    else{
+        console.log('la BBD '+conf.nameBDD+' n\'est pas accessible');
+    }
+ })
 //|===================================================================================|
 //|=================================== Module KNX ====================================|
 //|===================================================================================|
@@ -64,23 +74,6 @@ app.all('/', function(req, res) {
         root: __dirname
     });
 });
-/*
-
-mongoose.connection.on('open', function(ref) {
-console.log('Connecté au serveur MongoDB');
-});
-
-mongoose.connection.on('error', function(err) {
-    console.log('Impossible de se connecter au serveur!');
-    console.log(err);
-});
-
-mongoose.connect('mongodb://localhost:27016/modeles', function(err) {
-  if (err) { throw err; }
-  else{
-    console.log("mongodb modeles install");
-  }
-});*/
 //|===================================================================================|
 //|============================== Lancement du server  ===============================|
 //|===================================================================================|
