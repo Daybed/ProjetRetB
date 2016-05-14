@@ -1,0 +1,70 @@
+		<div class="row">
+			<div class="nomModele">
+			{{nomModele}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="enregistrementModeleTitre">
+				<div class="col-md-4">
+					Chenillard
+				</div>
+				<div class="col-md-4">
+					Lampes
+				</div>
+				<div class="col-md-4">
+					Hue
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="enregistrementModeleContenu">
+				<div class="col-md-4">
+					<div class="row">
+						Sens : {{EnregistrementModele.chenillard.sens}}
+					</div>
+					<div class="row">
+						Vitesse : {{EnregistrementModele.chenillard.speed}}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div ng-show="lampeKnx">
+						<div ng-repeat="x in EnregistrementModele.lampes">
+							<div class="row">
+								Lampe {{x.num}} : {{x.etat}}
+							</div>
+						</div>
+					</div>
+					<div ng-show="!lampeKnx">
+						Aucune lampe knx enregistrée
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div ng-show="lampeHue">
+						<div ng-repeat="x in EnregistrementModele.hue">
+							<div class="row">
+								<div class="col-md-4">
+									Hue {{x.lampe}} :
+								</div>
+								<div class="col-md-8">
+									<div class="carreCouleurHue" style="background-color: {{x.couleur}}; display:inline-block;"></div>
+								</div>								
+							</div>
+						</div>
+					</div>
+					<div ng-show="!lampeHue">
+						Aucune Hue enregistrée
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12" style="padding-top:20px">
+				<div class="col-md-6 col-md-offset-1">
+					<div class="lancerModele" ng-click="LancerModele(EnregistrementModele)">Activer le modèle</div>
+				</div>
+				<div class="col-md-3 trash">
+					<img src="public/img/trash.png" style="width:30px; height:30px" ng-click="SupprimerModele(nomModele)">
+				</div>
+			</div>
+		</div>
+						
