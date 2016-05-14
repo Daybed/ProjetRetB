@@ -9,10 +9,10 @@
 var mongoose = require('mongoose');
 var scenarioSchema = new mongoose.Schema({
     nom: String,
-    sens:String,
-    speed:String,
-    light:String,
-    hue:String
+    sens : String,
+    speed : String,
+    light: String,
+    hue: String
 });
 
 var scenarioModel = mongoose.model('scenario', scenarioSchema);
@@ -31,6 +31,7 @@ var connection = function(name, callback) {
     });
 }
 var add = function(nom, chenillard, light, hue, callback) {
+
     if (connected) {
       findByName(nom,function(rep){
         if(rep==null){
@@ -42,9 +43,11 @@ var add = function(nom, chenillard, light, hue, callback) {
           monScenario.light = light;
           monScenario.hue = hue;
           monScenario.save(function(err,answer) {
+
               if (err) {
                   callback('error');
               } else {
+
                   callback(answer);
               }
           });
@@ -111,6 +114,7 @@ var removeByName = function(name, callback) {
         } else {
             callback(answer);
         }
+
     })
   }
   else{
