@@ -1,20 +1,28 @@
-var conf = require("../conf.json");
-var fonction = require("./fonction.js");
-var chenillard = require("./chenillard.js");
+var conf=require("../conf.json");
+var fonction= require("./fonction.js");
+var BDD = require("./BDD.js");
+var chenillard= require("./chenillard.js");
+var lastModeleEnclenché="";
 //|===================================================================================|
 //|================================== socket client ==================================|
 //|===================================================================================|
 var socketClient = function(io, mySocket, connection) {
     io.on('connection', function(socket) {
         console.log("Un client s'est connecté");
-        socket.emit('lampes', fonction.light);
-        socket.emit('Chenillard', {
-            on: chenillard.on,
-            speed: chenillard.speed,
-            sens: chenillard.clockwise
-        });
-        fonction.initialisationHue(socket, mySocket);
-        socket.on('disconnection', function(socket) {
+
+        socket.emit('lampes',fonction.light);
+
+        socket.emit('Modeles',[]);
+        //A FAIRE
+        //Envoyer tous les modeles de la bdd
+            
+        socket.emit('Chenillard',{on: chenillard.on, speed: chenillard.speed, sens: chenillard.clockwise});
+
+        fonction.initialisationHue(socket,mySocket);
+
+        socket.emit('lastModeleEnclenché',lastModeleEnclenché);
+
+        socket.on('disconnection',function(socket){
             console.log("Un client s'est déconnecté");
         });
         socket.on('setlampe', function(data) {
@@ -46,8 +54,8 @@ var socketClient = function(io, mySocket, connection) {
             });
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
-            if (json[0].success) {
-                fonction.initialisationHue(socket, mySocket);
+            if(json[0].success){
+                fonction.initialisationHue(socket,mySocket);
             }
         });
         socket.on('setsens', function(data) {
@@ -59,6 +67,30 @@ var socketClient = function(io, mySocket, connection) {
         socket.on('setstate', function() {
             chenillard.changestate(io, fonction, mySocket, connection);
         });
+
+        socket.on('NouveauModele',function(data){
+         //   BDD.add()
+           io.emit('nouveauModele',data);
+           // A FAIRE
+
+           //ajouter le nouveau modele à la bdd
+           //Si nom existe dejà, envoyer un message aux clients
+           //Sinon, envoyer aux clients tous les modeles  io.emit("Modeles",);
+        });
+
+         socket.on('modeleEnclenché',function(nom){
+            io.emit('lastModeleEnclenché',lastModeleEnclenché);
+            lastModeleEnclenché=nom;
+        });
+
+         socket.on('supprimerModele',function(nom){
+            io.emit('modeleSupprimé',nom);
+            // A FAIRE
+
+        //supprimer le modele et renvoyer aux cliens tous les modeles io.emit("Modeles",);
+
+         })
+
     });
 }
 //|===================================================================================|
@@ -127,8 +159,8 @@ var socketEmitChenillard = function(io) {
         sens: chenillard.clockwise
     });
 }
-var socketInitHue = function(io, hue) {
-    io.emit('Hue', hue);
+var socketInitHue = function(socket, hue) {
+    socket.emit('Hue', hue);
 
 
 /*

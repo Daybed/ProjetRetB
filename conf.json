@@ -1,9 +1,9 @@
-{
-    "ipAdresseHue": "192.168.1.92",
-    "hueUsernameLABO": "212150cb11b2432f33c7c9d315fb08b7",
-    "hueUsername": "3c4369c1251d7e771a5b1af56bed28b",
-    "portServer": 8000,
-    "ipPlateauknx": "192.168.1.117",
-    "portPlateauknx": 3671,
-    "nameBDD":"projetRetB"
+{ 
+  "ipAdresseHue" : "192.168.1.92",
+  "hueUsernamePontDavid" : "38b48817b59067f2a4a36072729568f",
+  "hueUsernamePontMathieu": "3c4369c1251d7e771a5b1af56bed28b",
+  "portServer" : 8000,
+  "ipPlateauknx" :"192.168.1.117",
+  "portPlateauknx": 3671,
+  "nameBDD":"projetRetB"
 }

@@ -1,8 +1,8 @@
-var app = angular.module("myApp", ['ngMaterial', 'ngToast', 'ngSanitize']);
+var app = angular.module("myApp",['ngMaterial','ngToast','ngSanitize','ui.router']);
 var ip;
-var socket = io();
-var Lampes = [];
+var socket=io();
 var initialisation = false;
+var Lampes=[];
 
 function couleur(picker, numero) {
     var resultat = {
@@ -13,36 +13,48 @@ function couleur(picker, numero) {
     };
     socket.emit('setCouleurHue', resultat);
 };
-app.controller('myCtrl', function($scope, $http, ngToast) {
-    $scope.test = [1, 2, 5, 5, 2, 9, 0, 0, 0, 1, 2, 980];
-    socket.on('Chenillard', function(data) {
-        $scope.$apply(function() {
-            $scope.speed = data.speed;
-            $scope.sens = data.sens;
-            $scope.on = data.on;
-            if (data.on == true) {
-                $scope.loopstart = "public/img/pause.png";
-            } else {
-                $scope.loopstart = "public/img/play.png";
-            }
-            if (data.sens == true) {
-                $scope.rightSens = "public/img/chevron-double-right_on.png";
-                $scope.leftSens = "public/img/chevron-double-left_off.png";
-            } else if (data.sens == false) {
-                $scope.rightSens = "public/img/chevron-double-right_off.png";
-                $scope.leftSens = "public/img/chevron-double-left_on.png";
-            }
-        });
+
+
+app.controller('myCtrl', function($scope,$http,ngToast,$state) {
+    $scope.modeles=[];
+
+    socket.on('Chenillard',function(data){
+      $scope.$apply(function () {
+
+        $scope.speed=data.speed;
+        $scope.sens=data.sens;
+        $scope.on = data.on;
+
+       if (data.on==true){
+        $scope.loopstart="public/img/pause.png";
+       }
+       else{
+        $scope.loopstart="public/img/play.png";
+       }
+
+        if(data.sens==true){
+          $scope.rightSens="public/img/chevron-double-right_on.png";
+          $scope.leftSens="public/img/chevron-double-left_off.png";
+        }
+        else if(data.sens==false){
+          $scope.rightSens="public/img/chevron-double-right_off.png";
+          $scope.leftSens="public/img/chevron-double-left_on.png";
+        }
+     });
     });
-    $scope.loop = function() {
-        socket.emit('setstate');
-    };
-    $scope.setsens = function(sens) {
-        socket.emit('setsens', sens);
-    };
-    $scope.setspeed = function() {
-        socket.emit('setspeed', $scope.speed);
-    };
+
+     $scope.loop=function(){
+      socket.emit('setstate');
+     };
+
+     $scope.setsens=function(sens){
+      socket.emit('setsens',sens);
+     };
+
+     $scope.setspeed = function(){
+     socket.emit('setspeed',$scope.speed);
+   }; 
+
     socket.on('lampes', function(data) {
         var total = 0;
         for (i in data) {
@@ -71,90 +83,214 @@ app.controller('myCtrl', function($scope, $http, ngToast) {
                 };
             }
         }
-        $scope.$apply(function() {
-            $scope.lampes = Lampes;
-        });
-        if (total > 0) {
-            document.getElementById("knx").style.visibility = "visible";
-        } else {
-            document.getElementById("knx").style.visibility = "hidden";
+
+          $scope.$apply(function(){$scope.lampes=Lampes;});
+
+          if(total>0){
+           $scope.lampeKnx=true;
+          }
+          else{
+            $scope.lampeKnx=false;
+          }
+      });
+       
+
+
+    socket.on('Hue',function(data){
+      console.log(data);
+        $scope.$apply(function(){
+        $scope.Hue=data;
+        if(data[0]==null){
+          $scope.lampeHue=false;
         }
-    });
-    socket.on('Hue', function(data) {
-        $scope.$apply(function() {
-            $scope.Hue = data;
-        });
-        if (data[0] != null) {
-            document.getElementById("hue").style.visibility = "visible";
-        } else {
-            document.getElementById("hue").style.visibility = "hidden";
+        else{
+          $scope.lampeHue=true;
         }
-        if (initialisation == false) {
+      });
+
+        if(initialisation == false){
             initialisation = true;
-            for (i in data) {
-                window['input' + i] = document.createElement('INPUT');
-                window['picker' + i] = new jscolor(window['input' + i]);
-                window['picker' + i].hash = true;
-                window['picker' + i].onchange = function() {
-                    couleur(window['picker' + i], data[i].lampe);
-                };
-                document.getElementById('container').appendChild(window['input' + i]);
-            }
-        }
-        for (i in data) {
-            if (data[i].on == true) {
-                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb(' + data[i].rgb.r + ',' + data[i].rgb.g + ',' + data[i].rgb.b + ')';
-            } else {
-                document.getElementById("hue " + data[i].lampe).style.backgroundColor = 'rgb( 0 , 0 , 0 )';
-            }
-        }
+
+            for(i in data){
+
+            var input = document.createElement('INPUT');
+            var picker = new jscolor(input);
+            picker.hash=true;
+
+            picker.onchange=function(){
+            couleur(picker,data[i].lampe);
+
+            };
+
+            document.getElementById('container').appendChild(input);
+          }
+      }
+        for(i in data){
+         document.getElementById("hue "+data[i].lampe).style.backgroundColor = data[i].couleur;
+       }
+    
     });
-    $scope.changehue = function(numero) {
-        for (i in $scope.Hue) {
-            if ($scope.Hue[i].lampe == numero) {
-                socket.emit('sethue', {
-                    lampe: numero,
-                    bri: $scope.Hue[i].bri,
-                    sat: $scope.Hue[i].sat,
-                    on: !$scope.Hue[i].on
-                });
-            }
+
+       socket.on('changementCouleurHue',function(data){
+         document.getElementById("hue "+data.numero).style.backgroundColor = data[i].couleur;
+       });
+
+    $scope.lampe= function(numero){
+      if($scope.lampes[numero-1].etat==="error"){
+        ngToast.create({
+         content: "Erreur. Cette lampe ne fonctionne pas ou n'est pas branchée, veuillez utiliser les autres.",
+         dismissOnTimeout : true,
+         timeout: 3000,
+         className: 'danger',
+        });
+      }
+      else{
+      socket.emit('setlampe',{adresse:$scope.lampes[numero-1].adresse,etat:!$scope.lampes[numero-1].etat});
+     }
+    };
+
+  $scope.VoirModele = function(modele){
+  var sens;
+    if(modele==undefined){
+      if($scope.sens == true){
+        sens = "droite";
+      }
+      else{
+        sens="gauche";
+      }
+    if($scope.Hue[0]==null){
+        $scope.lampeHue=false;
+      }
+      else{
+        $scope.lampeHue=true;
+      } 
+    
+    var theModele = {hue : $scope.Hue, lampes : $scope.lampes, chenillard : {on : $scope.on, speed : $scope.speed , sens : sens}};
+    console.log(theModele);
+    $scope.EnregistrementModele = theModele;
+   
+    }
+    else{
+      if(modele.hue[0]==null){
+        $scope.lampeHue=false;
+      }
+      else{
+        $scope.lampeHue=true;
+      }
+    var infos = $scope.modeles[$scope.modeles.indexOf(modele)].infos;
+      if(infos.chenillard.sens == true){
+        infos.chenillard.sens = "droite";
+      }
+      else{
+        infos.chenillard.sens="gauche";
+      }
+      $scope.EnregistrementModele = infos;
+      $scope.nomModele=modele.nom;
+
+    }
+    $scope.modele=true;
+  };
+
+  $scope.EnregistrerModele=function(){
+    var nom = document.getElementById('name_modele').value;
+    if(nom==""){
+      ngToast.create({
+         content: "Vous devez indiquer un nom pour votre nouveau modèle",
+         dismissOnTimeout : true,
+         timeout: 3000,
+         className:"danger",
+        });
+    }
+    else{
+  socket.emit('NouveauModele',{nom:nom, infos : $scope.EnregistrementModele});
+  document.getElementById("bdd").style.visibility="visible";
+  document.getElementById('name_modele').value="";
+  }
+  };
+
+  $scope.LancerModele = function(modele){
+    console.log(modele);
+    for(i in modele.hue){
+      socket.emit("sethue",{lampe:modele.hue[i].lampe,bri:modele.hue[i].bri,sat:modele.hue[i].sat,on:modele.hue[i].on});
+      socket.emit('setCouleurHue',{lampe : modele.hue[i].lampe, r: parseInt(modele.hue[i].rgb.r), g: parseInt(modele.hue[i].rgb.g), b: parseInt(modele.hue[i].rgb.b)});
+    }
+
+    socket.emit("modeleEnclenché",modele.nom);
+    // coloré le modele enclenché
+   // document.getElementById(modele.nom).style.backgroundColor="rgb(255,64,129)";
+  };
+
+  socket.on("lastModeleEnclenché",function(data){
+    console.log("dernier modele enclenché : "+data);
+    if(data!=null || data!=""){
+    //document.getElementById(data).style.backgroundColor="rgb(40,40,40)";
+    // coloré le modele enclenché
+    }
+
+  });
+
+  socket.on('Modeles',function(listeModeles){
+    $scope.modeles=listeModeles;
+  });
+
+    $scope.changehue = function(numero,commutation){
+      for(i in $scope.Hue){
+        if($scope.Hue[i].lampe == numero){
+          if(commutation==true){
+            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:!$scope.Hue[i].on});
+          }
+          else{
+            socket.emit('sethue',{lampe:numero,bri:$scope.Hue[i].bri,sat:$scope.Hue[i].sat,on:$scope.Hue[i].on});
+          }
         }
+      }
     };
-    $scope.lampe = function(numero) {
-        if (Lampes[numero - 1].etat === "error") {
-            ngToast.create({
-                content: "Erreur. Cette lampe ne fonctionne pas ou n'est pas branchée, veuillez utiliser les autres.",
-                dismissOnTimeout: true,
-                timeout: 3000,
-                className: 'danger',
-            });
-        } else {
-            socket.emit('setlampe', {
-                adresse: Lampes[numero - 1].adresse,
-                etat: !Lampes[numero - 1].etat
-            });
-        }
+
+    socket.on('nouveauModele',function(data){
+      $scope.$apply(function(){
+        $scope.modeles.push(data);});
+          ngToast.create({
+         content: "Le modèle " +data.nom+ " est enregistré",
+         dismissOnTimeout : true,
+         timeout: 3000,
+        });
+    });
+
+    socket.on('modeleSupprimé',function(data){
+          ngToast.create({
+         content: "Le modèle " +data+ " est supprimé",
+         dismissOnTimeout : true,
+         timeout: 3000,
+        });
+    });
+
+    $scope.SupprimerModele=function(nom){
+      console.log(nom);
+      soket.emit('supprimerModele',nom);
     };
-    $scope.infoversbdd = function() {
-        var modele = {
-            hue: $scope.Hue,
-            lampes: $scope.lampes,
-            chenillard: {
-                on: $scope.on,
-                speed: $scope.speed,
-                sens: $scope.sens,
-                color: $scope.fond
-            }
-        };
-        socket.emit('NouveauModele', modele);
-        $scope.infosBdd = modele;
-        document.getElementById("bdd").style.visibility = "visible";
-        setTimeout(function() {
-            document.getElementById("bdd").style.visibility = "hidden";
-            $scope.$apply(function() {
-                $scope.infosBdd = ""
-            })
-        }, 5000);
-    };
+
 })
+
+.config(function($stateProvider,$urlRouterProvider){
+
+$stateProvider.state('activerModele',{
+url:"/activationModele",
+views: {
+  "view":{
+    templateUrl:"public/templates/activationModele.html"
+  }
+},
+controller:"myCtrl"
+})
+.state('enregistrerModele',{
+url:"/enregistrementModele",
+views: {
+  "view":{
+    templateUrl:"public/templates/enregistrementModele.html"
+  }
+},
+controller:"myCtrl"
+});
+
+});
+

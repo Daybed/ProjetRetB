@@ -124,6 +124,7 @@ var xyBriToRgb = function(x, y, bri) {
 //|===================================================================================|
 //|================================= Fonctions spécifiques ===========================|
 //|===================================================================================|
+
 var detectionHue = function(callback) {
     var hue = [];
     var rep = Get('http://' + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights/');
@@ -152,10 +153,10 @@ var initialisationHue = function(socket, mySocket) {
             for (i in hue) {
                 hue[i].rgb = xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255);
             }
-            mySocket.socketInitHue(socket, hue);
         } else {
             chenillard.presenceHue(false);
         }
+     mySocket.socketInitHue(socket, hue);
     });
 }
 var getAll = function(connection) {

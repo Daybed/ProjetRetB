@@ -3,7 +3,7 @@
   sur l'interface on affichera le truc pour faire ou utiliser les scénarios que si la BDD est connecté ;) BAM interface dynamique ma gueule !
   il faut lancer mongo puis mongod sur ton pc
   et apres ca roule 
-  moi ils sont dans le même fichier que le projet si tu arrive pas a l'instaler appel moi 
+  moi ils sont dans le même fichier que le projet si tu arrive pas a l'installr appel moi 
 */
 
 var mongoose = require('mongoose');
@@ -11,11 +11,14 @@ var scenarioSchema = new mongoose.Schema({
     name: String,
     sens: Boolean,
     speed: String,
-    ligth: String,
+    light: String,
     hue: String
 });
+
 var scenarioModel = mongoose.model('scenario', scenarioSchema);
+
 var connected = false;
+
 var connection = function(name, callback) {
     mongoose.connect('mongodb://localhost/' + name, function(err) {
         if (err) {
@@ -27,10 +30,10 @@ var connection = function(name, callback) {
         }
     });
 }
-var add = function(nom, sens, speed, ligth, hue, callback) {
+var add = function(nom, chenillard, light, hue, callback) {//nom, sens, speed, light, hue, callback
     if (connected) {
       findByName(nom,function(rep){
-        if(rep!='error'){
+        if(rep!='error'|| rep!=null){
           var monScenario = new scenarioModel({
               name: nom
           });
@@ -56,6 +59,7 @@ var add = function(nom, sens, speed, ligth, hue, callback) {
       callback('error');
     }
 }
+
 var findById = function(id, callback) {
   if(connected){
     scenarioModel.findById(id, function(err, answer) {
@@ -114,6 +118,7 @@ var removeByName = function(name, callback) {
     callback('error');
   }
 }
+
 exports.findById = findById;
 exports.removeByName = removeByName;
 exports.findByName = findByName;

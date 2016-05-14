@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 //|===================================================================================|
 //|==================== Déclaration/initialisation des variables =====================|
 //|===================================================================================|
@@ -56,6 +57,7 @@ fonction.connectionknx(connection, function() {
         mySocket.socketListenerKNX(io, connection);
     }
 });
+
 mySocket.socketClient(io, mySocket, connection);
 //|===================================================================================|
 //|========================== Régle les pb de cross domain ===========================|
