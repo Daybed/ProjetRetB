@@ -89,7 +89,7 @@ var socketClient = function(io, mySocket, connection) {
 
         //supprimer le modele et renvoyer aux cliens tous les modeles io.emit("Modeles",);
 
-         })
+         });
 
     });
 }
