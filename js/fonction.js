@@ -109,7 +109,8 @@ var detectionHue = function(callback){
 		rep=JSON.parse(rep);
 		for(i in rep){
 			if (rep[i].state.reachable==true){
-				var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, xy: [rep[i].state.xy[0],rep[i].state.xy[1]], hue:rep[i].state.hue, sat:rep[i].state.sat};
+				var rgb = xyBriToRgb(rep[i].state.xy[0],rep[i].state.xy[1],rep[i].state.bri/255);
+				var lampe = {lampe : i, on : rep[i].state.on, bri : rep[i].state.bri, rgb:rgb,couleur: "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", hue:rep[i].state.hue, sat:rep[i].state.sat};
 				hue.push(lampe);
 			}
 		}
@@ -157,10 +158,10 @@ var getknx = function (connection,adresse){
 
 var exec = function (connection,callback){
 	if(chenillard.clockwise==true){
-		for (var j=0; j<server.light.length;j++){
-			k = (j+1+server.light.length) % server.light.length;
-			somme+=server.light[j].etat;
-			if(server.light[j].etat==1){
+		for (var j=0; j<light.length;j++){
+			k = (j+1+light.length) % light.length;
+			somme+=light[j].etat;
+			if(light[j].etat==1){
 				newtab[k].etat=true;
 			}
 			else{
@@ -169,10 +170,10 @@ var exec = function (connection,callback){
 		}
 	}
 	else if(chenillard.clockwise==false){
-		for (var j=0; j<server.light.length;j++){
-			k = (j-1+server.light.length) % server.light.length;
-			somme+=server.light[j].etat;
-			if(server.light[j].etat==1){
+		for (var j=0; j<light.length;j++){
+			k = (j-1+light.length) % light.length;
+			somme+=light[j].etat;
+			if(light[j].etat==1){
 				newtab[k].etat=true;
 			}
 			else{
@@ -180,13 +181,12 @@ var exec = function (connection,callback){
 			}
 		}
 	}
-	if(somme==server.light.length || somme==0){
+	if(somme==light.length || somme==0){
 		console.log("Pas d'action à effectuer, lampes toute allumées ou lampes toute éteintes");
 	}
 	else if(chenillard.on==true){
 		for(var i in newtab){
-			console.log(server.light[i].adresse + "   " + newtab[i].etat);
-			setknx(connection,server.light[i].adresse,newtab[i].etat);
+			setknx(connection,light[i].adresse,newtab[i].etat);
 		}
 	}
 	else{

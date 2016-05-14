@@ -8,7 +8,8 @@
 		<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
 
-		<!--<script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>-->
+		<script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
 
 		<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
 		<link rel="stylesheet" href="./bower_components/angular-material/angular-material.min.css">
@@ -42,7 +43,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row text">
 				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4">
 					<md-slider flex="100" ng-model="speed" min="500" max="10000" aria-label="vitesse" class="md-accent" md-horizontal ng-click="setspeed()">
 					</md-slider> 
@@ -52,59 +53,67 @@
 				</div>
 			</div>
 		</div>
-		
-		<div id="knx" class="Whitebox" style="visibility:hidden">
-			<div class="row">
-				<div class="col-md-offset-3">
-					<div class="col-md-2" ng-repeat="x in lampes track by $index">
-				            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="100" width="100">
-				    </div>
-				</div> 
-			</div>
-		</div>
-	
-
-
-	<div id="hue" class="Whitebox" style="visibility:hidden">
-		<div class="row">
-				<div class="col-md-3" ng-repeat="x in Hue track by $index">
-			           	 <img src="public/img/hue.png" ng-click="changehue(x.lampe,true)" height="100" width="100"  id= "hue {{x.lampe}}"> 
-			           	 <p> Lampe {{x.lampe}} : {{x.on}}</p><p> Couleur : {{x.xy}} </p>
-			    </div>
-		</div>
-		<div class="row">
-			<div class="col-md-3">
-				<p id="container"></p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-3" ng-repeat="x in Hue track by $index">
-			           	<div class="col-md-6">
-			           		<md-slider flex ng-model="x.bri" min="0" max="254" aria-label="brightness" id="brigthness-slider" class="md-accent" md-vertical md-range ng-click="changehue(x.lampe,false)"></md-slider> <md-slider-container>Luminosité de la Hue {{x.lampe}} : {{x.bri}}</md-slider-container>
-			           	</div>
-			           	<div class="col-md-6">
-			           		<md-slider flex ng-model="x.sat" min="0" max="254" aria-label="saturation" id="saturation-slider" class="md-accent" md-vertical md-range ng-click="changehue(x.lampe,false)"></md-slider> <md-slider-container>Saturation de la Hue {{x.lampe}} : {{x.sat}}</md-slider-container>
-			           	</div>
-			</div>
-
-		</div>
-	</div>
 
 		<div class="row">
-				<div class="col-md-4 col-md-offset-1 affichage" id="bdd" style="visibility:hidden">
-					{{infosBdd}}
+			<div class="col-md-{{lampes.length}}">
+				<div ng-init="lampeKnx = false">
+					<div ng-show="lampeKnx">
+						<div class="col-md-12 Whitebox">
+									<div class="col-md-{{12/lampes.length}}" ng-repeat="x in lampes track by $index">
+								            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="75" width="75">
+								    </div>
+						</div>
+					</div>
 				</div>
-				<div class="col-md-3 col-md-offset-2 modele">
-					<button type="button" class="btn btn-warning center-block"  ng-click="infoversbdd()">Enregistrer situation actuelle </button>
-					<div ng-repeat="x in test track by $index">
-						<div class="row">
-							<div class="bdd">
-							Hey
+			</div>
+			<div class="col-md-{{12-lampes.length}}">
+				<div ng-init="lampeHue = false">
+					<div ng-show="lampeHue">
+						<div id="hue" class="Whitebox">
+							<div class="row text">
+									<div class="col-md-3" ng-repeat="x in Hue track by $index">
+								           	 <img src="public/img/hue.png" ng-click="changehue(x.lampe,true)" height="50" width="50"  id= "hue {{x.lampe}}"> 
+								           	 <p> Lampe {{x.lampe}} : {{x.on}}</p><p> Couleur : {{x.rgb}} </p>
+								    </div>
+							</div>
+							<div class="row">
+								<div class="col-md-3">
+									<p id="container"></p>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div> 
+				</div>
+			</div>
 		</div>
+
+
+		<div class="row">
+				<div class="col-md-4 col-md-offset-1">
+					<div class="col-md-12 affichage" ng-init="modele = false" ng-show="modele">
+						<div ui-view="view"></div>
+					</div>	
+				</div>
+				<div class="col-md-3 col-md-offset-2">
+					<div class="row">
+						<div class="modele">
+							<button type="button" ui-sref="enregistrerModele" class="btn bouttons img text center-block" ng-click="VoirModele()">Enregistrer situation actuelle </button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12 bdd" id="bdd" style="visibility:hidden">
+							<div ng-repeat="x in modeles track by $index">
+									<div class="col-md-10">
+										<div class="cliquable text" id="{{x.nom}}" ng-click="LancerModele(x)">{{x.nom}}</div>
+									</div>
+									<div class="col-md-2">
+										<img src="public/img/settings.png" style="width:30px; height:30px" ng-click="VoirModele(x)" ui-sref="activerModele">
+									</div>																
+							</div>
+						</div>
+					</div>
+				</div>
+		</div> 
 
 </div>
 
