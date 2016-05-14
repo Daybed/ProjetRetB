@@ -33,6 +33,9 @@ if(tabIp[0] != '192' && tabIp[1]!='168'){
 BDD.connection(conf.nameBDD,function(rep){
     if(rep){
         console.log('vous etes connecté à la BDD ' + conf.nameBDD);
+        DBB.findall(function(rep){
+            console.log(rep);
+        });
     }
     else{
         console.log('la BBD '+conf.nameBDD+' n\'est pas accessible');

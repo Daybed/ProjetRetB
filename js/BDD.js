@@ -29,21 +29,28 @@ var connection = function(name, callback) {
 }
 var add = function(nom, sens, speed, ligth, hue, callback) {
     if (connected) {
-        var monScenario = new scenarioModel({
-            name: nom
-        });
-        monScenario.sens = sens;
-        monScenario.speed = speed;
-        monScenario.ligth = ligth;
-        monScenario.hue = hue;
-        monScenario.save(function(err,answer) {
-            mongoose.connection.close();
-            if (err) {
-                callback('error');
-            } else {
-                callback(answer);
-            }
-        });
+      findByName(nom,function(rep){
+        if(rep!='error'){
+          var monScenario = new scenarioModel({
+              name: nom
+          });
+          monScenario.sens = sens;
+          monScenario.speed = speed;
+          monScenario.ligth = ligth;
+          monScenario.hue = hue;
+          monScenario.save(function(err,answer) {
+              mongoose.connection.close();
+              if (err) {
+                  callback('error');
+              } else {
+                  callback(answer);
+              }
+          });
+        }
+        else{
+          callback('error');
+        }
+      }) 
     }
     else{
       callback('error');
@@ -77,6 +84,18 @@ var findByName = function(name, callback) {
   }
   else{
     callback('error');
+  }
+}
+var findAll=function(callback){
+  if(connected){
+    scenarioModel.find(function(err,answer){
+      if(err){
+        callback('error');
+      }
+      else{
+        callback(answer);
+      }
+    })
   }
 }
 var removeByName = function(name, callback) {
