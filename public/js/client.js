@@ -218,15 +218,12 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         }
         $scope.modele = !$scope.modele;
     };
+    
 
     $scope.EnregistrerModele = function() {
         var nouveauModele=$scope.EnregistrementModele;
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
-
-        console.log(nouveauModele);
-        //nouveauModele.replace("\","");
-        //console.log("nouveauModele : "+nouveauModele.lampes);
         if ($scope.modeles.length < 10) {
             var nom = document.getElementById('name_modele').value;
             if (nom == "") {
@@ -240,7 +237,6 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
                 socket.emit('NouveauModele', {
                     nom: nom,
-                   //infos: $scope.EnregistrementModele
                    infos:nouveauModele
                 });
                 document.getElementById('name_modele').value = "";
