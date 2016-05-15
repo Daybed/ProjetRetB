@@ -100,7 +100,17 @@ var findAll=function(callback){
         callback('error');
       }
       else{
-        callback(JSON.parse(answer));
+        var lampes=[];
+        var hue=[];
+        for(i in answer.light){
+          lampes.push(JSON.parse(answer.light[i]));
+        }
+        for(i in answer.hue){
+          hue.push(JSON.parse(answer.hue[i]));
+        }
+        answer.light=lampes;
+        answer.hue=hue;
+        callback(answer);
       }
     });
   }

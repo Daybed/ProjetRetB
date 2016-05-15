@@ -1,3 +1,4 @@
+
 var app = angular.module("myApp", ['ngMaterial', 'ngToast', 'ngSanitize', 'ui.router']);
 var ip;
 var socket = io();
@@ -256,7 +257,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     };
 
     socket.on('Modeles', function(listeModeles) {
-        console.log("listeModeles : "+listeModeles);
+        console.log("listeModeles : "+listeModeles[0].hue);
         document.getElementById('bdd').style.visibility="visible";
         $scope.$apply(function(){
             $scope.modeles = listeModeles;
@@ -264,6 +265,11 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     });
 
     $scope.LancerModele = function(modele) {
+        //console.log(JSON.stringify(modele.hue));
+        /*console.log(modele.hue.split('['));
+        modele.hue=JSON.stringify(modele.hue);
+        modele.light=JSON.stringify(modele.light);*/
+        //console.log(modele.hue);
         socket.emit("modeleEnclenché", modele);
     };
 
