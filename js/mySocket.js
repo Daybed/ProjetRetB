@@ -61,9 +61,11 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('NouveauModele',function(data){
+
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
                 BDD.findAll(function(rep){
+                    console.log('findall'+rep);
                     io.emit('Modeles',rep);
                 });
             });

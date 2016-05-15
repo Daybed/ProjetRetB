@@ -5,7 +5,6 @@ var initialisation = false;
 var Lampes = [];
 
 function couleur(picker, numero) {
-
     var resultat = {
         lampe: numero,
         r: parseInt(picker.rgb[0]),
@@ -103,7 +102,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         if (initialisation == false) {
             initialisation = true;
             for (i in data) {
-                window['input' + i] = document.createElement('INPUT');
+                window['input' + i] = document.createElement('BUTTON');
                 window['picker' + i] = new jscolor(window['input' + i]);
                 function initPicker(picker){
                     picker.backgroundColor='#282828';
@@ -117,15 +116,9 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                     picker.borderRadius=10;
                     picker.shadow = false; // whether to display shadow
                     picker.pointerBorderWidth = 0; 
-                    picker.pointerColor = '#282828';
-
+                    picker.pointerColor = '#C8C8C8';
                 }
                 initPicker(window['picker' + i]);
-                
-
-                picker0.hash = true;
- 
-                
                 
                 listernerColor(window['picker' + i], data[i].lampe);
                 
@@ -176,6 +169,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         }
     });
 
+
     $scope.VoirModele = function(modele) {
         var sens;
         if (modele == undefined) {
@@ -201,7 +195,8 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             $scope.EnregistrementModele = theModele;
         } else {
 
-            if (modele.hue[0] == null) {
+        if (modele.hue[0] == null) {
+
                 $scope.lampeHue = false;
             } else {
                 $scope.lampeHue = true;

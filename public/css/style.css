@@ -3,31 +3,33 @@ html {
     /*overflow-y:hidden;*/
     zoom: 1;
 }
-body{
+
+body {
     /*background : url("../img/10.jpg") fixed center center ;*/
-    background-color: rgb(200,200,200);
+    background-color: rgb(200, 200, 200);
     overflow-x: hidden;
     /*overflow-y:hidden;*/
 }
 
-.cliquable{
-    display:block;
-    width:100%;
-    height:100%;
+.cliquable {
+    display: block;
+    width: 100%;
+    height: 100%;
     border-top: 2px solid black;
     text-align: center;
 }
 
-.pink{
-    background-color:rgb(255,64,129);
-}
-.bouttons {
-    color:white;
-    background-color: rgb(40,40,40);
+.pink {
+    background-color: rgb(255, 64, 129);
 }
 
-.envoieVersBdd{
-    color:white;
+.bouttons {
+    color: white;
+    background-color: rgb(40, 40, 40);
+}
+
+.envoieVersBdd {
+    color: white;
     background-color: green;
 }
 
@@ -38,93 +40,99 @@ body{
     background-color: rgb(40, 40, 40);
 }
 
-
-.enregistrementModeleTitre{
-font-family: fantasy;
-font-size: 30px;
-margin-bottom : 20px;
+.enregistrementModeleTitre {
+    font-family: fantasy;
+    font-size: 30px;
+    margin-bottom: 20px;
 }
 
-.enregistrementModeleContenu{
-font-family: "Comic Sans Ms";
-font-size: 20px;
+.enregistrementModeleContenu {
+    font-family: "Comic Sans Ms";
+    font-size: 20px;
 }
 
-.text{
-font-family: "Comic Sans Ms";
-font-size: 15px;
+.text {
+    font-family: "Comic Sans Ms";
+    font-size: 15px;
 }
-.carreCouleurHue{
-border: solid black;
-width:40px;
-height:40px;
+
+.carreCouleurHue {
+    border: solid black;
+    width: 40px;
+    height: 40px;
 }
-.Whitebox{
-    margin:20px;
+
+.Whitebox {
+    margin: 20px;
     border-radius: 10px;
-    padding-left:20px;
-    padding-right:20px;
+    padding-left: 20px;
+    padding-right: 20px;
     padding-top: 30px;
     padding-bottom: 30px;
     border: 2px solid black;
-    background: rgb(255,255,255);
-}
-.modele{
-border-radius: 10px;
-background-color: rgb(255,255,255);
-padding: 30px;
-border: 2px solid black;
+    background: rgb(255, 255, 255);
 }
 
-.bdd{
-text-align: center;
-background-color:rgb(40,40,40);
-border: 2px solid black;
-border-radius:10px;
-margin-top:20px;
-color:white;
-font-family: "Comic Sans Ms";
-font-size: 15px;
+.modele {
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    border: 2px solid black;
 }
-.trash{
-background-color:rgb(255,0,0);
-border-radius:10px;
-padding-top:4px;
-padding-bottom:4px;
-text-align: center;
+
+.bdd {
+    text-align: center;
+    background-color: rgb(40, 40, 40);
+    border: 2px solid black;
+    border-radius: 10px;
+    margin-top: 20px;
+    color: white;
+    font-family: "Comic Sans Ms";
+    font-size: 15px;
 }
-.lancerModele{
-background-color:green;
-border-radius:10px;
-padding:6px;
-text-align: center;
-font-family: "Comic Sans Ms";
-font-size: 15px;
-color:white;
-display:block;
-width:100%;
-height:100%;
+
+.trash {
+    background-color: rgb(255, 0, 0);
+    border-radius: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    text-align: center;
 }
-.affichage{
-border-radius: 10px;
-background-color: rgb(255,255,255);
-padding-bottom: 30px;
-padding-left:30px;
-padding-right:30px;
-padding-top:15px;
-border: 2px solid black;
+
+.lancerModele {
+    background-color: green;
+    border-radius: 10px;
+    padding: 6px;
+    text-align: center;
+    font-family: "Comic Sans Ms";
+    font-size: 15px;
+    color: white;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
-.nomModele{
-border-radius: 10px;
-background-color: rgb(40,40,40);
-border-bottom: 2px solid black; 
-border-left: 2px solid black; 
-border-right: 2px solid black; 
-text-align: center;
-font-family: fantasy;
-font-size: 30px;
-margin-bottom : 20px;
-color:white;
+
+.affichage {
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 15px;
+    border: 2px solid black;
+}
+
+.nomModele {
+    border-radius: 10px;
+    background-color: rgb(40, 40, 40);
+    border-bottom: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    text-align: center;
+    font-family: fantasy;
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: white;
 }
 
 img {
