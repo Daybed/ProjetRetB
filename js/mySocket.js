@@ -14,7 +14,7 @@ var socketClient = function(io, mySocket, connection) {
 
         socket.emit('lampes', fonction.light);
 
-        BDD.findAll(function(rep) {
+       BDD.findAll(function(rep) {
             socket.emit('Modeles', rep);
         });
 
@@ -65,7 +65,6 @@ var socketClient = function(io, mySocket, connection) {
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
                 BDD.findAll(function(rep){
-                    console.log('findall'+rep);
                     io.emit('Modeles',rep);
                 });
             });
@@ -86,10 +85,38 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('modeleEnclenché',function(modele){
-            modelActuel=modele.nom;
-            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modelActuel});
+            modeleActuel=modele.nom;
+            var hue=[];
+            hue[0]=modele.hue.substring(1);
+            hue[0]= hue[0].substring(0, hue[0].length-1);
+            var huesplit=hue[0].split(',');
+            var j= 0;
+            for (var i = 0; i < huesplit.length/14; i++) {
+                hue[i]=""
+                for(j; j<(13*(i+1)+i) ; j++){
+                    hue[i]=hue[i]+huesplit[j]+',';
+                }
+                hue[i]=JSON.parse(hue[i]+huesplit[13*(i+1)+i]);
+                j=(13*(i+1)+i)+1;
+            }
+            modele.hue=hue;
+            var lampes=[];
+            lampes[0]=modele.light.substring(1);
+            lampes[0]= lampes[0].substring(0, lampes[0].length-1);
+            var lampesSplit=lampes[0].split(',');
+            var j= 0;
+            for (var i = 0; i < lampesSplit.length/5; i++) {
+                lampes[i]=""
+                for(j; j<(4*(i+1)+i) ; j++){
+                    lampes[i]=lampes[i]+lampesSplit[j]+',';
+                }
+                lampes[i]=JSON.parse(lampes[i]+lampesSplit[4*(i+1)+i]);
+                j=(4*(i+1)+i)+1;
+            }
+            modele.light=lampes;
+            
+            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
             lastModeleEnclenché=modele.nom;
-
             if(modele.sens=='droite'){
                 chenillard.changeclockwise(io,mySocket,true);
             }
@@ -97,32 +124,32 @@ var socketClient = function(io, mySocket, connection) {
                 chenillard.changeclockwise(io,mySocket,false);
             }
             chenillard.setspeed(io,mySocket,modele.speed);
-            for(i in modele.lampes){
-                if(modele.lampes[i].etat!="error"){
-                fonction.setknx(connection, modele.lampes[i].adresse, modele.lampes[i].etat);
+            for(i in modele.light){
+                if(modele.light[i].etat!="error"){
+                fonction.setknx(connection, modele.light[i].adresse, modele.light[i].etat);
                 }
                 else{
-                fonction.setknx(connection,modele.lampes[i].adresse,false);
+                fonction.setknx(connection,modele.light[i].adresse,false);
                 }
             }
-            var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights';
-            var requete;
             for(i in modele.hue){
-                requete+=modele.hue[i].lampe +":{'state':{"+
-                    "'on':"+modele.hue[i].on+","+
-                    "'bri':"+modele.hue[i].bri+","+
-                    "'sat':"+modele.hue[i].sat+","+
-                    "'xy':"+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+
-                "}}";
+
+                var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/'+modele.hue[i].lampe+'/state';
+                var requete="{"+
+                    '"on":'+modele.hue[i].on+","+
+                    '"bri":'+modele.hue[i].bri+","+
+                    '"xy": ['+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+"]"+
+                "}";
+                var res = fonction.Put(url, requete);
+                var json = JSON.parse(res);
+                if (json[0].success) {
+                } else {
+                    console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
+                }
+
             }
-            var res = fonction.Put(url, "{"+requete+"}");
-            var json = JSON.parse(res);
-            if (json[0].success) {
-                fonction.initialisationHue(socket, mySocket);
-            } else {
-                console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
-            }
-            
+            fonction.initialisationHue(socket, mySocket);
+        
 
         });
 
