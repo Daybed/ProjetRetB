@@ -40,6 +40,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             }
         });
     });
+    
     $scope.loop = function() {
         socket.emit('setstate');
     };
@@ -287,7 +288,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
           if($scope.nomModele==data){
             $scope.$apply(
                 function(){$scope.modele=false;
-                };);
+                });
           }
     });
 

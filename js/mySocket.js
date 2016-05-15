@@ -43,7 +43,7 @@ var socketClient = function(io, mySocket, connection) {
                 "on": data.on,
                 "bri": data.bri,
                 "sat": data.sat
- 
+            });
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
             if(json[0].success){
