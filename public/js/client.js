@@ -158,13 +158,11 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
     socket.on("lastModeleEnclenché",function(data){
         if(data.nouveau!=""){
-            document.getElementById(data.nouveau).style.backgroundColor="rgb(255,255,255)";
-            document.getElementById(data.nouveau).style.color="black";
+            document.getElementById(data.nouveau).style.color="rgb(255, 64, 129)";
         }
 
         if(data.last!=""){
             console.log("dernier modele enclenché : "+data);
-            document.getElementById(data.last).style.backgroundColor="rgb(40,40,40)";
             document.getElementById(data.last).style.color="white";
         }
     });
@@ -217,15 +215,14 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             $scope.EnregistrementModele = infos;
             $scope.nomModele = modele.nom;
         }
-        $scope.modele = true;
+        $scope.modele = !$scope.modele;
     };
 
     $scope.EnregistrerModele = function() {
         var nouveauModele=$scope.EnregistrementModele;
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
-       
-        //console.log("nouveauModele : "+nouveauModele.lampes);
+
         if ($scope.modeles.length < 10) {
             var nom = document.getElementById('name_modele').value;
             if (nom == "") {
@@ -288,6 +285,10 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 }
             }
         }
+    };
+
+    $scope.fermerAffichage=function(){
+        $scope.modele=false;
     };
 
     socket.on('nouveauModele', function(data) {

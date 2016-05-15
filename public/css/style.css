@@ -44,11 +44,13 @@ body {
     font-family: fantasy;
     font-size: 30px;
     margin-bottom: 20px;
+    margin-left:0px;
+    padding-left: 0px;
 }
 
 .enregistrementModeleContenu {
     font-family: "Comic Sans Ms";
-    font-size: 20px;
+    font-size: 17px;
 }
 
 .text {
@@ -58,8 +60,8 @@ body {
 
 .carreCouleurHue {
     border: solid black;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
 }
 
 .Whitebox {
@@ -71,6 +73,7 @@ body {
     padding-bottom: 30px;
     border: 2px solid black;
     background: rgb(255, 255, 255);
+    height:140px;
 }
 
 .modele {
@@ -115,8 +118,9 @@ body {
 .affichage {
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    padding-bottom: 30px;
-    padding-left: 30px;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    margin:20px;
     padding-right: 30px;
     padding-top: 15px;
     border: 2px solid black;

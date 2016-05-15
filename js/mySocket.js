@@ -87,7 +87,7 @@ var socketClient = function(io, mySocket, connection) {
 
         socket.on('modeleEnclenché',function(modele){
             modelActuel=modele.nom;
-            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
+            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modelActuel});
             lastModeleEnclenché=modele.nom;
 
             if(modele.sens=='droite'){
