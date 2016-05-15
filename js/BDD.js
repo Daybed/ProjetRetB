@@ -93,19 +93,21 @@ var findByName = function(name, callback) {
   }
 }
 var findAll=function(callback){
+
   if(connected){
     scenarioModel.find(function(err,answer){
       if(err){
         callback('error');
       }
       else{
-        callback(answer);
+        callback(JSON.parse(answer));
       }
     });
   }
 }
 var removeByName = function(name, callback) {
   if(connected){
+
     scenarioModel.findOneAndRemove({
         'nom': name
     }, function(err, answer) {

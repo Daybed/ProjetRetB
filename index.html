@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Chenillard</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link link rel="shortcut icon" type="image/x-icon" href="./public/img/bb8.png"/>
 		<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js" ></script>
 		<link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
@@ -28,18 +29,18 @@
 <body ng-app="myApp">
 	<div ng-controller="myCtrl">
 	<toast></toast>
-
+<div class="containter">
 		<div class="Blackbox">
 			<div class="row">
 				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4">
 					<div class="col-md-2">
-						<img  ng-src="{{leftSens}}" ng-click="setsens(false)">
+						<img  ng-src="{{leftSens}}" class="img-responsive" ng-click="setsens(false)">
 					</div>
 					<div class="col-md-2 col-md-offset-3">
-						<img  ng-src="{{loopstart}}" ng-click="loop()">
+						<img  ng-src="{{loopstart}}" class="img-responsive"  ng-click="loop()">
 					</div>
 					<div class="col-md-2 col-md-offset-3">
-						<img  ng-src="{{rightSens}}" ng-click="setsens(true)">
+						<img  ng-src="{{rightSens}}" class="img-responsive" ng-click="setsens(true)">
 					</div>
 				</div>
 			</div>
@@ -59,7 +60,7 @@
 					<div ng-show="lampeKnx">
 						<div class="col-md-12 Whitebox">
 									<div class="col-md-{{12/lampes.length}}" ng-repeat="x in lampes track by $index">
-								            <img ng-src="{{x.img}}" ng-click="lampe(x.num)" height="75" width="75">
+								            <img ng-src="{{x.img}}" class="img-responsive img" ng-click="lampe(x.num)" height="75" width="75">
 								    </div>
 						</div>
 					</div>
@@ -71,7 +72,7 @@
 						<div id="hue" class="Whitebox">
 							<div class="row text">
 									<div class="col-md-{{12/Hue.length}}" ng-repeat="x in Hue track by $index">
-								           	 <img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" height="50" width="50"  id= "hue {{x.lampe}}"> 
+								           	 <img src="public/img/hue.png" class="img-responsive img" ng-click="changehue(x.lampe,true)" height="75" width="75"  id= "hue {{x.lampe}}"> 
 								         
 								    </div>
 							</div>
@@ -113,7 +114,7 @@
 					</div>
 				</div>
 		</div> 
-
+</div>
 </div>
 
 </body>
