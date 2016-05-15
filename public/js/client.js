@@ -97,21 +97,39 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 $scope.lampeHue = true;
             }
         });
+
         if (initialisation == false) {
             initialisation = true;
             for (i in data) {
                 window['input' + i] = document.createElement('INPUT');
                 window['picker' + i] = new jscolor(window['input' + i]);
-                window['picker' + i].hash = true;
+                function initPicker(picker){
+                    picker.backgroundColor='#282828';
+                    picker.width= 150;
+                    picker.height = 100;
+                    picker.position = 'bottom';
+                    picker.smartPosition = false;
+                    picker.sliderSize = 3;
+                    picker.padding = 6; 
+                    picker.borderWidth=0;
+                    picker.borderRadius=10;
+                    picker.shadow = false; // whether to display shadow
+                    picker.pointerBorderWidth = 0; 
+                    picker.pointerColor = '#282828';
+
+                }
+                initPicker(window['picker' + i]);
+                
+
+                picker0.hash = true;
+ 
+                
+                
                 listernerColor(window['picker' + i], data[i].lampe);
-                //window['picker' + i].rgb='rgb( 0 , 0 , 0 )';
+                
                 document.getElementById('container').appendChild(window['input' + i]);
             }
-            /*for (i in data){
-                var test = document.getElementById('INPUT');
-                console.log (test);
-                test.jscolor.fromRGB(255, 255, 255);
-            }*/
+
         }
         for (i in data) {
             if (data[i].on == true) {
