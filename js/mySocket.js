@@ -61,9 +61,11 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('NouveauModele',function(data){
+
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
                 BDD.findAll(function(rep){
+                    console.log('findall'+rep);
                     io.emit('Modeles',rep);
                 });
             });
@@ -122,38 +124,7 @@ var socketClient = function(io, mySocket, connection) {
                 fonction.initialisationHue(socket, mySocket);
             }
         });
-/*
-        socket.on('modeleEnclenché', function(modele) {
-            modelActuel=modele.nom;
-            io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
-            lastModeleEnclenché=modele.nom;
-            if (modele.sens == 'droite') {
-                chenillard.changeclockwise(io, mySocket, true);
-            } else if (modele.sens == "gauche") {
-                chenillard.changeclockwise(io, mySocket, false);
-            }
-            chenillard.setspeed(io, mySocket, modele.speed);
-            for (i in modele.lampes) {
-                if (modele.lampes[i].etat != "error") {
-                    fonction.setknx(connection, modele.lampes[i].adresse, modele.lampes[i].etat);
-                } else {
-                    fonction.setknx(connection, modele.lampes[i].adresse, false);
-                }
-            }
-            var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + '/lights';
-            var requete;
-            for (i in modele.hue) {
-                requete += modele.hue[i].lampe + ":{'state':{" + "'on':" + modele.hue[i].on + "," + "'bri':" + modele.hue[i].bri + "," + "'sat':" + modele.hue[i].sat + "," + "'xy':" + [fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).x, fonction.rgbToXyBri(parseInt(modele.hue[i].rgb).r, parseInt(modele.hue[i].rgb).g, parseInt(modele.hue[i].rgb).b).y] + "}}";
-            }
-            var res = fonction.Put(url, "{" + requete + "}");
-            var json = JSON.parse(res);
-            if (json[0].success) {
-                fonction.initialisationHue(socket, mySocket);
-            } else {
-                console.log("Erreur : :" + modele + ". Type de l'erreur : " + json[0].error.description);
-            }
-        });
-*/
+
         socket.on('supprimerModele', function(nom) {
             BDD.removeByName(nom, function(fichier) {
                 io.emit('modeleSupprimé', fichier.nom);
