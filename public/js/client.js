@@ -225,7 +225,8 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         var nouveauModele=$scope.EnregistrementModele;
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
-       
+        console.log(nouveauModele);
+        //nouveauModele.replace("\","");
         //console.log("nouveauModele : "+nouveauModele.lampes);
         if ($scope.modeles.length < 10) {
             var nom = document.getElementById('name_modele').value;
@@ -257,7 +258,6 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     };
 
     socket.on('Modeles', function(listeModeles) {
-        console.log("listeModeles : "+listeModeles[0].hue);
         document.getElementById('bdd').style.visibility="visible";
         $scope.$apply(function(){
             $scope.modeles = listeModeles;
@@ -265,6 +265,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     });
 
     $scope.LancerModele = function(modele) {
+        console.log(modele);
         //console.log(JSON.stringify(modele.hue));
         /*console.log(modele.hue.split('['));
         modele.hue=JSON.stringify(modele.hue);
