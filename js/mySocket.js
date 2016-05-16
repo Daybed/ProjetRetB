@@ -15,7 +15,6 @@ var socketClient = function(io, mySocket, connection) {
         socket.emit('lampes', fonction.light);
 
        BDD.findAll(function(rep) {
-        console.log(rep[1]);
             socket.emit('Modeles', rep);
         });
 
@@ -62,7 +61,7 @@ var socketClient = function(io, mySocket, connection) {
         });
 
         socket.on('NouveauModele',function(data){
-            console.log(data);
+            console.log("nouveau modele : " +data);
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
                 BDD.findAll(function(rep){
@@ -91,14 +90,14 @@ var socketClient = function(io, mySocket, connection) {
             hue[0]=modele.hue.substring(1);
             hue[0]= hue[0].substring(0, hue[0].length-1);
             var huesplit=hue[0].split(',');
-            console.log(huesplit);
+            console.log("huesplit : "+huesplit);
             var j= 0;
             for (var i = 0; i < huesplit.length/14; i++) {
                 hue[i]=""
                 for(j; j<(13*(i+1)+i) ; j++){
                     hue[i]=hue[i]+huesplit[j]+',';
                 }
-                console.log((hue[i]+huesplit[13*(i+1)+i]));
+                console.log(("juste apres huesplit : "+hue[i]+huesplit[13*(i+1)+i]));
                 hue[i]=JSON.parse(hue[i]+huesplit[13*(i+1)+i]);
                 j=(13*(i+1)+i)+1;
             }
