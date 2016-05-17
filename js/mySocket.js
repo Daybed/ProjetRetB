@@ -57,7 +57,6 @@ var socketClient = function(io, mySocket, connection) {
             chenillard.setspeed(io, mySocket, vitesse);
         });
         socket.on('setstate', function() {
-            console.log('coté serveur');
             chenillard.changestate(io, fonction, mySocket, connection,socket);
         });
 

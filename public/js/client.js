@@ -205,7 +205,6 @@ socket.on('erreur',function(data){
         }
 
         if(data.last!=""){
-            console.log("dernier modele enclenché : "+data);
             document.getElementById(data.last).style.color="white";
         }
     });
@@ -252,7 +251,7 @@ socket.on('erreur',function(data){
             nomDuModeleEnCours=modele.nom;
             var huee = JSON.parse(modele.hue);
             var lightt= JSON.parse(modele.light);
-            
+
             var somme=0;
         if (huee[0]==undefined) {
                 $scope.activationHue = false;
@@ -302,8 +301,26 @@ socket.on('erreur',function(data){
     $scope.EnregistrerModele = function() {
         var present=false;
         var nouveauModele=$scope.EnregistrementModele;
+
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
+
+        sommeHue=0;
+        sommeKnx=0;
+        var i = 0;
+        var j = 0;
+
+        while(nouveauModele.hue.charAt(i)!="["){
+            sommeHue++;
+            i++;
+        }
+        while(nouveauModele.lampes.charAt(j)!="["){
+            sommeKnx++;
+            j++;
+        }
+        nouveauModele.hue=nouveauModele.hue.substring(sommeHue,nouveauModele.hue.length-sommeHue);
+        nouveauModele.lampes = nouveauModele.lampes.substring(sommeKnx,nouveauModele.lampes.length-sommeKnx);
+
 
         for (i in nouveauModele.lampes){
             nouveauModele.lampes =nouveauModele.lampes.replace(/\\/, "");
@@ -311,6 +328,7 @@ socket.on('erreur',function(data){
         for(i in nouveauModele.hue){
             nouveauModele.hue=nouveauModele.hue.replace(/\\/,"");
         }
+
         if ($scope.modeles.length < 5) {
             var nom = document.getElementById('name_modele').value;
             for (i in $scope.modeles){
