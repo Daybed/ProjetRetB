@@ -28,7 +28,7 @@
 				</div>
 				<div class="col-md-4 col-lg-4 col-xs-4 col-sm-4">
 					<div ng-show="lampeKnx">
-						<div ng-repeat="x in EnregistrementModele.lampes">
+						<div ng-repeat="x in EnregistrementModele.lampes track by $id(x)">
 							<div class="row">
 								Lampe {{x.num}} : {{x.etat}}
 							</div>
@@ -40,7 +40,7 @@
 				</div>
 				<div class="col-md-4 col-lg-4 col-xs-4 col-sm-4">
 					<div ng-show="lampeHue">
-						<div ng-repeat="x in EnregistrementModele.hue">
+						<div ng-repeat="x in EnregistrementModele.hue track by $id(x)">
 							<div class="row">
 								<div class="col-md-4  col-lg-4 col-xs-4 col-sm-4">
 									Hue {{x.lampe}}

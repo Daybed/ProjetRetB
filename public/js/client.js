@@ -4,6 +4,10 @@ var ip;
 var socket = io();
 var initialisation = false;
 var Lampes = [];
+var enregistrement=false;
+var activation=false;
+var EnregistrementEnCours=false;
+var nomDuModeleEnCours=null;
 
 function couleur(picker, numero) {
     var resultat = {
@@ -25,6 +29,19 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     $scope.modeles = [];
     socket.on('Chenillard', function(data) {
         $scope.$apply(function() {
+
+            if(EnregistrementEnCours==true){
+                var chenillard={speed:null,sens:null};
+                chenillard.speed=data.speed;
+                if(data.sens==false){
+                    chenillard.sens="gauche";
+                }
+                else{
+                    chenillard.sens="droite";
+                }
+                 $scope.EnregistrementModele.chenillard=chenillard;
+            }
+
             $scope.speed = data.speed;
             $scope.sens = data.sens;
             $scope.on = data.on;
@@ -82,6 +99,9 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         }
         $scope.$apply(function() {
             $scope.lampes = Lampes;
+                if(EnregistrementEnCours==true){
+                 $scope.EnregistrementModele.lampes=$scope.lampes;
+                }
         });
         if (total > 0) {
             $scope.lampeKnx = true;
@@ -98,6 +118,10 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             } else {
                 $scope.lampeHue = true;
             }
+             if(EnregistrementEnCours==true){
+                $scope.EnregistrementModele.hue=$scope.Hue;
+            }
+
         });
 
         if (initialisation == false) {
@@ -141,6 +165,10 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     });
 
     $scope.lampe = function(numero) {
+        if(EnregistrementEnCours==true){
+
+        }
+
         if ($scope.lampes[numero - 1].etat === "error") {
             ngToast.create({
                 content: "Erreur. Cette lampe ne fonctionne pas ou n'est pas branchée, veuillez utiliser les autres.",
@@ -172,6 +200,11 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     $scope.VoirModele = function(modele) {
         var sens;
         if (modele == undefined) {
+            EnregistrementEnCours=true;
+            enregistrement=!enregistrement;
+            activation=false;
+            
+
             if ($scope.sens == true) {
                 sens = "droite";
             } else {
@@ -192,10 +225,20 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 }
             };
             $scope.EnregistrementModele = theModele;
-        } else {
+            EnregistrementEnCours=true;
+        } 
+        else {
+            EnregistrementEnCours=false;
+            enregistrement=false;
+            if(modele.nom==nomDuModeleEnCours){
+                activation=!activation;
+            }
+            else{
+                activation=true;
+            }
+            nomDuModeleEnCours=modele.nom;
 
-        if (modele.hue[0] == null) {
-
+        if (modele.hue=="[]") {
                 $scope.lampeHue = false;
             } else {
                 $scope.lampeHue = true;
@@ -216,8 +259,17 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
             $scope.EnregistrementModele = infos;
             $scope.nomModele = modele.nom;
         }
-        $scope.modele = !$scope.modele;
+        if(enregistrement==false){
+            EnregistrementEnCours=false;
+        }
+        if(activation==false && enregistrement==false){
+        $scope.modele = false;
+        }
+        else{
+            $scope.modele=true;
+        }
     };
+
 
     $scope.EnregistrerModele = function() {
         var nouveauModele=$scope.EnregistrementModele;
@@ -244,7 +296,6 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
                 socket.emit('NouveauModele', {
                     nom: nom,
-                   //infos: $scope.EnregistrementModele
                    infos:nouveauModele
                 });
                 document.getElementById('name_modele').value = "";
