@@ -59,18 +59,20 @@
 		<div class="row">
 			<div ng-init="lampeKnx = false; lampeHue=false">
 				<div ng-show="lampeKnx||lampeHue">
-					<div class="col-md-{{lampes.length+Hue.length}} col-md-offset-{{12/(lampes.length+Hue.length)}} col-xs-12 Whitebox">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="col-md-1 col-xs-1" ng-repeat="x in lampes track by $index">
-								    <img ng-src="{{x.img}}" class="img" style="width:px:75;height:75px;" ng-click="lampe(x.num)">
+					<div class="container-fluid">
+						<div class="col-md-10 col-md-offset-2 col-xs-12 Whitebox">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-2 col-xs-1" ng-repeat="x in lampes track by $index">
+									    <img ng-src="{{x.img}}" class="img" style="width:px:75;height:75px;" ng-click="lampe(x.num)">
+									</div>
+									<div class="col-md-2 col-xs-1" ng-repeat="x in Hue track by $index">
+										<img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" style="width:75px;height:75px;" id= "hue {{x.lampe}}">
+										<p id="container{{x.lampe}}"></p>
+									</div>
 								</div>
-								<div class="col-md-1 col-xs-1" ng-repeat="x in Hue track by $index">
-									<img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" style="width:75px;height:75px;" id= "hue {{x.lampe}}">
-									<p id="container{{x.lampe}}"></p>
-								</div>
-							</div>
-						</div>						
+							</div>						
+						</div>
 					</div>
 				</div>
 			</div>

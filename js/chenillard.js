@@ -3,9 +3,9 @@ global.speed = 500;
 global.clockwise = true;
 global.hue = false;
 
-var changestate = function(io, fonction, mySocket, connection,callback) {
-
+var changestate = function(io, fonction, mySocket, connection,socket) {
 if (connection.connected || on == true || hue == true) {
+    if(socket!=undefined){
         var sommePos=0;
         var sommeNeg=0;
         var sommeError=0;
@@ -21,16 +21,15 @@ if (connection.connected || on == true || hue == true) {
             }
         }
         if(sommePos==4 || sommeNeg==4 || sommeError==4){
-            callback.emit('erreur',"Toutes les lampes sont au même état");
+            mySocket.socketKNXIdentiques(socket);
         }
-        else{
+    }
         on = !on;
         exports.on = on;
         mySocket.socketEmitChenillard(io);
         if (on == true) {
             fonction.looptest(connection);
         }
-     }
     }
 }
 var changeclockwise = function(io, mySocket, sens) {

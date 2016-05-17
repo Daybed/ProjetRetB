@@ -231,6 +231,9 @@ var socketInitHue = function(socket, hue) {
 var socketInitHueIo = function(io, hue) {
         io.emit('Hue', hue);
     }
+var socketKNXIdentiques= function(socket){
+    socket.emit('erreur',"Pas besoin de lancer le chenillard, les lampes sont toutes aux mêmes état");
+}
     //|===================================================================================|
     //|============================= Exports des fonctions utiles ========================|
     //|===================================================================================|
