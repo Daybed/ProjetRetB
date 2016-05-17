@@ -36,7 +36,8 @@ body {
 .Blackbox {
     margin-bottom: 20px;
     margin-top: 30px;
-    padding: 15px;
+    padding-top: 15px;
+    padding-bottom:15px;
     background-color: rgb(40, 40, 40);
 }
 
@@ -81,14 +82,15 @@ body {
     background-color: rgb(255, 255, 255);
     padding: 30px;
     border: 2px solid black;
+    margin-top:20px;
 }
 
 .bdd {
     text-align: center;
+    margin-top : 20px;
     background-color: rgb(40, 40, 40);
     border: 2px solid black;
-    border-radius: 10px;
-    margin-top: 20px;
+    border-radius: 10px; 
     color: white;
     font-family: "Comic Sans Ms";
     font-size: 15px;

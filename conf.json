@@ -1,5 +1,5 @@
 { 
-  "ipAdresseHue" : "192.168.1.10",
+  "ipAdresseHue" : "192.168.1.100",
   "hueUsername" : "38b48817b59067f2a4a36072729568f",
   "hueUsernamePontMathieu": "3c4369c1251d7e771a5b1af56bed28b",
   "portServer" : 8000,

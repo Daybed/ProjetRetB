@@ -32,20 +32,22 @@
 <div class="container-fluid" style="padding-right:0px;padding-left:0px;">
 		<div class="Blackbox">
 			<div class="row">
-				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4 col-lg-4 col-lg-offset-4 col-sm-4 col-sm-offset-4">
-					<div class="col-md-2 col-xs-2 col-lg-2 col-sm-2">
-						<img  ng-src="{{leftSens}}" class="img"  ng-click="setsens(false)">
-					</div>
-					<div class="col-md-2 col-md-offset-3 col-xs-2 col-xs-offset-3 col-lg-2 col-lg-offset-3 col-sm-2 col-sm-offset-3">
-						<img  ng-src="{{loopstart}}" class="img"  ng-click="loop()">
-					</div>
-					<div class="col-md-2 col-md-offset-3 col-xs-2 col-xs-offset-3 col-lg-2 col-lg-offset-3 col-sm-2 col-sm-offset-3">
-						<img  ng-src="{{rightSens}}" class="img" ng-click="setsens(true)">
+				<div class="col-md-12 col-xs-12">
+					<div class="col-md-4 col-md-offset-4 col-xs-12 col-lg-4 col-lg-offset-4 col-sm-4 col-sm-offset-4">
+						<div class="col-md-2 col-xs-2 col-lg-2 col-sm-2">
+							<img  ng-src="{{leftSens}}" class="img"  ng-click="setsens(false)">
+						</div>
+						<div class="col-md-2 col-md-offset-3 col-xs-2 col-xs-offset-3  col-lg-2 col-lg-offset-3 col-sm-2 col-sm-offset-3">
+							<img  ng-src="{{loopstart}}" class="img"  ng-click="loop()">
+						</div>
+						<div class="col-md-2 col-md-offset-3 col-xs-2 col-xs-offset-3 col-lg-2 col-lg-offset-3 col-sm-2 col-sm-offset-3">
+							<img  ng-src="{{rightSens}}" class="img" ng-click="setsens(true)">
+						</div>
 					</div>
 				</div>
 			</div>
 			<div class="row text">
-				<div class="col-md-4 col-md-offset-4 col-xs-4 col-xs-offset-4 col-lg-4 col-lg-offset-4 col-sm-4 col-sm-offset-4">
+				<div class="col-md-4 col-md-offset-4 col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 col-sm-4 col-sm-offset-4">
 					<md-slider flex="100" ng-model="speed" min="500" max="10000" aria-label="vitesse" class="md-accent" md-horizontal ng-click="setspeed()">
 					</md-slider> 
 					<div class="center">
@@ -55,6 +57,27 @@
 			</div>
 		</div>
 		<div class="row">
+			<div class="col-md-{{(lampes.length + Hue.length)}} col-md-offset-{{(12-(lampes.length + Hue.length))/2}} col-xs-11">
+				<div ng-init="lampeKnx = false; lampeHue=false">
+					<div ng-show="lampeKnx||lampeHue">
+						<div class="col-md-12 col-xs-12 col-lg-12 col-sm-12 Whitebox">
+							<div class="col-md-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}} col-xs-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}} col-lg-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}} col-sm-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}}" ng-repeat="x in lampes track by $index">
+							    <img ng-src="{{x.img}}" class="img" style="width:75px;height:75px" ng-click="lampe(x.num)">
+							</div>
+							<div class="col-md-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}} col-xs-2 col-lg-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}} col-sm-{{(12/(lampes.length+Hue.length))-(12/(lampes.length+Hue.length))%1}}" style="margin-left:20px"ng-repeat="x in Hue track by $index">
+								<div class="row">
+									<img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" style="width:75px;height:75px;" id= "hue {{x.lampe}}">
+								</div>
+								<div class="row">
+									<p id="container"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!--	<div class="row">
 			<div id="cadreKnx" class="col-md-{{lampes.length}} col-xs-{{lampes.length}} col-lg-{{lampes.length}} col-sm-{{lampes.length}}">
 				<div ng-init="lampeKnx = false">
 					<div ng-show="lampeKnx">
@@ -83,27 +106,27 @@
 				</div>
 			</div>
 		</div>
-
+-->
 
 		<div class="row">
-				<div class="col-md-4 col-xs-4 col-lg-4  col-sm-4">
-					<div class="col-md-12 col-xs-12  col-lg-12 affichage" ng-init="modele = false" ng-show="modele">
+				<div class="col-md-4 col-md-offset-2 ">
+					<div class="col-md-12 affichage" ng-init="modele = false" ng-show="modele">
 						<div ui-view="view"></div>
 					</div>	
 				</div>
-				<div class="col-md-3 col-md-offset-2 col-xs-3 col-xs-offset-2 col-lg-3 col-lg-offset-2 col-sm-3 col-sm-offset-2">
+				<div class="col-md-3 col-md-offset-1">
 					<div class="row">
 						<div class="modele">
 							<button type="button" ui-sref="enregistrerModele" class="btn bouttons img text center-block" ng-click="VoirModele()">Enregistrer situation actuelle </button>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-12 col-xs-12 col-lg-12 col-sm-12 bdd" id="bdd" style="visibility:hidden">
+						<div class="col-md-12 bdd" id="bdd" style="visibility:hidden">
 							<div ng-repeat="x in modeles track by $index">
-									<div class="col-md-10 col-xs-10 col-lg-10 col-sm-10">
+									<div class="col-md-10">
 										<div class="cliquable text" id="{{x.nom}}" ng-click="LancerModele(x)">{{x.nom}}</div>
 									</div>
-									<div class="col-md-2 col-xs-2 col-lg-2 col-sm-2">
+									<div class="col-md-2">
 										<img src="public/img/settings.png" style="width:30px; height:30px" ng-click="VoirModele(x)" ui-sref="activerModele">
 									</div>																
 							</div>
@@ -111,6 +134,7 @@
 					</div>
 				</div>
 		</div> 
+
 </div>
 </div>
 

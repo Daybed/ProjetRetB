@@ -272,6 +272,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
 
     $scope.EnregistrerModele = function() {
+        var present=false;
         var nouveauModele=$scope.EnregistrementModele;
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
@@ -281,18 +282,31 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         for(i in nouveauModele.hue){
             nouveauModele.hue=nouveauModele.hue.replace(/\\/,"");
         }
-        
         if ($scope.modeles.length < 5) {
             var nom = document.getElementById('name_modele').value;
+            for (i in $scope.modeles){
+                if ($scope.modeles[i].nom==nom){
+                    present=true;
+                }
+            }
             if (nom == "") {
                 ngToast.create({
-                    content: "Vous devez indiquer un nom pour votre nouveau modèle",
+                    content: "Vous devez indiquer un nom pour votre nouveau modèle.",
                     dismissOnTimeout: true,
                     timeout: 3000,
                     className: "danger",
                 });
-            } else {
+            } 
 
+            else if(present==true){
+                 ngToast.create({
+                    content: "Nom de modèle déjà existant, choisissez un autre nom.",
+                    dismissOnTimeout: true,
+                    timeout: 3000,
+                    className: "danger",
+                });
+            }
+            else {
                 socket.emit('NouveauModele', {
                     nom: nom,
                    infos:nouveauModele
@@ -311,7 +325,13 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     };
 
     socket.on('Modeles', function(listeModeles) {
+        console.log(listeModeles);
+        if(listeModeles.length>0){
         document.getElementById('bdd').style.visibility="visible";
+        }
+        else{
+        document.getElementById('bdd').style.visibility="hidden"; 
+        }
         $scope.$apply(function(){
             $scope.modeles = listeModeles;
         });
