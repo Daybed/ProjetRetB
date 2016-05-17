@@ -224,10 +224,14 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
 
-        console.log(nouveauModele);
-        //nouveauModele.replace("\","");
-        //console.log("nouveauModele : "+nouveauModele.lampes);
-        if ($scope.modeles.length < 10) {
+        for (i in nouveauModele.lampes){
+            nouveauModele.lampes =nouveauModele.lampes.replace(/\\/, "");
+        }
+        for(i in nouveauModele.hue){
+            nouveauModele.hue=nouveauModele.hue.replace(/\\/,"");
+        }
+        
+        if ($scope.modeles.length < 5) {
             var nom = document.getElementById('name_modele').value;
             if (nom == "") {
                 ngToast.create({
@@ -264,12 +268,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     });
 
     $scope.LancerModele = function(modele) {
-        console.log(modele);
-        //console.log(JSON.stringify(modele.hue));
-        /*console.log(modele.hue.split('['));
-        modele.hue=JSON.stringify(modele.hue);
-        modele.light=JSON.stringify(modele.light);*/
-        //console.log(modele.hue);
+
         socket.emit("modeleEnclenché", modele);
     };
 
