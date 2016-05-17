@@ -57,6 +57,7 @@ var socketClient = function(io, mySocket, connection) {
             chenillard.setspeed(io, mySocket, vitesse);
         });
         socket.on('setstate', function() {
+            console.log('coté serveur');
             chenillard.changestate(io, fonction, mySocket, connection,socket);
         });
 
@@ -234,6 +235,10 @@ var socketInitHueIo = function(io, hue) {
 var socketKNXIdentiques= function(socket){
     socket.emit('erreur',"Pas besoin de lancer le chenillard, les lampes sont toutes aux mêmes état");
 }
+
+var socketKNXDisconnected=function(socket){
+    socket.emit('erreur',"Impossible de lancer le chenillard, KNX non connecté");
+}
     //|===================================================================================|
     //|============================= Exports des fonctions utiles ========================|
     //|===================================================================================|
@@ -242,3 +247,5 @@ exports.socketListenerKNX = socketListenerKNX;
 exports.socketEmitChenillard = socketEmitChenillard;
 exports.socketInitHue = socketInitHue;
 exports.socketInitHueIo=socketInitHueIo;
+exports.socketKNXIdentiques=socketKNXIdentiques;
+exports.socketKNXDisconnected=socketKNXDisconnected;

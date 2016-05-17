@@ -27,19 +27,19 @@
 					</div>
 				</div>
 				<div class="col-md-4 col-lg-4 col-xs-4 col-sm-4">
-					<div ng-show="lampeKnx">
+					<div ng-show="activationKNX">
 						<div ng-repeat="x in EnregistrementModele.lampes">
 							<div class="row">
 								Lampe {{x.num}} : {{x.etat}} 
 							</div>
 						</div>
 					</div>
-					<div ng-show="!lampeKnx">
+					<div ng-show="!activationKNX">
 						Aucune lampe knx enregistrée
 					</div>
 				</div>
 				<div class="col-md-4 col-lg-4 col-xs-4 col-sm-4">
-					<div ng-show="lampeHue">
+					<div ng-show="activationHue">
 						<div ng-repeat="x in EnregistrementModele.hue">
 							<div class="row">
 								<div class="col-md-4  col-lg-4 col-xs-4 col-sm-4">
@@ -51,7 +51,7 @@
 							</div>
 						</div>
 					</div>
-					<div ng-show="!lampeHue">
+					<div ng-show="!activationHue">
 						Aucune Hue enregistrée
 					</div>
 				</div>

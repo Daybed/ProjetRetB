@@ -107,7 +107,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                  $scope.EnregistrementModele.lampes=$scope.lampes;
                 }
         });
-        if (total == 0) {
+        if (total > 0) {
             $scope.lampeKnx = true;
         } else {
             $scope.lampeKnx = false;
@@ -212,13 +212,11 @@ socket.on('erreur',function(data){
 
 
     $scope.VoirModele = function(modele) {
-        var hey = $scope.Hue.length + $scope.lampes.length;
         var sens;
         if (modele == undefined) {
             EnregistrementEnCours=true;
             enregistrement=!enregistrement;
             activation=false;
-            
 
             if ($scope.sens == true) {
                 sens = "droite";
@@ -252,19 +250,34 @@ socket.on('erreur',function(data){
                 activation=true;
             }
             nomDuModeleEnCours=modele.nom;
-
-        if (modele.hue=="[]") {
-                $scope.lampeHue = false;
+            var huee = JSON.parse(modele.hue);
+            var lightt= JSON.parse(modele.light);
+            
+            var somme=0;
+        if (huee[0]==undefined) {
+                $scope.activationHue = false;
             } else {
-                $scope.lampeHue = true;
+                $scope.activationHue = true;
             }
+        for(i in lightt){
+            if(lightt[i].etat!=0 && lightt[i].etat!=1){
+                somme++;
+            }
+        }
+        if(somme==4){
+            $scope.activationKNX=false;
+        }
+        else{
+            $scope.activationKNX=true;
+        }
+
             var infos = {
                 chenillard: {
-                    sens: $scope.modeles[$scope.modeles.indexOf(modele)].sens,
-                    speed: $scope.modeles[$scope.modeles.indexOf(modele)].speed
+                    sens: modele.sens,
+                    speed: modele.speed
                 },
-                hue: $scope.modeles[$scope.modeles.indexOf(modele)].hue,
-                lampes: $scope.modeles[$scope.modeles.indexOf(modele)].light
+                hue: huee,
+                lampes: lightt
             };
             if (infos.chenillard.sens == true) {
                 infos.chenillard.sens = "droite";
@@ -341,7 +354,6 @@ socket.on('erreur',function(data){
     };
 
     socket.on('Modeles', function(listeModeles) {
-        console.log(listeModeles);
         if(listeModeles.length>0){
         document.getElementById('bdd').style.visibility="visible";
         }
