@@ -53,6 +53,11 @@ body {
     font-family: "Comic Sans Ms";
     font-size: 17px;
 }
+.HueEtKnx{
+width:75px;
+height:75px;
+margin-top:30px;
+}
 
 .text {
     font-family: "Comic Sans Ms";
@@ -66,13 +71,22 @@ body {
 }
 
 .Whitebox {
+    padding-top:30px;
     margin-top: 20px;
     margin-bottom:20px;
     border-radius: 10px;
-    padding-top: 30px;
     padding-bottom: 30px;
     border: 2px solid black;
     background: rgb(255, 255, 255);
+}
+
+.NewWhiteBox{
+margin-top: 20px;
+margin-bottom:20px;
+border-top: 2px solid black;
+border-bottom: 2px solid black;
+background: rgb(255, 255, 255);
+padding-bottom: 30px;
 }
 
 .modele {

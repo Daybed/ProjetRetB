@@ -27,6 +27,10 @@ function listernerColor(picker, numero) {
 
 app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     $scope.modeles = [];
+    $scope.bonjour=function(){
+        var somme = $scope.lampes + $scope.Hue;
+        return somme;
+    }
     socket.on('Chenillard', function(data) {
         $scope.$apply(function() {
 
