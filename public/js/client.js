@@ -276,6 +276,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
         var nouveauModele=$scope.EnregistrementModele;
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
+
         for (i in nouveauModele.lampes){
             nouveauModele.lampes =nouveauModele.lampes.replace(/\\/, "");
         }
@@ -338,6 +339,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
     });
 
     $scope.LancerModele = function(modele) {
+
         socket.emit("modeleEnclenché", modele);
     };
 

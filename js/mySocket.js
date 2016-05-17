@@ -110,7 +110,6 @@ var socketClient = function(io, mySocket, connection) {
                 for(j; j<(4*(i+1)+i) ; j++){
                     lampes[i]=lampes[i]+lampesSplit[j]+',';
                 }
-                var here = JSON.parse(lampes[i]+lampesSplit[4*(i+1)+i]);
                 lampes[i]=JSON.parse(lampes[i]+lampesSplit[4*(i+1)+i]);
                 j=(4*(i+1)+i)+1;
             }
