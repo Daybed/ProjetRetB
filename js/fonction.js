@@ -17,23 +17,19 @@ var newtab = [{
 var light = [{
     adresse: "0/1/1",
     etat: "error",
-    numero: 1,
-    nbessai: 0
+    numero: 1
 }, {
     adresse: "0/1/2",
     etat: "error",
-    numero: 2,
-    nbessai: 0
+    numero: 2
 }, {
     adresse: "0/1/3",
     etat: "error",
-    numero: 3,
-    nbessai: 0
+    numero: 3
 }, {
     adresse: "0/1/4",
     etat: "error",
-    numero: 4,
-    nbessai: 0
+    numero: 4
 }];
 //|===================================================================================|
 //|======================= Detection de l'adresse ip du serveur ======================|

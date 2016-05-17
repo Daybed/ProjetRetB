@@ -172,12 +172,7 @@ var intervalUp, intervalDown;
 var socketListenerKNX = function(io, connection, mySocket) {
         connection.on('status', function(data, data1, data2) {
             console.log('status : L\'adresse ' + data + " est a l'état : " + data1);
-            if (data1 == 0 || data1 == 1) {
                 fonction.light[data[4] - 1].etat = data1;
-            } else if (data1 != 0 && data1 != 1 && fonction.light[data[4] - 1].nberreur < 10) {
-                fonction.getknx(connection, data);
-                fonction.light[data[4] - 1].nberreur++;
-            }
         });
         connection.on('event', function(data, data1, data2) {
             console.log('event : L\'adresse ' + data + " est a l'état : " + data1);
