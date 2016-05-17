@@ -55,7 +55,7 @@ var connection = new KnxConnectionTunneling(conf.ipPlateauknx, conf.portPlateauk
 fonction.connectionknx(connection, function() {
     if (connection.connected) {
         fonction.getAll(connection);
-        mySocket.socketListenerKNX(io, connection);
+        mySocket.socketListenerKNX(io, connection,mySocket);
     }
 });
 

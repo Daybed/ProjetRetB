@@ -2,14 +2,35 @@ global.on = false;
 global.speed = 500;
 global.clockwise = true;
 global.hue = false;
-var changestate = function(io, fonction, mySocket, connection) {
-    if (connection.connected || on == true || hue == true) {
+
+var changestate = function(io, fonction, mySocket, connection,callback) {
+
+if (connection.connected || on == true || hue == true) {
+        var sommePos=0;
+        var sommeNeg=0;
+        var sommeError=0;
+        for(i in fonction.light){
+            if(fonction.light[i].etat==0){
+                sommeNeg++;
+            }
+            else if(fonction.light[i].etat==1){
+                sommePos++;
+            }
+            else{
+                sommeError++;
+            }
+        }
+        if(sommePos==4 || sommeNeg==4 || sommeError==4){
+            callback.emit('erreur',"Toutes les lampes sont au même état");
+        }
+        else{
         on = !on;
         exports.on = on;
         mySocket.socketEmitChenillard(io);
         if (on == true) {
             fonction.looptest(connection);
         }
+     }
     }
 }
 var changeclockwise = function(io, mySocket, sens) {

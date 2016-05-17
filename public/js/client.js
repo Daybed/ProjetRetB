@@ -103,12 +103,21 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                  $scope.EnregistrementModele.lampes=$scope.lampes;
                 }
         });
-        if (total > 0) {
+        if (total == 0) {
             $scope.lampeKnx = true;
         } else {
             $scope.lampeKnx = false;
         }
     });
+
+socket.on('erreur',function(data){
+     ngToast.create({
+                content: data,
+                dismissOnTimeout: true,
+                timeout: 3000,
+                className: 'danger',
+            });
+});
 
     socket.on('Hue', function(data) {
         $scope.$apply(function() {
@@ -126,9 +135,11 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
         if (initialisation == false) {
             initialisation = true;
+
             for (i in data) {
                 window['input' + i] = document.createElement('BUTTON');
                 window['picker' + i] = new jscolor(window['input' + i]);
+                window['input'+i].setAttribute('style',"width:75px;");
                 function initPicker(picker){
                     picker.backgroundColor='#282828';
                     picker.width= 150;
@@ -146,8 +157,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
                 initPicker(window['picker' + i]);
                 
                 listernerColor(window['picker' + i], data[i].lampe);
-                
-                document.getElementById('container').appendChild(window['input' + i]);
+                document.getElementById('container' + data[i].lampe).appendChild(window["input"+i]);
             }
 
         }
@@ -198,6 +208,7 @@ app.controller('myCtrl', function($scope, $http, ngToast, $state) {
 
 
     $scope.VoirModele = function(modele) {
+        var hey = $scope.Hue.length + $scope.lampes.length;
         var sens;
         if (modele == undefined) {
             EnregistrementEnCours=true;

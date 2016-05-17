@@ -47,7 +47,7 @@ var socketClient = function(io, mySocket, connection) {
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
             if(json[0].success){
-                fonction.initialisationHue(socket,mySocket);
+                fonction.initialisationHue(io,mySocket);
             }
         });
         socket.on('setsens', function(data) {
@@ -57,7 +57,7 @@ var socketClient = function(io, mySocket, connection) {
             chenillard.setspeed(io, mySocket, vitesse);
         });
         socket.on('setstate', function() {
-            chenillard.changestate(io, fonction, mySocket, connection);
+            chenillard.changestate(io, fonction, mySocket, connection,socket);
         });
 
         socket.on('NouveauModele',function(data){
@@ -79,7 +79,7 @@ var socketClient = function(io, mySocket, connection) {
             var res = fonction.Put(url, param);
             var json = JSON.parse(res);
             if (json[0].success) {
-                fonction.initialisationHue(socket, mySocket);
+                fonction.initialisationHueIo(io, mySocket);
             }
         });
 
@@ -233,6 +233,9 @@ var socketEmitChenillard = function(socket) {
 var socketInitHue = function(socket, hue) {
         socket.emit('Hue', hue);
     }
+var socketInitHueIo = function(io, hue) {
+        io.emit('Hue', hue);
+    }
     //|===================================================================================|
     //|============================= Exports des fonctions utiles ========================|
     //|===================================================================================|
@@ -240,3 +243,4 @@ exports.socketClient = socketClient;
 exports.socketListenerKNX = socketListenerKNX;
 exports.socketEmitChenillard = socketEmitChenillard;
 exports.socketInitHue = socketInitHue;
+exports.socketInitHueIo=socketInitHueIo;

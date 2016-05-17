@@ -160,6 +160,20 @@ var initialisationHue = function(socket, mySocket) {
      mySocket.socketInitHue(socket, hue);
     });
 }
+var initialisationHueIo = function(io, mySocket) {
+    detectionHue(function(hue) {
+        if (hue[0] != null) {
+            chenillard.presenceHue(true);
+            for (i in hue) {
+                hue[i].rgb = xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255);
+                hue[i].couleur="rgb("+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).r+","+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).g+","+xyBriToRgb(hue[i].xy[0], hue[i].xy[1], hue[i].bri / 255).b+")";
+            }
+        } else {
+            chenillard.presenceHue(false);
+        }
+     mySocket.socketInitHueIo(io, hue);
+    });
+}
 var getAll = function(connection) {
     for (var i in light) {
         getknx(connection, light[i].adresse);
@@ -225,7 +239,7 @@ var looptest = function(connection) {
         exec(connection, function() {
             setTimeout(function() {
                 module.exports.looptest(connection);
-            }, chenillard.speed);
+            }, 10500-chenillard.speed);
         });
     } else {
         return;
@@ -247,3 +261,4 @@ exports.Put = Put;
 exports.Get = Get;
 exports.light = light;
 exports.looptest = looptest;
+exports.initialisationHueIo=initialisationHueIo;
