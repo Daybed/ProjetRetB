@@ -117,14 +117,14 @@
 				<div class="col-md-3 col-md-offset-1">
 					<div class="row">
 						<div class="modele">
-							<button type="button" ui-sref="enregistrerModele" class="btn bouttons img text center-block" ng-click="VoirModele()">Enregistrer situation actuelle </button>
+							<button type="button" ui-sref="enregistrerModele" class="btn bouttons img text center-block" style = "outline-style:none;" ng-click="VoirModele()">Enregistrer situation actuelle </button>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-12 bdd" id="bdd" style="visibility:hidden">
 							<div ng-repeat="x in modeles track by $index">
 									<div class="col-md-10">
-										<div class="cliquable text img" id="{{x.nom}}" ng-click="LancerModele(x)">{{x.nom}}</div>
+										<div class="cliquable text img" style = "outline-style:none;" id="{{x.nom}}" ng-click="LancerModele(x)">{{x.nom}}</div>
 									</div>
 									<div class="col-md-2">
 										<img src="public/img/settings.png" style="width:30px; height:30px" ng-click="VoirModele(x)" ui-sref="activerModele">

@@ -384,7 +384,6 @@ socket.on('erreur',function(data){
     });
 
     $scope.LancerModele = function(modele) {
-
         socket.emit("modeleEnclenché", modele);
     };
 

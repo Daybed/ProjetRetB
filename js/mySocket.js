@@ -85,7 +85,9 @@ var socketClient = function(io, mySocket, connection) {
 
         socket.on('modeleEnclenché',function(modele){
             modeleActuel=modele.nom;
-            var hue=[];
+            modele.light= JSON.parse(modele.light);
+            modele.hue=JSON.parse(modele.hue);
+           /* var hue=[];
             hue[0]=modele.hue.substring(1);
             hue[0]= hue[0].substring(0, hue[0].length-1);
             var huesplit=hue[0].split(',');
@@ -114,7 +116,8 @@ var socketClient = function(io, mySocket, connection) {
                 j=(4*(i+1)+i)+1;
             }
             modele.light=lampes;
-            
+            */
+
             io.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modele.nom});
             lastModeleEnclenché=modele.nom;
             if(modele.sens=='droite'){
@@ -132,24 +135,25 @@ var socketClient = function(io, mySocket, connection) {
                 fonction.setknx(connection,modele.light[i].adresse,false);
                 }
             }
-            for(i in modele.hue){
+            if(modele.hue[0]!=undefined){
+                for(i in modele.hue){
 
-                var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/'+modele.hue[i].lampe+'/state';
-                var requete="{"+
-                    '"on":'+modele.hue[i].on+","+
-                    '"bri":'+modele.hue[i].bri+","+
-                    '"xy": ['+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+"]"+
-                "}";
-                var res = fonction.Put(url, requete);
-                var json = JSON.parse(res);
-                if (json[0].success) {
-                } else {
-                    console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
+                    var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/'+modele.hue[i].lampe+'/state';
+                    var requete="{"+
+                        '"on":'+modele.hue[i].on+","+
+                        '"bri":'+modele.hue[i].bri+","+
+                        '"xy": ['+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+"]"+
+                    "}";
+                    var res = fonction.Put(url, requete);
+                    var json = JSON.parse(res);
+                    if (json[0].success) {
+                    } else {
+                        console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
+                    }
+
                 }
-
+                fonction.initialisationHue(socket, mySocket);
             }
-            fonction.initialisationHue(socket, mySocket);
-        
 
         });
 
