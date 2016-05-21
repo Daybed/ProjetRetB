@@ -63,12 +63,16 @@
 						<div class="col-md-12 col-xs-12 NewWhiteBox">
 							<div class="row">
 								<div class="col-md-10 col-md-offset-1">
-									<div class="col-md-2 col-md-offset-1 col-xs-1" ng-repeat="x in lampes track by $index">
-									    <img ng-src="{{x.img}}" class="img HueEtKnx" ng-click="lampe(x.num)">
+									<div ng-show="lampeKnx">
+										<div class="col-md-2 col-md-offset-1 col-xs-1" ng-repeat="x in lampes track by $index">
+										    <img ng-src="{{x.img}}" class="img HueEtKnx" ng-click="lampe(x.num)">
+										</div>
 									</div>
-									<div class="col-md-2 col-md-offset-1 col-xs-1" ng-repeat="x in Hue track by $index">
-										<img src="public/img/hue.png" class="img HueEtKnx" ng-click="changehue(x.lampe,true)" id= "hue {{x.lampe}}">
-										<p id="container{{x.lampe}}"></p>
+									<div ng-show="lampeHue">
+										<div class="col-md-2 col-md-offset-1 col-xs-1" ng-repeat="x in Hue track by $index">
+											<img src="public/img/hue.png" class="img HueEtKnx" ng-click="changehue(x.lampe,true)" id= "hue {{x.lampe}}">
+											<p id="container{{x.lampe}}"></p>
+										</div>
 									</div>
 								</div>
 							</div>						
@@ -77,40 +81,13 @@
 				</div>
 			</div>
 		</div>
-	<!--	<div class="row">
-			<div id="cadreKnx" class="col-md-{{lampes.length}} col-xs-{{lampes.length}} col-lg-{{lampes.length}} col-sm-{{lampes.length}}">
-				<div ng-init="lampeKnx = false">
-					<div ng-show="lampeKnx">
-						<div class="col-md-12 col-xs-12  col-lg-12 col-sm-12 Whitebox">
-							<div class="col-md-{{12/lampes.length}} col-xs-{{12/lampes.length}} col-lg-{{12/lampes.length}} col-sm-{{12/lampes.length}}" ng-repeat="x in lampes track by $index">
-					            <img ng-src="{{x.img}}" class="img-responsive img" ng-click="lampe(x.num)">
-						    </div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="cadreHue" class="col-md-{{11-lampes.length}} col-xs-{{11-lampes.length}} col-lg-{{11-lampes.length}} col-sm-{{11-lampes.length}} ">
-				<div ng-init="lampeHue = false">
-					<div ng-show="lampeHue">
-							<div class="col-md-12 col-xs-12 col-lg-12 col-sm-12 Whitebox">
-									<div class="row">
-										<div class="col-md-{{12/Hue.length}} col-xs-{{12/Hue.length}} col-lg-{{12/Hue.length}} col-sm-{{12/Hue.length}}" ng-repeat="x in Hue track by $index">
-								           	 <img src="public/img/hue.png" class="img" ng-click="changehue(x.lampe,true)" style="width:75px;height:75px" id= "hue {{x.lampe}}">
-									    </div>
-									</div>
-									<div class="row">
-										<p id="container"></p>
-									</div>
-							</div>
-					</div>
-				</div>
-			</div>
-		</div>
--->
 
 		<div class="row">
 				<div class="col-md-4 col-md-offset-2 ">
-					<div class="col-md-12 affichage" ng-init="modele = false" ng-show="modele">
+					<div class="col-md-12 affichage" ng-init="modele = false" ng-show="modele&&!fenetre">
+						<div ui-view="view"></div>
+					</div>
+					<div class="col-xs-12 NewWhiteBox" ng-init="modele = false" ng-show="modele&&fenetre">
 						<div ui-view="view"></div>
 					</div>	
 				</div>

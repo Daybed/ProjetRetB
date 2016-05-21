@@ -1,3 +1,4 @@
+	<div ng-show="!fenetre">
 		<div class="row">
 			<div class="nomModele">
 			{{nomModele}}
@@ -59,14 +60,79 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12  col-lg-12 col-xs-12 col-sm-12" style="padding-top:20px">
-				<div class="col-md-6 col-md-offset-1 col-lg-6 col-lg-offset-1 col-xs-6 col-xs-offset-1 col-sm-6 col-sm-offset-1">
-					<div class="lancerModele" style = "outline-style:none;" ng-click="LancerModele(EnregistrementModele)">Activer le modèle</div>
-				</div>
-				<div class="col-md-3 col-xs-3 col-lg-3 col-sm-3 trash">
+				<div class="col-md-2 col-md-offset-5 col-xs-3 col-lg-3 col-sm-3 trash">
 					<div ng-click="SupprimerModele(nomModele)" style="outline-style:none;">
 						<img src="public/img/trash.png" style="width:30px;height:30px;">
 					</div>
 				</div>
 			</div>
 		</div>
-						
+	</div>
+
+	<div ng-show="fenetre">
+		<div class="row">
+			<div class="nomModele">
+			{{nomModele}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="enregistrementModeleContenu">
+				<div class="col-xs-12 ">
+					<div class="col-xs-12 enregistrementModeleTitre">
+						Chenillard
+					</div>
+					<div class="row">
+						Sens : {{EnregistrementModele.chenillard.sens}}
+					</div>
+					<div class="row">
+						Vitesse : {{EnregistrementModele.chenillard.speed}}
+					</div>
+				</div>
+				<div class="col-xs-12 ">
+					<div class="col-xs-12 enregistrementModeleTitre">
+						Lampes
+					</div>
+					<div ng-show="activationKNX">
+						<div ng-repeat="x in EnregistrementModele.lampes">
+							<div class="row">
+								Lampe {{x.num}} : {{x.etat}} 
+							</div>
+						</div>
+					</div>
+					<div ng-show="!activationKNX">
+						Aucune lampe knx enregistrée
+					</div>
+				</div>
+				<div class="col-xs-12 ">
+					<div class="col-xs-12 enregistrementModeleTitre">
+						Hue
+					</div>
+					<div ng-show="activationHue">
+						<div ng-repeat="x in EnregistrementModele.hue">
+							<div class="row">
+								<div class="col-xs-6 ">
+									Hue {{x.lampe}}
+								</div>
+								<div class="col-xs-6 ">
+									<div class="carreCouleurHue" style="background-color: {{x.couleur}}; display:inline-block;"></div>
+								</div>								
+							</div>
+						</div>
+					</div>
+					<div ng-show="!activationHue">
+						Aucune Hue enregistrée
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 " style="padding-top:20px">
+				<div class="col-xs-12 trash">
+					<div ng-click="SupprimerModele(nomModele)" style="outline-style:none;">
+						<img src="public/img/trash.png" style="width:30px;height:30px;">
+					</div>
+				</div>
+			</div>
+		</div>
+				
+</div>		

@@ -56,9 +56,12 @@ var changeclockwise = function(io, mySocket, sens) {
     mySocket.socketEmitChenillard(io);
 }
 var setspeed = function(io, mySocket, newspeed) {
-    if (newspeed < 500) {
-        speed = 500;
-    } else {
+    if (newspeed >10000) {
+        speed = 10000;
+    } else if(newspeed<500){
+        speed=500;
+    }
+    else{
         speed = newspeed;
     }
     exports.speed = speed;

@@ -14,7 +14,7 @@ var socketClient = function(io, mySocket, connection) {
 
         socket.emit('lampes', fonction.light);
 
-       BDD.findAll(function(rep) {
+        BDD.findAll(function(rep) {
             socket.emit('Modeles', rep);
         });
 
@@ -27,10 +27,10 @@ var socketClient = function(io, mySocket, connection) {
         fonction.initialisationHue(socket,mySocket);
 
         socket.emit('lastModeleEnclenché',{last:lastModeleEnclenché,nouveau:modeleActuel});
-
         socket.on('disconnection',function(socket){
             console.log("Un client s'est déconnecté");
         });
+
         socket.on('setlampe', function(data) {
             if (chenillard.on == true) {
                 chenillard.changestate(io, fonction, mySocket, connection);
@@ -59,7 +59,6 @@ var socketClient = function(io, mySocket, connection) {
         socket.on('setstate', function() {
             chenillard.changestate(io, fonction, mySocket, connection,socket);
         });
-
         socket.on('NouveauModele',function(data){
             BDD.add(data.nom,data.infos.chenillard,data.infos.lampes,data.infos.hue,function(data){
                 io.emit('nouveauModele',data.nom);
@@ -69,7 +68,6 @@ var socketClient = function(io, mySocket, connection) {
             });
 
         });
-
         socket.on('setCouleurHue', function(data) {
             var url = "http://" + conf.ipAdresseHue + '/api/' + conf.hueUsername + "/lights/" + data.lampe + "/state";
             var param = JSON.stringify({
@@ -135,26 +133,27 @@ var socketClient = function(io, mySocket, connection) {
                 fonction.setknx(connection,modele.light[i].adresse,false);
                 }
             }
-            if(modele.hue[0]!=undefined){
-                for(i in modele.hue){
+            if(fonction.Get("http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/')!='error'){
+                if(modele.hue[0]!=undefined){
+                    for(i in modele.hue){
 
-                    var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/'+modele.hue[i].lampe+'/state';
-                    var requete="{"+
-                        '"on":'+modele.hue[i].on+","+
-                        '"bri":'+modele.hue[i].bri+","+
-                        '"xy": ['+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+"]"+
-                    "}";
-                    var res = fonction.Put(url, requete);
-                    var json = JSON.parse(res);
-                    if (json[0].success) {
-                    } else {
-                        console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
+                        var url= "http://"+conf.ipAdresseHue +'/api/'+conf.hueUsername+'/lights/'+modele.hue[i].lampe+'/state';
+                        var requete="{"+
+                            '"on":'+modele.hue[i].on+","+
+                            '"bri":'+modele.hue[i].bri+","+
+                            '"xy": ['+[fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).x,fonction.rgbToXyBri(parseInt(modele.hue[i].rgb.r), parseInt(modele.hue[i].rgb.g), parseInt(modele.hue[i].rgb.b)).y]+"]"+
+                        "}";
+                        var res = fonction.Put(url, requete);
+                        var json = JSON.parse(res);
+                        if (json[0].success) {
+                        } else {
+                            console.log("Erreur : :" +modele+". Type de l'erreur : " + json[0].error.description);
+                        }
+
                     }
-
+                    fonction.initialisationHue(io, mySocket);
                 }
-                fonction.initialisationHue(socket, mySocket);
             }
-
         });
 
         socket.on('supprimerModele', function(nom) {
@@ -192,12 +191,12 @@ var socketListenerKNX = function(io, connection, mySocket) {
                     } else if (data[4] == 3) {
                         startDiminuer = new Date().getTime();
                         intervalDown = setInterval(function() {
-                            chenillard.setspeed(io, mySocket, chenillard.speed + 10);
+                            chenillard.setspeed(io, mySocket, chenillard.speed + 100);
                         }, 100);
                     } else if (data[4] == 4) {
                         startAugmenter = new Date().getTime();
                         intervalUp = setInterval(function() {
-                            chenillard.setspeed(io, mySocket, chenillard.speed - 10);
+                            chenillard.setspeed(io, mySocket, chenillard.speed - 100);
                         }, 100);
                     }
                 } else if (data1 == 0) {

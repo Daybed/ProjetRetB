@@ -25,12 +25,10 @@ function listernerColor(picker, numero) {
     };
 }
 
-app.controller('myCtrl', function($scope, $http, ngToast, $state) {
+app.controller('myCtrl', function($scope, $http, ngToast, $state,$window) {
+    $scope.fenetre = $window.innerWidth<500;
     $scope.modeles = [];
-    $scope.bonjour=function(){
-        var somme = $scope.lampes + $scope.Hue;
-        return somme;
-    }
+
     socket.on('Chenillard', function(data) {
         $scope.$apply(function() {
 
@@ -304,7 +302,7 @@ socket.on('erreur',function(data){
 
         nouveauModele.hue=JSON.stringify(nouveauModele.hue);
         nouveauModele.lampes=JSON.stringify(nouveauModele.lampes);
-
+        console.log(nouveauModele);
         sommeHue=0;
         sommeKnx=0;
         var i = 0;
